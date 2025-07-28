@@ -14,5 +14,4 @@ public class WorkTimeNotMatched extends AbstractEvent {
     private Date workStartTime;
     private Date workEndTime;
     private Long cctvId;
-    private Long cctvId;
 }
