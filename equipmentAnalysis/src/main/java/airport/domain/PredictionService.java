@@ -5,11 +5,12 @@ package airport.domain;
 public class PredictionService {
 
     public static int predictCost(String equipmentType) {
-        return switch (equipmentType) {
-            case "RampLoader" -> 500_000;
-            case "PushbackTruck" -> 700_000;
-            case "BeltLoader" -> 400_000;
-            default -> 600_000;
-        };
+        if ("레이더".equals(equipmentType)) {
+            return 1500000;
+        } else if ("센서".equals(equipmentType)) {
+            return 800000;
+        } else {
+            return 500000;
+        }
     }
 }
