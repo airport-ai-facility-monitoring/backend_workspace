@@ -1,0 +1,399 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: member
+  labels:
+    app: member
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: member
+  template:
+    metadata:
+      labels:
+        app: member
+    spec:
+      containers:
+        - name: member
+          image: username/member:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification
+  labels:
+    app: notification
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification
+  template:
+    metadata:
+      labels:
+        app: notification
+    spec:
+      containers:
+        - name: notification
+          image: username/notification:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert
+  labels:
+    app: alert
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert
+  template:
+    metadata:
+      labels:
+        app: alert
+    spec:
+      containers:
+        - name: alert
+          image: username/alert:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runwayobject
+  labels:
+    app: runwayobject
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: runwayobject
+  template:
+    metadata:
+      labels:
+        app: runwayobject
+    spec:
+      containers:
+        - name: runwayobject
+          image: username/runwayobject:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runwaycrack
+  labels:
+    app: runwaycrack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: runwaycrack
+  template:
+    metadata:
+      labels:
+        app: runwaycrack
+    spec:
+      containers:
+        - name: runwaycrack
+          image: username/runwaycrack:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: equipment analysis
+  labels:
+    app: equipment analysis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: equipment analysis
+  template:
+    metadata:
+      labels:
+        app: equipment analysis
+    spec:
+      containers:
+        - name: equipment analysis
+          image: username/equipment analysis:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: equipmentdashboard
+  labels:
+    app: equipmentdashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: equipmentdashboard
+  template:
+    metadata:
+      labels:
+        app: equipmentdashboard
+    spec:
+      containers:
+        - name: equipmentdashboard
+          image: username/equipmentdashboard:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: member
+  labels:
+    app: member
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: member
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification
+  labels:
+    app: notification
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: notification
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: alert
+  labels:
+    app: alert
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: alert
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: runwayobject
+  labels:
+    app: runwayobject
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: runwayobject
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: runwaycrack
+  labels:
+    app: runwaycrack
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: runwaycrack
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: equipment analysis
+  labels:
+    app: equipment analysis
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: equipment analysis
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: equipmentdashboard
+  labels:
+    app: equipmentdashboard
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: equipmentdashboard
+

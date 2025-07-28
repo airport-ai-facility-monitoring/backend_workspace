@@ -1,0 +1,108 @@
+server:
+  port: 8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+#<<< API Gateway / Routes
+      routes:
+        - id: member
+          uri: http://localhost:8082
+          predicates:
+            - Path=/users/**, /employees/**, 
+        - id: notification
+          uri: http://localhost:8083
+          predicates:
+            - Path=/notifications/**, 
+        - id: alert
+          uri: http://localhost:8084
+          predicates:
+            - Path=/alerts/**, /cctvs/**, 
+        - id: runwayobject
+          uri: http://localhost:8085
+          predicates:
+            - Path=/strangeObjects/**, /workers/**, /workTrucks/**, 
+        - id: runwaycrack
+          uri: http://localhost:8086
+          predicates:
+            - Path=/runwayCracks/**, /runwayCrackReports/**, 
+        - id: equipment analysis
+          uri: http://localhost:8087
+          predicates:
+            - Path=/equipmentReports/**, 
+        - id: equipmentdashboard
+          uri: http://localhost:8088
+          predicates:
+            - Path=/equipment/**, 
+        - id: frontend
+          uri: http://localhost:8080
+          predicates:
+            - Path=/**
+#>>> API Gateway / Routes
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: member
+          uri: http://member:8080
+          predicates:
+            - Path=/users/**, /employees/**, 
+        - id: notification
+          uri: http://notification:8080
+          predicates:
+            - Path=/notifications/**, 
+        - id: alert
+          uri: http://alert:8080
+          predicates:
+            - Path=/alerts/**, /cctvs/**, 
+        - id: runwayobject
+          uri: http://runwayobject:8080
+          predicates:
+            - Path=/strangeObjects/**, /workers/**, /workTrucks/**, 
+        - id: runwaycrack
+          uri: http://runwaycrack:8080
+          predicates:
+            - Path=/runwayCracks/**, /runwayCrackReports/**, 
+        - id: equipment analysis
+          uri: http://equipmentAnalysis:8080
+          predicates:
+            - Path=/equipmentReports/**, 
+        - id: equipmentdashboard
+          uri: http://equipmentdashboard:8080
+          predicates:
+            - Path=/equipment/**, 
+        - id: frontend
+          uri: http://frontend:8080
+          predicates:
+            - Path=/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080
