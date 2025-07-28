@@ -33,10 +33,11 @@ public class Equipment {
         EquipmentRegistered equipmentRegistered = new EquipmentRegistered(this);
         equipmentRegistered.publishAfterCommit();
 
-        EquipmentIAnalyRequested equipmentIAnalyRequested = new EquipmentIAnalyRequested(
-            this
-        );
-        equipmentIAnalyRequested.publishAfterCommit();
+        // 장비 등록 시점에는 분석 요청이 자동으로 발생하지 않도록 주석 처리
+        // EquipmentIAnalyRequested equipmentIAnalyRequested = new EquipmentIAnalyRequested(
+        //     this
+        // );
+        // equipmentIAnalyRequested.publishAfterCommit();
     }
 
     public static EquipmentRepository repository() {
@@ -76,6 +77,13 @@ public class Equipment {
 
     }
     //>>> Clean Arch / Port Method
+
+    public void requestAnalysis() {
+        this.state = "분석요청됨";
+
+        EquipmentIAnalyRequested event = new EquipmentIAnalyRequested(this);
+        event.publishAfterCommit();
+    }
 
 }
 //>>> DDD / Aggregate Root
