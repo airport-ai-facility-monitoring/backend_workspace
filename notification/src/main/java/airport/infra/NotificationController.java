@@ -11,13 +11,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 //<<< Clean Arch / Inbound Adaptor
-
+@CrossOrigin(origins = "*")
 @RestController
-// @RequestMapping(value="/notifications")
+@RequestMapping(value="/notifications")
 @Transactional
 public class NotificationController {
 
     @Autowired
     NotificationRepository notificationRepository;
+
+    public Notification registerNotification(@RequestBody RegisterNotificationCommand command) {
+        return Notification.register(command);
+    }
 }
 //>>> Clean Arch / Inbound Adaptor

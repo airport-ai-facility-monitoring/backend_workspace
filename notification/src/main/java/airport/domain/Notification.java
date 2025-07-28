@@ -43,5 +43,15 @@ public class Notification {
         );
         return notificationRepository;
     }
+
+    public static Notification register(RegisterNotificationCommand command) {
+        Notification notification = new Notification();
+        notification.setTitle(command.getTitle());
+        notification.setWriterId(command.getWriterId());
+        notification.setContents(command.getContents());
+        notification.setWriteDate(new Date());
+
+        return repository().save(notification); // 저장 후 @PostPersist에서 이벤트 자동 발생
+    }
 }
 //>>> DDD / Aggregate Root
