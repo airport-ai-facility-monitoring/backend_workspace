@@ -2,6 +2,8 @@ package airport.infra;
 
 import airport.config.kafka.KafkaProcessor;
 import airport.domain.*;
+import airport.domain.User.UserRepository;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.naming.NameParser;
