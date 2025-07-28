@@ -9,15 +9,18 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Table(name = "Employee_table")
 @Data
+@ToString
+
 //<<< DDD / Aggregate Root
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "employee_id")
     private Long employeeId;
 
     private String name;

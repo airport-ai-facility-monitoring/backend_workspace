@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import airport.domain.Employee;
+import airport.domain.EmployeeRepository;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.List;
 @Service
 public class MyUserDetailService implements UserDetailsService {
     private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Override
     public UserDetails loadUserByUsername(String employeeId) throws UsernameNotFoundException {
@@ -29,8 +33,8 @@ public class MyUserDetailService implements UserDetailsService {
         } catch (NumberFormatException e) {
             throw new UsernameNotFoundException("Employee ID가 올바른 숫자가 아닙니다: " + employeeId);
         }
-
-        var result = userRepository.findByEmployee_Id(empId);
+        Employee employee = employeeRepository.findById(empId).orElseThrow();
+        var result = userRepository.findByEmployee(employee);
         
         if(result.isEmpty()){
             throw new UsernameNotFoundException("에러");

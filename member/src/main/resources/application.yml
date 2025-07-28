@@ -40,6 +40,9 @@ spring:
 #>>> EDA / Topic Name
           contentType: application/json
 
+jwt:
+  secret: fmvqwnkeqnvkqweiscanjvdbqjedwqpdihccapdwqdjsac
+
 logging:
   level:
     org.hibernate.type: trace
@@ -50,8 +53,6 @@ server:
   port: 8082
 
 ---
-jwt:
-  secret: ${JWT_SECRET}
 
 spring:
   profiles: docker

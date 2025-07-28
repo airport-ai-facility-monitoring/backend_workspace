@@ -14,10 +14,13 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Table(name = "User_table")
 @Data
+@ToString
+
 //<<< DDD / Aggregate Root
 public class User {
 
@@ -28,7 +31,7 @@ public class User {
     private String password;
 
     @OneToOne
-    @JoinColumn(name = "Employee_ID", unique = true)
+    @JoinColumn(name = "employee_id", unique = true)
     private Employee employee;
 
     private String status;
