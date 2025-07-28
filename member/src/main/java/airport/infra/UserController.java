@@ -49,6 +49,17 @@ public class UserController {
         return user.getEmployee().getPhoneNumber();
     } 
 
+    @PostMapping("/users/employee")
+    public String employee2(@RequestBody Map<String, String> userData) {
+        Employee employee = employeeRepository.findById(Long.valueOf(userData.get("employee_id"))).orElseThrow();
+        User user = new User();
+        user.setEmployee(employee);
+        user.setPassword(userData.get("password")); // 실제 애플리케이션에서는 비밀번호를 암호화해야 합니다.
+        user.setStatus("CREATED");
+        userRepository.save(user);
+        return "";
+    } 
+
     @GetMapping("/users/employee/{id}")
     public String employee(@PathVariable Long id){
         Employee employee = employeeRepository.findById(id).orElseThrow();
