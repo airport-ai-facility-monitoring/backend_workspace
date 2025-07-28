@@ -5,7 +5,7 @@ import airport.infra.AbstractEvent;
 import java.time.LocalDate;
 import java.util.*;
 import lombok.*;
-
+import java.time.LocalDateTime;
 //<<< DDD / Domain Event
 @Data
 @ToString
@@ -15,10 +15,15 @@ public class NotificationsRegistered extends AbstractEvent {
     private String title;
     private Long writerId;
     private String contents;
-    private Date writeDate;
+    private LocalDateTime writeDate;
 
     public NotificationsRegistered(Notification aggregate) {
         super(aggregate);
+        this.notificationsId = aggregate.getNotificationsId();
+        this.title = aggregate.getTitle();
+        this.writerId = aggregate.getWriterId();
+        this.contents = aggregate.getContents();
+        this.writeDate = aggregate.getWriteDate();
     }
 
     public NotificationsRegistered() {

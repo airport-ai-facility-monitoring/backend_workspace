@@ -24,7 +24,7 @@ public class EquipmentReport {
 
     private String title;
 
-    private String maintenanceCost;
+    private int maintenanceCost;
 
     private String reportContents;
 
@@ -32,13 +32,13 @@ public class EquipmentReport {
 
     private String state;
 
-    @PreUpdate
-    public void onPreUpdate() {
-        MaintenanceCompleted maintenanceCompleted = new MaintenanceCompleted(
-            this
-        );
-        maintenanceCompleted.publishAfterCommit();
-    }
+    // @PreUpdate
+    // public void onPreUpdate() {
+    //     MaintenanceCompleted maintenanceCompleted = new MaintenanceCompleted(
+    //         this
+    //     );
+    //     maintenanceCompleted.publishAfterCommit();
+    // }
 
     public static EquipmentReportRepository repository() {
         EquipmentReportRepository equipmentReportRepository = EquipmentAnalysisApplication.applicationContext.getBean(

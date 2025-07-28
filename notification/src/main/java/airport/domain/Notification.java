@@ -11,6 +11,10 @@ import java.util.Map;
 import javax.persistence.*;
 import lombok.Data;
 
+// 시간
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "Notification_table")
 @Data
@@ -27,7 +31,8 @@ public class Notification {
 
     private String contents;
 
-    private Date writeDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    private LocalDateTime writeDate;
 
     @PostPersist
     public void onPostPersist() {
@@ -44,12 +49,12 @@ public class Notification {
         return notificationRepository;
     }
 
-    public static Notification register(RegisterNotificationCommand command) {
+    public static Notification register(NotificationsRegistered command) {
         Notification notification = new Notification();
         notification.setTitle(command.getTitle());
         notification.setWriterId(command.getWriterId());
         notification.setContents(command.getContents());
-        notification.setWriteDate(new Date());
+        notification.setWriteDate(LocalDateTime.now());
 
         return repository().save(notification); // 저장 후 @PostPersist에서 이벤트 자동 발생
     }

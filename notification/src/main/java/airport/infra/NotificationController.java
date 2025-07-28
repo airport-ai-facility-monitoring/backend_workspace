@@ -20,7 +20,8 @@ public class NotificationController {
     @Autowired
     NotificationRepository notificationRepository;
 
-    public Notification registerNotification(@RequestBody RegisterNotificationCommand command) {
+    @PostMapping
+    public Notification registerNotification(@RequestBody NotificationsRegistered command) {
         return Notification.register(command);
     }
 }

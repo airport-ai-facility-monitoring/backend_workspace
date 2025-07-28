@@ -13,12 +13,17 @@ public class ReportGenerated extends AbstractEvent {
 
     private Long equipReportid;
     private String title;
-    private String maintenanceCost;
+    private int maintenanceCost;
     private String reportContents;
     private Long equipmentId;
 
     public ReportGenerated(EquipmentReport aggregate) {
         super(aggregate);
+        this.equipReportid = aggregate.getEquipReportid();
+        this.title = aggregate.getTitle();
+        this.maintenanceCost = aggregate.getMaintenanceCost();
+        this.reportContents = aggregate.getReportContents();
+        this.equipmentId = aggregate.getEquipmentId();
     }
 
     public ReportGenerated() {

@@ -13,7 +13,7 @@ public class MaintenanceCompleted extends AbstractEvent {
 
     private Long equipReportid;
     private String title;
-    private String maintenanceCost;
+    private int maintenanceCost;
     private String reportContents;
     private Long equipmentId;
 
