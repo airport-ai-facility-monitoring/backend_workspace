@@ -38,30 +38,13 @@ public class Worker {
 
     //<<< Clean Arch / Port Method
     public static void checkWorkerCount(WorkerDetected workerDetected) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        Worker worker = new Worker();
-        repository().save(worker);
-
-        WorkerCountExceeded workerCountExceeded = new WorkerCountExceeded(worker);
-        workerCountExceeded.publishAfterCommit();
-        */
-
-        /** Example 2:  finding and process
-        
-
-        repository().findById(workerDetected.get???()).ifPresent(worker->{
-            
-            worker // do something
-            repository().save(worker);
-
-            WorkerCountExceeded workerCountExceeded = new WorkerCountExceeded(worker);
+        Integer totalApprovalWorkerCount = repository().getTotalApprovalWorkerCount();
+        if (workerDetected.getCount() > totalApprovalWorkerCount) {
+            WorkerCountExceeded workerCountExceeded = new WorkerCountExceeded();
+            workerCountExceeded.setDetectedCount(workerDetected.getCount());
+            workerCountExceeded.setDbCount(Long.valueOf(totalApprovalWorkerCount));
             workerCountExceeded.publishAfterCommit();
-
-         });
-        */
-
+        }
     }
     //>>> Clean Arch / Port Method
 

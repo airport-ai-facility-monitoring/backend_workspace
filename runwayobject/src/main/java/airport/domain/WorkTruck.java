@@ -2,6 +2,7 @@ package airport.domain;
 
 import airport.RunwayobjectApplication;
 import airport.domain.WorkTimeNotMatched;
+import airport.domain.WorkTruckDetected;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -42,26 +43,12 @@ public class WorkTruck {
 
     //<<< Clean Arch / Port Method
     public static void checkWorkTime(WorkTruckDetected workTruckDetected) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        WorkTruck workTruck = new WorkTruck();
-        repository().save(workTruck);
-
-        */
-
-        /** Example 2:  finding and process
-        
-
-        repository().findById(workTruckDetected.get???()).ifPresent(workTruck->{
-            
-            workTruck // do something
-            repository().save(workTruck);
-
-
-         });
-        */
-
+        // Check if the detected work truck is operating outside of approved work hours
+        if (!repository().isWorkTimeMatched(workTruckDetected.getClassId())) {
+            WorkTimeNotMatched workTimeNotMatched = new WorkTimeNotMatched();
+            workTimeNotMatched.setWorkTruckId(workTruckDetected.getObjId());
+            workTimeNotMatched.publishAfterCommit();
+        }
     }
     //>>> Clean Arch / Port Method
 

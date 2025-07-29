@@ -1,9 +1,6 @@
 package airport.domain;
 
-import airport.domain.*;
 import airport.infra.AbstractEvent;
-import java.time.LocalDate;
-import java.util.*;
 import lombok.*;
 
 //<<< DDD / Domain Event
@@ -15,6 +12,8 @@ public class WorkTruckDetected extends AbstractEvent {
     private Integer objectType;
     private String imageUrl;
     private Long cctvId;
+    private Integer classId;
+    private Integer count;
 
     public WorkTruckDetected(StrangeObject aggregate) {
         super(aggregate);
@@ -22,6 +21,22 @@ public class WorkTruckDetected extends AbstractEvent {
 
     public WorkTruckDetected() {
         super();
+    }
+
+    public Integer getClassId() {
+        return classId;
+    }
+
+    public void setClassId(Integer classId) {
+        this.classId = classId;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
     }
 }
 //>>> DDD / Domain Event

@@ -1,9 +1,7 @@
 package airport.domain;
 
-import airport.domain.*;
 import airport.infra.AbstractEvent;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Date;
 import lombok.*;
 
 //<<< DDD / Domain Event
@@ -16,6 +14,7 @@ public class WorkTimeNotMatched extends AbstractEvent {
     private Date workStartTime;
     private Date workEndTime;
     private Long cctvId;
+    private Integer classId;
 
     public WorkTimeNotMatched(WorkTruck aggregate) {
         super(aggregate);
@@ -23,6 +22,14 @@ public class WorkTimeNotMatched extends AbstractEvent {
 
     public WorkTimeNotMatched() {
         super();
+    }
+
+    public Integer getClassId() {
+        return classId;
+    }
+
+    public void setClassId(Integer classId) {
+        this.classId = classId;
     }
 }
 // >>> DDD / Domain Event
