@@ -40,6 +40,11 @@ spring:
 #>>> EDA / Topic Name
           contentType: application/json
 
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
+
+
 logging:
   level:
     org.hibernate.type: trace
