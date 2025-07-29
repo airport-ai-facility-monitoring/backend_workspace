@@ -23,7 +23,9 @@ public class PolicyHandler {
     @StreamListener(KafkaProcessor.INPUT)
     public void whatever(@Payload String eventString) {}
 
-    @StreamListener(KafkaProcessor.INPUT
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='EquipmentIAnalyRequested'"
     )
     public void wheneverEquipmentAnalyzeRequested(@Payload EquipmentIAnalyRequested event) {
         if (!event.validate()) return;
