@@ -46,5 +46,12 @@ public class EquipmentReport {
         );
         return equipmentReportRepository;
     }
+
+    public void completeInspection() {
+        this.state = "점검완료";
+
+        MaintenanceCompleted event = new MaintenanceCompleted(this);
+        event.publishAfterCommit();
+    }
 }
 //>>> DDD / Aggregate Root

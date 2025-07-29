@@ -41,5 +41,16 @@ public class EquipmentReportController {
     public void deleteReport(@PathVariable Long id) {
         equipmentReportRepository.deleteById(id);
     }
+
+    // 장비 점검 완료
+    @PutMapping("/{id}/complete")
+    public void completeInspection(@PathVariable Long id) {
+        Optional<EquipmentReport> reportOptional = equipmentReportRepository.findById(id);
+        if (reportOptional.isPresent()) {
+            EquipmentReport report = reportOptional.get();
+            report.completeInspection(); // 상태 변경 및 이벤트 발행
+            equipmentReportRepository.save(report);
+        }
+    }
 }
 //>>> Clean Arch / Inbound Adaptor
