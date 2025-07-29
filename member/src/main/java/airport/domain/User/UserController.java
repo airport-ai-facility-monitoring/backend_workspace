@@ -1,12 +1,11 @@
-package airport.infra;
+package airport.domain.User;
 
 import airport.config.security.JwtUtil;
 import airport.domain.*;
-import airport.domain.User.User;
-import airport.domain.User.UserRepository;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -16,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,44 +40,36 @@ public class UserController {
 
     @Autowired
     AuthenticationManagerBuilder authenticationManagerBuilder;
-    @GetMapping("/employee")
-    public String employee1() {
-        Employee employee = employeeRepository.findById(1L).orElseThrow();
-        var user = userRepository.findByEmployee(employee)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        
-        return user.getEmployee().getPhoneNumber();
-    } 
 
-    @PostMapping("/users/employee")
-    public String employee2(@RequestBody Map<String, String> userData) {
-        Employee employee = employeeRepository.findById(Long.valueOf(userData.get("employee_id"))).orElseThrow();
-        User user = new User();
-        user.setEmployee(employee);
-        user.setPassword(userData.get("password")); // 실제 애플리케이션에서는 비밀번호를 암호화해야 합니다.
-        user.setStatus("CREATED");
-        userRepository.save(user);
-        return "";
-    } 
+    @Autowired
+    UserService userService;
 
-    @GetMapping("/users/employee/{id}")
-    public String employee(@PathVariable Long id){
-        Employee employee = employeeRepository.findById(id).orElseThrow();
-        var result = userRepository.findByEmployee(employee);
+    @PostMapping("/user")
+    public ResponseEntity<Map<String, Object>> employee2(@RequestBody Map<String, Object> req) {
 
-        if (result.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다.");
+        try {
+            String password = (String) req.get("password");
+            Long employeeId = Long.valueOf(String.valueOf(req.get("employeeId")));
+
+            if (password == null || password.isEmpty()) {
+                throw new IllegalArgumentException("password가 비어있습니다.");
+            }
+
+            userService.join(password, employeeId);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("잘못된 요청 데이터입니다.", e);
         }
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "회원가입이 완료되었습니다.");
 
-        System.out.println(result.get().getEmployee());
-        return "";
-    }   
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/login/jwt")
     @ResponseBody
-    public String loginJWT(@RequestBody Map<String, String> data,
+    public String loginJWT(@RequestBody Map<String, Object> data,
                            HttpServletResponse response){
-        System.out.println("Aa");
         var authToken = new UsernamePasswordAuthenticationToken(
             data.get("employeeId"),
             data.get("password")
@@ -87,14 +79,14 @@ public class UserController {
         // auth 등록
         SecurityContextHolder.getContext().setAuthentication(auth);
         // auth 변수 쓰고싶으면
-//        SecurityContextHolder.getContext().getAuthentication();
+        // SecurityContextHolder.getContext().getAuthentication();
 
         // jwt 만들어서 보내주세요~
         var jwt = jwtUtil.createToken(SecurityContextHolder.getContext().getAuthentication());
         System.out.println(jwt);
 
         var cookie = new Cookie("jwt", jwt);
-        cookie.setMaxAge(10);
+        cookie.setMaxAge(1000);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);

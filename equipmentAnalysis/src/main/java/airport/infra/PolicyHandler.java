@@ -23,7 +23,8 @@ public class PolicyHandler {
     @StreamListener(KafkaProcessor.INPUT)
     public void whatever(@Payload String eventString) {}
 
-    @StreamListener(KafkaProcessor.INPUT)
+    @StreamListener(KafkaProcessor.INPUT
+    )
     public void wheneverEquipmentAnalyzeRequested(@Payload EquipmentIAnalyRequested event) {
         if (!event.validate()) return;
 
