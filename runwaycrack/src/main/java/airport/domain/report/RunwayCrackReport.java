@@ -1,7 +1,7 @@
-package airport.domain;
+package airport.domain.report;
 
 import airport.RunwaycrackApplication;
-import airport.domain.ReportGenerated;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.Collections;

@@ -2,6 +2,9 @@ package airport.infra;
 
 import airport.config.kafka.KafkaProcessor;
 import airport.domain.*;
+import airport.domain.report.RunwayCrackReportRepository;
+import airport.domain.runway.RunwayCrackRepository;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.naming.NameParser;

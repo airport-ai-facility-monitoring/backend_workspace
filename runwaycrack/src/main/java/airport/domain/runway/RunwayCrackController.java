@@ -1,6 +1,7 @@
-package airport.infra;
+package airport.domain.runway;
 
 import airport.domain.*;
+
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-// @RequestMapping(value="/runwayCrackReports")
+// @RequestMapping(value="/runwayCracks")
 @Transactional
-public class RunwayCrackReportController {
+public class RunwayCrackController {
 
     @Autowired
-    RunwayCrackReportRepository runwayCrackReportRepository;
+    RunwayCrackRepository runwayCrackRepository;
 }
 //>>> Clean Arch / Inbound Adaptor
