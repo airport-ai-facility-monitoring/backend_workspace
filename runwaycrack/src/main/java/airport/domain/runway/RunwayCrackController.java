@@ -1,6 +1,7 @@
 package airport.domain.runway;
 
 import airport.domain.*;
+import airport.domain.report.ai.AnalysisService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 //<<< Clean Arch / Inbound Adaptor
 
@@ -24,6 +23,9 @@ public class RunwayCrackController {
 
     @Autowired
     RunwayCrackRepository runwayCrackRepository;
+
+    @Autowired
+    AnalysisService analysisService;
 
     // 1. 탐지된 모델에서 값 받아올 api
     // @PostMapping("/runwaycrack")
@@ -46,6 +48,8 @@ public class RunwayCrackController {
             if(result.isPresent()){
                 ReportRequested reportRequested = new ReportRequested(result.get());
                 reportRequested.publishAfterCommit();
+                // 1. ai의 프롬프트 입력값 보내기
+                // analysisService.analyzeAndSave(body);
                 // 로직 처리
                 Map<String, Object> res = new HashMap<>();
                 res.put("message", "보고가 성공적으로 처리되었습니다.");
