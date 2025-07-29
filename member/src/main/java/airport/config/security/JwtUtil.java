@@ -27,8 +27,7 @@ public class JwtUtil {
                 .map(a-> a.getAuthority())
                 .collect(Collectors.joining(","));
         String jwt = Jwts.builder()
-                .claim("username", user.getUsername())
-                .claim("employeeId", user.getEmployeeId())
+                .claim("employeeId", user.getUsername())
                 .claim("authorities", authorities)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 1000)) // 유효시간 10초

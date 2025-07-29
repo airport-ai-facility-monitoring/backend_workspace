@@ -10,7 +10,6 @@ import java.util.Collection;
 @Getter
 @Setter
 public class CustomUser extends User {
-    private Long employeeId;
     public CustomUser(
             String username,
             String password,
