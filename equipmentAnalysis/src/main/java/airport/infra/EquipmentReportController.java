@@ -19,5 +19,24 @@ public class EquipmentReportController {
 
     @Autowired
     EquipmentReportRepository equipmentReportRepository;
+
+    // 전체 보고서 조회
+    @GetMapping
+    public List<EquipmentReport> getAllReports() {
+        return equipmentReportRepository.findAll();
+    }
+
+    // 단일 보고서 조회
+    @GetMapping("/{id}")
+    public EquipmentReport getReportById(@PathVariable Long id) {
+        return equipmentReportRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("보고서를 찾을 수 없습니다"));
+    }
+
+    // 보고서 삭제
+    @DeleteMapping("/{id}")
+    public void deleteReport(@PathVariable Long id) {
+        equipmentReportRepository.deleteById(id);
+    }
 }
 //>>> Clean Arch / Inbound Adaptor

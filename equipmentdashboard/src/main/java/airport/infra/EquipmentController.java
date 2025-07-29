@@ -20,6 +20,25 @@ public class EquipmentController {
     @Autowired
     EquipmentRepository equipmentRepository;
 
+    // 전체 장비 조회
+    @GetMapping
+    public List<Equipment> getAllEquipments() {
+        return equipmentRepository.findAll();
+    }
+
+    // 단일 장비 조회
+    @GetMapping("/{id}")
+    public Equipment getEquipmentById(@PathVariable Long id) {
+        return equipmentRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("장비를 찾을 수 없습니다"));
+    }
+
+    // 장비 삭제
+    @DeleteMapping("/{id}")
+    public void deleteEquipment(@PathVariable Long id) {
+        equipmentRepository.deleteById(id);
+    }
+
     @PostMapping
     public Equipment registerEquipment(@RequestBody Equipment equipment) {
         return equipmentRepository.save(equipment);
