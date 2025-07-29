@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.*;
+
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
@@ -23,7 +25,9 @@ public class EquipmentController {
     // 전체 장비 조회
     @GetMapping
     public List<Equipment> getAllEquipments() {
-        return equipmentRepository.findAll();
+        List<Equipment> result = new ArrayList<>();
+        equipmentRepository.findAll().forEach(result::add);
+        return result;
     }
 
     // 단일 장비 조회

@@ -9,11 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.*;
 
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-// @RequestMapping(value="/equipmentReports")
+@RequestMapping(value="/equipmentReports")
 @Transactional
 public class EquipmentReportController {
 
@@ -23,7 +24,9 @@ public class EquipmentReportController {
     // 전체 보고서 조회
     @GetMapping
     public List<EquipmentReport> getAllReports() {
-        return equipmentReportRepository.findAll();
+        List<EquipmentReport> result = new ArrayList<>();
+        equipmentReportRepository.findAll().forEach(result::add);
+        return result;
     }
 
     // 단일 보고서 조회
