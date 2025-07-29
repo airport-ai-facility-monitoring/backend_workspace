@@ -62,5 +62,41 @@ public class NotificationController {
     public Notification registerNotification(@RequestBody NotificationsRegistered command) {
         return Notification.register(command);
     }
+
+    // -------------------------------------
+    // public NotificationController(NotificationRepository notificationRepository) {
+    //     this.notificationRepository = notificationRepository;
+    // }
+
+    // 목록 조회 with 검색, 정렬, 필터, 페이징
+    // @GetMapping
+    // public Page<Notification> getNotifications(
+    //     @RequestParam(defaultValue = "0") int page,
+    //     @RequestParam(defaultValue = "10") int size,
+    //     @RequestParam(defaultValue = "writeDate") String sortBy,
+    //     @RequestParam(defaultValue = "desc") String direction,
+    //     @RequestParam(required = false) String keyword,
+    //     @RequestParam(required = false) Long writerId
+    // ) {
+    //     Sort sort = direction.equalsIgnoreCase("desc") ?
+    //         Sort.by(sortBy).descending() :
+    //         Sort.by(sortBy).ascending();
+
+    //     PageRequest pageRequest = PageRequest.of(page, size, sort);
+
+    //     if (keyword != null && writerId != null) {
+    //         return notificationRepository.findByTitleContainingOrContentsContainingAndWriterId(
+    //             keyword, keyword, writerId, pageRequest
+    //         );
+    //     } else if (keyword != null) {
+    //         return notificationRepository.findByTitleContainingOrContentsContaining(
+    //             keyword, keyword, pageRequest
+    //         );
+    //     } else if (writerId != null) {
+    //         return notificationRepository.findByWriterId(writerId, pageRequest);
+    //     } else {
+    //         return notificationRepository.findAll(pageRequest);
+    //     }
+    // }
 }
 //>>> Clean Arch / Inbound Adaptor
