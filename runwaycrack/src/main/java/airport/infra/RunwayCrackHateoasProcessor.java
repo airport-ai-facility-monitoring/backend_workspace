@@ -1,6 +1,8 @@
 package airport.infra;
 
 import airport.domain.*;
+import airport.domain.runway.RunwayCrack;
+
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.RepresentationModelProcessor;

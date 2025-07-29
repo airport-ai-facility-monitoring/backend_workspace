@@ -48,8 +48,7 @@ public class MyUserDetailService implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority("사용자"));
         }
 
-        var a = new CustomUser("", user.getPassword(), authorities);
-        a.setEmployeeId(user.getEmployee().getEmployeeId());
+        var a = new CustomUser(employeeId, user.getPassword(), authorities);
 
         return a;
     }

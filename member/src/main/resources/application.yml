@@ -41,7 +41,7 @@ spring:
           contentType: application/json
 
 jwt:
-  secret: fmvqwnkeqnvkqweiscanjvdbqjedwqpdihccapdwqdjsac
+  secret: ${JWT_SECRET}
 
 logging:
   level:

@@ -1,6 +1,7 @@
 package airport.domain;
 
 import airport.domain.*;
+import airport.domain.runway.RunwayCrack;
 import airport.infra.AbstractEvent;
 import java.time.LocalDate;
 import java.util.*;

@@ -1,8 +1,9 @@
-package airport.domain;
+package airport.domain.runway;
 
 import airport.RunwaycrackApplication;
 import airport.domain.DamageDetected;
 import airport.domain.ReportRequested;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -27,6 +28,12 @@ public class RunwayCrack {
     private Long cctvId;
 
     private Integer size;
+
+    @PostPersist
+    public void onPostPersist() {
+        DamageDetected damageDetected = new DamageDetected(this);
+        damageDetected.publishAfterCommit();
+    }
 
     public static RunwayCrackRepository repository() {
         RunwayCrackRepository runwayCrackRepository = RunwaycrackApplication.applicationContext.getBean(

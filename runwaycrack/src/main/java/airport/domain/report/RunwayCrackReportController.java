@@ -1,14 +1,17 @@
-package airport.infra;
+package airport.domain.report;
 
 import airport.domain.*;
+import airport.domain.report.ai.AnalysisService;
+
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 //<<< Clean Arch / Inbound Adaptor
 
@@ -19,5 +22,14 @@ public class RunwayCrackReportController {
 
     @Autowired
     RunwayCrackReportRepository runwayCrackReportRepository;
+    
+    @Autowired
+    AnalysisService analysisService;
+
+    @PostMapping("/analyze")
+    public ResponseEntity<Void> analyze(@RequestBody String body) throws JsonProcessingException {
+        analysisService.analyzeAndSave(body);
+        return ResponseEntity.ok().build();
+    }
 }
 //>>> Clean Arch / Inbound Adaptor

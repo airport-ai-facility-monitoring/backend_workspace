@@ -90,6 +90,12 @@
 			<version>${cucumber.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.genai</groupId>
+			<artifactId>google-genai</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -107,6 +113,11 @@
 				<version>${spring-cloud-stream.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>32.1.2-jre</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

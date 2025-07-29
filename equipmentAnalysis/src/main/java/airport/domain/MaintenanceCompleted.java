@@ -19,6 +19,11 @@ public class MaintenanceCompleted extends AbstractEvent {
 
     public MaintenanceCompleted(EquipmentReport aggregate) {
         super(aggregate);
+        this.equipReportid = aggregate.getEquipReportid();
+        this.equipmentId = aggregate.getEquipmentId();
+        this.title = aggregate.getTitle();
+        this.maintenanceCost = aggregate.getMaintenanceCost();
+        this.reportContents = aggregate.getReportContents();
     }
 
     public MaintenanceCompleted() {

@@ -65,7 +65,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 authorities
         );
 
-        customUser.setEmployeeId(Long.valueOf(claim.get("employeeId").toString()));
 
         var authToken = new UsernamePasswordAuthenticationToken(
                 customUser, "", authorities
