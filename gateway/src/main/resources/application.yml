@@ -1,8 +1,12 @@
 server:
   port: 8088
 
+# 모든 프로필에 공통으로 적용될 JWT 설정
 jwt:
   secret: fmvqwnkeqnvkqweiscanjvdbqjedwqpdihccapdwqdjsac
+  excluded-paths:
+    - /user
+    - /login/jwt
 
 ---
 
@@ -10,59 +14,41 @@ spring:
   profiles: default
   cloud:
     gateway:
-#<<< API Gateway / Routes
+      default-filters:
+        - JwtFilter
       routes:
-        - id: member-unauthenticated
+        - id: member
           uri: http://localhost:8082
           predicates:
-            - Path=/user, /login/jwt
-        - id: member-authenticated
-          uri: http://localhost:8082
-          predicates:
-            - Path=/users/**, /employees/**
-          filters:
-            - JwtFilter
+            - Path=/users/**, /employees/**, /user, /login/jwt
         - id: notification
           uri: http://localhost:8083
           predicates:
             - Path=/notifications/**
-          filters:
-            - JwtFilter
         - id: alert
           uri: http://localhost:8084
           predicates:
             - Path=/alerts/**, /cctvs/**
-          filters:
-            - JwtFilter
         - id: runwayobject
           uri: http://localhost:8085
           predicates:
             - Path=/strangeObjects/**, /workers/**, /workTrucks/**
-          filters:
-            - JwtFilter
         - id: runwaycrack
           uri: http://localhost:8086
           predicates:
             - Path=/runwayCracks/**, /runwayCrackReports/**
-          filters:
-            - JwtFilter
-        - id: equipment analysis
+        - id: equipment-analysis
           uri: http://localhost:8087
           predicates:
             - Path=/equipmentReports/**
-          filters:
-            - JwtFilter
         - id: equipmentdashboard
           uri: http://localhost:8088
           predicates:
             - Path=/equipment/**
-          filters:
-            - JwtFilter
         - id: frontend
           uri: http://localhost:8080
           predicates:
             - Path=/**
-#>>> API Gateway / Routes
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -74,60 +60,43 @@ spring:
               - "*"
             allowCredentials: true
 
-
 ---
 
 spring:
   profiles: docker
   cloud:
     gateway:
+      default-filters:
+        - JwtFilter
       routes:
-        - id: member-unauthenticated
+        - id: member
           uri: http://member:8080
           predicates:
-            - Path=/user, /login/jwt
-        - id: member-authenticated
-          uri: http://member:8080
-          predicates:
-            - Path=/users/**, /employees/**
-          filters:
-            - JwtFilter
+            - Path=/users/**, /employees/**, /user, /login/jwt
         - id: notification
           uri: http://notification:8080
           predicates:
             - Path=/notifications/**
-          filters:
-            - JwtFilter
         - id: alert
           uri: http://alert:8080
           predicates:
             - Path=/alerts/**, /cctvs/**
-          filters:
-            - JwtFilter
         - id: runwayobject
           uri: http://runwayobject:8080
           predicates:
             - Path=/strangeObjects/**, /workers/**, /workTrucks/**
-          filters:
-            - JwtFilter
         - id: runwaycrack
           uri: http://runwaycrack:8080
           predicates:
             - Path=/runwayCracks/**, /runwayCrackReports/**
-          filters:
-            - JwtFilter
-        - id: equipment analysis
+        - id: equipment-analysis
           uri: http://equipmentAnalysis:8080
           predicates:
             - Path=/equipmentReports/**
-          filters:
-            - JwtFilter
         - id: equipmentdashboard
           uri: http://equipmentdashboard:8080
           predicates:
             - Path=/equipment/**
-          filters:
-            - JwtFilter
         - id: frontend
           uri: http://frontend:8080
           predicates:

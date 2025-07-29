@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpCookie;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -17,10 +16,12 @@ import reactor.core.publisher.Mono;
 public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
 
     private final JwtUtil jwtUtil;
+    private final JwtProperties jwtProperties;
 
-    public JwtFilter(JwtUtil jwtUtil) {
+    public JwtFilter(JwtUtil jwtUtil, JwtProperties jwtProperties) {
         super(Config.class);
         this.jwtUtil = jwtUtil;
+        this.jwtProperties = jwtProperties;
     }
 
     @Override
@@ -29,6 +30,12 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
             ServerHttpRequest request = exchange.getRequest();
             ServerHttpResponse response = exchange.getResponse();
 
+            // 1. Check if the request path is in the excluded list
+            if (jwtProperties.getExcludedPaths().contains(request.getPath().value())) {
+                return chain.filter(exchange); // Skip JWT validation
+            }
+
+            // 2. Get JWT from cookie
             String token = null;
             MultiValueMap<String, HttpCookie> cookies = request.getCookies();
             if (cookies != null && cookies.containsKey("jwt")) {
@@ -39,14 +46,13 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
                 return onError(response, "No JWT cookie found", HttpStatus.UNAUTHORIZED);
             }
 
+            // 3. Validate token and add user info to headers
             try {
                 Claims claims = jwtUtil.extractToken(token);
-                String username = claims.get("username", String.class);
                 String employeeId = String.valueOf(claims.get("employeeId"));
                 String authorities = claims.get("authorities", String.class);
 
                 ServerHttpRequest modifiedRequest = request.mutate()
-                        .header("X-User-Name", username)
                         .header("X-Employee-Id", employeeId)
                         .header("X-Authorities", authorities)
                         .build();
