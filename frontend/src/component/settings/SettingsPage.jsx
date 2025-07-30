@@ -1,9 +1,21 @@
 // src/component/settings/SettingsPage.jsx
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios';
 
 
 const SettingsPage = () => {
   const [showReset, setShowReset] = useState(false)
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    axios.get('/members/employees/1')
+      .then(response => {
+        setUser(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
+  }, []);
 
   const styles = {
     container: {
@@ -139,6 +151,10 @@ const SettingsPage = () => {
     }
   }
 
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>Settings</div>
@@ -159,16 +175,16 @@ const SettingsPage = () => {
         {/* Fields */}
         <div style={styles.fields}>
           <div style={styles.label}>이름</div>
-          <input style={styles.input} defaultValue="진예나" />
+          <input style={styles.input} defaultValue={user.name} />
 
           <div style={styles.label}>사번</div>
-          <input style={styles.input} defaultValue="202112570" />
+          <input style={styles.input} defaultValue={user.employeeId} />
 
           <div style={styles.label}>휴대폰번호</div>
-          <input style={styles.input} defaultValue="010-1234-5678" />
+          <input style={styles.input} defaultValue={user.phoneNumber} />
 
           <div style={styles.label}>이메일</div>
-          <input style={styles.input} defaultValue="IMPRINCESS18@pac.co.kr" />
+          <input style={styles.input} defaultValue={user.email} />
         </div>
       </div>
 
