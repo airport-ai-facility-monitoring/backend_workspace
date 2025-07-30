@@ -3,6 +3,7 @@ package airport.config.security;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpCookie;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -26,6 +27,16 @@ public class JwtFilter implements WebFilter {
 
         // 토큰 가져오기 (쿠키 or Authorization 헤더)
         String token = null;
+        
+        // ✅ OPTIONS 요청은 무조건 통과시킴 (Preflight)
+        if (request.getMethod() == HttpMethod.OPTIONS) {
+            return chain.filter(exchange);
+        }
+
+        if (request.getPath().toString().startsWith("/users") 
+            || request.getPath().toString().startsWith("/users/login/jwt")) {
+            return chain.filter(exchange); // 토큰 검사 안 함
+        }
 
         MultiValueMap<String, HttpCookie> cookies = request.getCookies();
         if (cookies != null && cookies.containsKey("jwt")) {

@@ -19,6 +19,7 @@ import CommuteIcon from "@mui/icons-material/Commute";
 import DescriptionIcon from "@mui/icons-material/Description";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
+import api from "../../api";
 
 const drawerWidth = 220;
 
@@ -35,6 +36,22 @@ const navItems = [
 const Side = ({ open, setOpen }) => {
   const navigate = useNavigate();
   const location = useLocation(); // ✅ 현재 URL 경로 확인
+
+  const handleLogout = async () => {
+    try {
+      // users/logout API 호출 (쿠키 삭제 등 서버 처리)
+      await api.post(
+        "/users/logout",
+        {},
+        { withCredentials: true } // 쿠키 전송 허용
+      );
+      // 로그아웃 성공 시, 로그인 페이지로 이동
+      navigate("/login");
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+      // 실패 시 필요한 처리 (알림 등)
+    }
+  };
 
   return (
     <Drawer
@@ -121,7 +138,7 @@ const Side = ({ open, setOpen }) => {
       <Box sx={{ flexGrow: 1 }} />
 
       <List sx={{ marginTop: "auto" }}>
-        <ListItem button onClick={() => navigate("/logout")}>
+        <ListItem button onClick={handleLogout}>
           <ListItemIcon sx={{ color: "white", minWidth: 40 }}>
             <LogoutIcon />
           </ListItemIcon>

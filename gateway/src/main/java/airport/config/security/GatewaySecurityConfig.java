@@ -22,7 +22,8 @@ public class GatewaySecurityConfig {
         return http
                 .csrf().disable()  // CSRF 비활성화 (API Gateway는 일반적으로 disable함)
                 .authorizeExchange()
-                        .pathMatchers("/user", "/login/jwt").permitAll() // 인증 없이 접근 허용
+                        .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                        .pathMatchers("/users", "/users/login/jwt").permitAll() // 인증 없이 접근 허용
                         .anyExchange().authenticated() // 나머지는 인증 필요
                 // JwtFilter를 인증 필터 앞에 위치시킴
                 .and()

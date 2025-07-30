@@ -1,8 +1,5 @@
 import Badge from "@mui/icons-material/Badge";
-import Email from "@mui/icons-material/Email";
 import Lock from "@mui/icons-material/Lock";
-import Person from "@mui/icons-material/Person";
-import Phone from "@mui/icons-material/Phone";
 import {
   Box,
   Button,
@@ -11,38 +8,41 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
+import api from "../../api";
+import { useNavigate } from "react-router-dom";
+
 
 const SignUp = () => {
-  const formFields = [
-    {
-      id: "employee-id",
-      label: "사번을 입력하세요",
-      icon: <Badge fontSize="small" />,
-    },
-    {
-      id: "password",
-      label: "비밀번호를 입력하세요",
-      icon: <Lock fontSize="small" />,
-      type: "password",
-    },
-    {
-      id: "name",
-      label: "이름을 입력하세요",
-      icon: <Person fontSize="small" />,
-    },
-    {
-      id: "phone",
-      label: "휴대번호를 입력하세요",
-      icon: <Phone fontSize="small" />,
-    },
-    {
-      id: "email",
-      label: "E-MAIL을 입력하세요",
-      icon: <Email fontSize="small" />,
-      type: "email",
-    },
-  ];
+  // 사번과 비밀번호 상태 추가
+  const [employeeId, setEmployeeId] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  // 입력 핸들러
+  const handleEmployeeIdChange = (e) => setEmployeeId(e.target.value);
+  const handlePasswordChange = (e) => setPassword(e.target.value);
+
+  const handleSignUp = async () => {
+    try {
+      const response = await api.post("/users", {
+        employeeId,
+        password,
+      });
+      alert("회원가입 성공!");
+      setEmployeeId("");
+      setPassword("");
+      console.log(response.data)
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+      if (error.response) {
+        alert("회원가입 실패: " + (error.response.data.message || error.response.statusText));
+      } else {
+        alert("서버 통신 중 오류가 발생했습니다.");
+      }
+    }
+  };
 
   return (
     <Box
@@ -118,47 +118,92 @@ const SignUp = () => {
             PRINCESS AIRPORTS SERVICE
           </Typography>
 
-          {formFields.map((field) => (
-            <TextField
-              key={field.id}
-              id={field.id}
-              placeholder={field.label}
-              type={field.type || "text"}
-              variant="outlined"
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">{field.icon}</InputAdornment>
-                ),
-                sx: {
-                  color: "white",
+          {/* 사번 입력 */}
+          <TextField
+            id="employee-id"
+            placeholder="사번을 입력하세요"
+            variant="outlined"
+            fullWidth
+            value={employeeId}
+            onChange={handleEmployeeIdChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Badge fontSize="small" />
+                </InputAdornment>
+              ),
+              sx: {
+                color: "white",
+                borderColor: "white",
+                height: "45px",
+                "& .MuiOutlinedInput-notchedOutline": {
                   borderColor: "white",
-                  height: "45px",
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "white",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "white",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "white",
-                  },
-                  "& .MuiInputAdornment-root": {
-                    color: "white",
-                  },
                 },
-              }}
-              sx={{
-                "& .MuiInputBase-input::placeholder": {
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "white",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "white",
+                },
+                "& .MuiInputAdornment-root": {
                   color: "white",
-                  opacity: 1,
-                  fontFamily: "Montserrat",
-                  fontWeight: 300,
-                  fontSize: "14px",
                 },
-              }}
-            />
-          ))}
+              },
+            }}
+            sx={{
+              "& .MuiInputBase-input::placeholder": {
+                color: "white",
+                opacity: 1,
+                fontFamily: "Montserrat",
+                fontWeight: 300,
+                fontSize: "14px",
+              },
+            }}
+          />
+
+          {/* 비밀번호 입력 */}
+          <TextField
+            id="password"
+            placeholder="비밀번호를 입력하세요"
+            variant="outlined"
+            fullWidth
+            type="password"
+            value={password}
+            onChange={handlePasswordChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Lock fontSize="small" />
+                </InputAdornment>
+              ),
+              sx: {
+                color: "white",
+                borderColor: "white",
+                height: "45px",
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "white",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "white",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "white",
+                },
+                "& .MuiInputAdornment-root": {
+                  color: "white",
+                },
+              },
+            }}
+            sx={{
+              "& .MuiInputBase-input::placeholder": {
+                color: "white",
+                opacity: 1,
+                fontFamily: "Montserrat",
+                fontWeight: 300,
+                fontSize: "14px",
+              },
+            }}
+          />
 
           <Button
             variant="contained"
@@ -176,6 +221,7 @@ const SignUp = () => {
               },
               boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.3)",
             }}
+            onClick={handleSignUp}
           >
             SIGN UP
           </Button>

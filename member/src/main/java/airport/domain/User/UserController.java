@@ -25,7 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-// @RequestMapping(value="/users")
+@RequestMapping(value="/users")
 @Transactional
 public class UserController {
 
@@ -44,7 +44,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/user")
+    @PostMapping()
     public ResponseEntity<Map<String, Object>> employee2(@RequestBody Map<String, Object> req) {
 
         try {
@@ -92,6 +92,15 @@ public class UserController {
         response.addCookie(cookie);
 
         return jwt;
+    }
+
+    @PostMapping("/users/logout")
+    public void logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("jwt", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // 즉시 만료
+        response.addCookie(cookie);
     }
 
 }

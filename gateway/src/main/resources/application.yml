@@ -15,7 +15,7 @@ spring:
         - id: member
           uri: http://localhost:8082
           predicates:
-            - Path=/users/**, /employees/**
+            - Path=/users/**, /employees/**,
         - id: notification
           uri: http://localhost:8083
           predicates:
@@ -41,16 +41,20 @@ spring:
           predicates:
             - Path=/equipment/**
         - id: frontend
-          uri: http://localhost:3000
+          uri: http://localhost:5173
           predicates:
             - Path=/**
       globalcors:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "*"
+              - "https://scaling-space-meme-jpvvjq4rvprh5pxp-5173.app.github.dev"
             allowedMethods:
-              - "*"
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
             allowedHeaders:
               - "*"
             allowCredentials: true

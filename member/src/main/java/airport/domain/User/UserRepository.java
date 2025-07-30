@@ -4,12 +4,10 @@ import airport.domain.*;
 
 import java.util.Optional;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 
 //<<< PoEAA / Repository
-@RepositoryRestResource(collectionResourceRel = "users", path = "users")
-public interface UserRepository
-    extends PagingAndSortingRepository<User, Long> {
-        Optional<User> findByEmployee(Employee employee);
-    }
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmployee(Employee employee);
+}
