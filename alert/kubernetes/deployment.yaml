@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: alert
-          image: "username/alert:latest"
+          image: "airport27/alert:250730"
           ports:
             - containerPort: 8080
           readinessProbe:
