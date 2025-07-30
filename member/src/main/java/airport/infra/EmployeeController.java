@@ -25,16 +25,10 @@ public class EmployeeController {
     //     return employeeRepository.findById(id);
     // }
 
-    @GetMapping("/employees/{id}")
-    public Optional<Employee> getEmployeeById(@PathVariable Long id) {
-        Employee employee = new Employee();
-        employee.setEmployeeId(1L);
-        employee.setName("테스트");
-        employee.setDepartment("개발팀");
-        employee.setPosition("사원");
-        employee.setPhoneNumber("010-0000-0000");
-        employee.setEmail("test@example.com");
-        return Optional.of(employee);
-    }
-}
+    // @GetMapping("/employees/{id}")
+    // public Optional<Employee> getEmployeeById(@PathVariable Long id) {
+    //      return employeeRepository.findById(id);
+
+    // }
+
 //>>> Clean Arch / Inbound Adaptor
