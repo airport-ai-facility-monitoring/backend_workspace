@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: runwayobject
-          image: "username/runwayobject:latest"
+          image: "gangmin522/runwayobject:250730"
           ports:
             - containerPort: 8080
           readinessProbe:
