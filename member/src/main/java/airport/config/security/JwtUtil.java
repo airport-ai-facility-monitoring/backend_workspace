@@ -30,7 +30,7 @@ public class JwtUtil {
                 .claim("employeeId", user.getUsername())
                 .claim("authorities", authorities)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 1000)) // 유효시간 10초
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 1000))
                 .signWith(key)
                 .compact();
 

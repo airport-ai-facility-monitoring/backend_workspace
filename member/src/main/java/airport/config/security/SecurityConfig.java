@@ -33,9 +33,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
             .logout()
-                .logoutUrl("/logout")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID");
+                .logoutUrl("/users/logout")        // 로그아웃 URL 설정
+                .invalidateHttpSession(true)      // 세션 무효화
+                .deleteCookies("JSESSIONID");      // 쿠키 삭제
+
     }
 
     @Bean

@@ -40,12 +40,7 @@ const Side = ({ open, setOpen }) => {
   const handleLogout = async () => {
     try {
       // users/logout API 호출 (쿠키 삭제 등 서버 처리)
-      await api.post(
-        "/users/logout",
-        {},
-        { withCredentials: true } // 쿠키 전송 허용
-      );
-      // 로그아웃 성공 시, 로그인 페이지로 이동
+      localStorage.removeItem("accessToken");
       navigate("/login");
     } catch (error) {
       console.error("로그아웃 실패:", error);

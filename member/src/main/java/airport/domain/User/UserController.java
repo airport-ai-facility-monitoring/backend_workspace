@@ -5,6 +5,7 @@ import airport.domain.*;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -69,7 +70,7 @@ public class UserController {
     @PostMapping("/login/jwt")
     @ResponseBody
     public String loginJWT(@RequestBody Map<String, Object> data,
-                           HttpServletResponse response){
+                           HttpServletResponse response) {
         var authToken = new UsernamePasswordAuthenticationToken(
             data.get("employeeId"),
             data.get("password")
@@ -85,11 +86,19 @@ public class UserController {
         var jwt = jwtUtil.createToken(SecurityContextHolder.getContext().getAuthentication());
         System.out.println(jwt);
 
-        var cookie = new Cookie("jwt", jwt);
-        cookie.setMaxAge(1000);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        // var cookie = new Cookie("jwt", jwt);
+        // cookie.setMaxAge(1000);
+        // cookie.setHttpOnly(true);
+        // cookie.setPath("/");
+        // cookie.sets("Lax");
+        // response.addCookie(cookie);
+
+        response.setContentType("application/json");
+        try{
+            response.getWriter().write("{\"accessToken\": \"" + jwt + "\"}");
+        }catch(IOException e){
+            throw new RuntimeException("니잘못");
+        }
 
         return jwt;
     }
