@@ -22,6 +22,11 @@ public class EmployeeController {
 
     // @GetMapping("/employees/{id}")
     // public Optional<Employee> getEmployeeById(@PathVariable Long id) {
+    //     return employeeRepository.findById(id);
+    // }
+
+    // @GetMapping("/employees/{id}")
+    // public Optional<Employee> getEmployeeById(@PathVariable Long id) {
     //      return employeeRepository.findById(id);
 
     // }

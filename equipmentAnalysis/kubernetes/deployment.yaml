@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: equipment analysis
+  name: equipmentanalysis
   labels:
-    app: equipment analysis
+    app: equipmentanalysis
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: equipment analysis
+      app: equipmentanalysis
   template:
     metadata:
       labels:
-        app: equipment analysis
+        app: equipmentanalysis
     spec:
       containers:
-        - name: equipment analysis
-          image: "username/equipment analysis:latest"
+        - name: equipmentanalysis
+          image: "gangmin522/equipmentanalysis:250730"
           ports:
             - containerPort: 8080
           readinessProbe:
