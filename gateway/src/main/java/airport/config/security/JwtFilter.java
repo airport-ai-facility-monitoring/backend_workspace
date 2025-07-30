@@ -2,6 +2,9 @@ package airport.config.security;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+
+import java.net.URI;
+
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -51,9 +54,11 @@ public class JwtFilter implements WebFilter {
         }
 
         if (token == null) {
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            response.setStatusCode(HttpStatus.FOUND);
+            response.getHeaders().setLocation(URI.create("/login"));
             return response.setComplete();
         }
+
 
         // 토큰 검증
         if (!jwtUtil.validateToken(token)) {

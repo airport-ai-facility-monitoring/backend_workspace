@@ -8,4 +8,12 @@ const api = axios.create({
   withCredentials: true, // ✅ 쿠키 자동 전송 옵션
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export default api;

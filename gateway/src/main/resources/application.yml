@@ -15,7 +15,7 @@ spring:
         - id: member
           uri: http://localhost:8082
           predicates:
-            - Path=/users/**, /employees/**,
+            - Path=/users/**, /employees/**
         - id: notification
           uri: http://localhost:8083
           predicates:
