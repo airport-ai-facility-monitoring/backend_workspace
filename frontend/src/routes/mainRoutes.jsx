@@ -9,7 +9,7 @@ import Dashboard from "../component/Dashboard/Dashboard";
 import DashDetail from "../component/Dashboard/DashDetail";
 import SettingsPage from "../component/settings/SettingsPage";
 import Anomaly from "../component/anomaly/Anomaly";
-import Anomalyreport from "../component/Anomalyreport/anomalyreport";
+import Anomalyreport from "../component/Anomalyreport/Anomalyreport";
 import AnomalyReportEdit from "../component/anomalyreport/AnomalyreportEdit";
 import Facility from "../component/facility/Facility";
 
