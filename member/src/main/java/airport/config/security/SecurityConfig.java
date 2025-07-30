@@ -17,8 +17,8 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private JwtFilter jwtFilter;
+    // @Autowired
+    // private JwtFilter jwtFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -27,7 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
             .csrf().disable()
-            .addFilterBefore(jwtFilter, ExceptionTranslationFilter.class)
+            // .addFilterBefore(jwtFilter, ExceptionTranslationFilter.class)
             .authorizeRequests()
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
