@@ -32,7 +32,6 @@ public class StrangeObjectController {
                 dangerDetected.setClassId(classId);
                 dangerDetected.setCount(count);
                 dangerDetected.publish();
-                break;
             case 10:
                 long dbWorkerCount = workerRepository.count();
                 if (count > dbWorkerCount) {
@@ -41,7 +40,6 @@ public class StrangeObjectController {
                     workerCountExceeded.setDbCount(dbWorkerCount);
                     workerCountExceeded.publish();
                 }
-                break;
             case 13: case 14: case 15: case 16: case 17:
             case 18: case 19: case 20: case 21: case 22:
                 boolean timeMismatch = !workTruckRepository.isWorkTimeMatched(classId);
@@ -50,7 +48,6 @@ public class StrangeObjectController {
                     workTimeNotMatched.setClassId(classId);
                     workTimeNotMatched.publish();
                 }
-                break;
             default:
                 break;
         }
