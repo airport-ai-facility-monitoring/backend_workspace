@@ -1,0 +1,62 @@
+/* src/component/notifications/notifications-detail.css */
+
+.detail-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f0f4fb;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.detail-header {
+  margin-bottom: 1.5rem;
+}
+.detail-title {
+  font-size: 1.75rem;
+  margin: 0;
+}
+
+/* 본문 카드 */
+.detail-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  flex: 1;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.detail-item-title {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.detail-datetime {
+  font-size: 0.85rem;
+  color: #657786;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dfe7ed;
+}
+
+/* pre 태그로 본문 렌더링 */
+.detail-body {
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* 뒤로가기 버튼 */
+.btn-back {
+  align-self: center;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}

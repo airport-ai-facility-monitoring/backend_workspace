@@ -1,0 +1,118 @@
+/* src/component/notifications/notifications-write.css */
+
+.write-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f0f4fb;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.write-header {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.write-form {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+  box-sizing: border-box;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.form-row label {
+  width: 80px;
+  font-weight: 500;
+}
+
+.form-row input[type="text"] {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 1px solid #dfe7ed;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.body-row {
+  align-items: flex-start;
+}
+
+.body-row textarea {
+  flex: 1;
+  min-height: 200px;
+  padding: 1rem;
+  border: 1px solid #dfe7ed;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+.important-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.important-switch input[type="checkbox"] {
+  width: 1.2em;
+  height: 1.2em;
+  accent-color: #4e73df;
+}
+
+.file-row {
+  align-items: center;
+}
+
+.file-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.file-btn {
+  background: #fff;
+  border: 1px solid #dfe7ed;
+  border-radius: 999px;
+  padding: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-actions {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-submit,
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.btn-submit {
+  background: #333;
+  color: #fff;
+}
+
+.btn-cancel {
+  background: #e0e0e0;
+  color: #666;
+}

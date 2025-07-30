@@ -14,8 +14,6 @@ spring:
   profiles: default
   cloud:
     gateway:
-      default-filters:
-        - JwtFilter
       routes:
         - id: member
           uri: http://localhost:8082
@@ -66,8 +64,6 @@ spring:
   profiles: docker
   cloud:
     gateway:
-      default-filters:
-        - JwtFilter
       routes:
         - id: member
           uri: http://member:8080
