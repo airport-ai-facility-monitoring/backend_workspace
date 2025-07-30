@@ -3,10 +3,7 @@ server:
 
 # 모든 프로필에 공통으로 적용될 JWT 설정
 jwt:
-  secret: fmvqwnkeqnvkqweiscanjvdbqjedwqpdihccapdwqdjsac
-  excluded-paths:
-    - /user
-    - /login/jwt
+  secret: ${JWT_SECRET}
 
 ---
 
@@ -18,7 +15,7 @@ spring:
         - id: member
           uri: http://localhost:8082
           predicates:
-            - Path=/users/**, /employees/**, /user, /login/jwt
+            - Path=/users/**, /employees/**
         - id: notification
           uri: http://localhost:8083
           predicates:
