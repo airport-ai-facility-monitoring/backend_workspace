@@ -9,28 +9,45 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* mainRoutes 보호 */}
-        <Route
-          path="/*"
-          element={
-            <ProtectedRoute>
-              {mainRoutes}
-            </ProtectedRoute>
-          }
-        />
-
-        {/* adminRoutes 보호 */}
-        <Route
-          path="/admin/*"
-          element={
-            <ProtectedRoute>
-              {adminRoutes}
-            </ProtectedRoute>
-          }
-        />
-        
+        {/* 로그인, 회원가입은 보호하지 않음 */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+
+        {/* mainRoutes */}
+        {mainRoutes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+          >
+            {route.children &&
+              route.children.map((child) => (
+                <Route
+                  key={child.path}
+                  path={child.path}
+                  element={<ProtectedRoute>{child.element}</ProtectedRoute>}
+                />
+              ))}
+          </Route>
+        ))}
+
+        {/* adminRoutes */}
+        {adminRoutes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+          >
+            {route.children &&
+              route.children.map((child) => (
+                <Route
+                  key={child.path}
+                  path={child.path}
+                  element={<ProtectedRoute>{child.element}</ProtectedRoute>}
+                />
+              ))}
+          </Route>
+        ))}
       </Routes>
     </Router>
   );

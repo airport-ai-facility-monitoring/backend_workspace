@@ -20,6 +20,7 @@ public class GatewaySecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
+                .cors().and()
                 .csrf().disable()  // CSRF 비활성화 (API Gateway는 일반적으로 disable함)
                 .authorizeExchange()
                         .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()

@@ -69,7 +69,7 @@ public class UserController {
 
     @PostMapping("/login/jwt")
     @ResponseBody
-    public String loginJWT(@RequestBody Map<String, Object> data,
+    public void loginJWT(@RequestBody Map<String, Object> data,
                            HttpServletResponse response) {
         var authToken = new UsernamePasswordAuthenticationToken(
             data.get("employeeId"),
@@ -100,7 +100,6 @@ public class UserController {
             throw new RuntimeException("니잘못");
         }
 
-        return jwt;
     }
 
     @PostMapping("/users/logout")
