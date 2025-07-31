@@ -16,16 +16,9 @@ const ProtectedRoute = ({ children }) => {
     }
   };
 
-  // 토큰 없으면 로그인 페이지
-  if (!token) {
+  if (!token || !isTokenValid(token)) {
     logout();
-    return <Navigate to="/login" replace />;
-  }
-
-  // 토큰 만료 시 로그아웃
-  if (!isTokenValid(token)) {
-    logout();
-    return <Navigate to="/login" replace />;
+    return null; // <Navigate> 안 씀
   }
 
   return children;

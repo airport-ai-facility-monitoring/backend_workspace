@@ -4,12 +4,20 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
@@ -28,6 +36,7 @@ public class JwtFilter implements WebFilter {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
 
+
         // 토큰 가져오기 (쿠키 or Authorization 헤더)
         String token = null;
         
@@ -36,11 +45,16 @@ public class JwtFilter implements WebFilter {
             return chain.filter(exchange);
         }
 
-        if (request.getPath().toString().startsWith("/users") 
-            || request.getPath().toString().startsWith("/users/login/jwt")
-        || request.getPath().toString().startsWith("users/refresh-token")) {
-            return chain.filter(exchange); // 토큰 검사 안 함
-        }
+
+        String path = request.getPath().toString();
+        System.out.println(path);
+        if (path.equals("/") || 
+            path.equals("/users/signup") || 
+            path.equals("/users/login/jwt") || 
+            path.equals("/users/refresh-token") ||
+            request.getMethod() == HttpMethod.OPTIONS) {
+            return chain.filter(exchange);
+        }                                                                                                          
 
         MultiValueMap<String, HttpCookie> cookies = request.getCookies();
         if (cookies != null && cookies.containsKey("jwt")) {
@@ -49,6 +63,7 @@ public class JwtFilter implements WebFilter {
                 token = jwtCookie.getValue();
             }
         }
+        System.out.println("쿠키 값: " + token);
 
         if (token == null) {
             String authHeader = request.getHeaders().getFirst("Authorization");
@@ -56,7 +71,8 @@ public class JwtFilter implements WebFilter {
                 token = authHeader.substring(7);
             }
         }
-
+            System.out.println("토큰 값: " + token);
+            System.out.println("토큰 유효 여부: " + jwtUtil.validateToken(token));
         // 토큰 검증
         if (!jwtUtil.validateToken(token)) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -66,13 +82,24 @@ public class JwtFilter implements WebFilter {
         // Claims 추출 → 사용자 정보 헤더에 추가
         Claims claims = jwtUtil.extractToken(token);
         String employeeId = claims.get("employeeId", String.class);
-        String authorities = claims.get("authorities", String.class);
+        String authoritiesString = claims.get("authorities", String.class);
+
+        List<SimpleGrantedAuthority> authorities = Arrays.stream(authoritiesString.split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        // 인증 객체 생성
+        Authentication authentication = new UsernamePasswordAuthenticationToken(employeeId, null, authorities);
+
 
         ServerHttpRequest mutatedRequest = request.mutate()
                 .header("X-Employee-Id", employeeId)
-                .header("X-Authorities", authorities)
+                .header("X-Authorities", authoritiesString)
                 .build();
 
-        return chain.filter(exchange.mutate().request(mutatedRequest).build());
+        return chain.filter(exchange.mutate().request(mutatedRequest).build())
+    .subscriberContext(ctx -> ReactiveSecurityContextHolder.withSecurityContext(
+        Mono.just(new SecurityContextImpl(authentication))
+    ).get(ctx));
     }
 }

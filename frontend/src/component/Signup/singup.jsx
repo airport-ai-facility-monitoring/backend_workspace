@@ -34,7 +34,7 @@ const SignUp = () => {
   // 회원가입 요청
   const handleSignUp = async () => {
     try {
-      const response = await api.post("/users", form);
+      const response = await api.post("/users/signup", form);
       alert("회원가입 성공!");
       console.log(response.data);
       navigate("/login");

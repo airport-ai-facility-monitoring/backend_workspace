@@ -1,11 +1,17 @@
 package airport.config.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
+
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+
+import java.security.SignatureException;
 import java.util.Date;
 import java.util.List;
 
@@ -33,8 +39,15 @@ public class JwtUtil {
         try {
             extractToken(token);
             return true;
-        } catch (Exception e) {
-            return false;
+        } catch (ExpiredJwtException e) {
+            System.out.println("토큰 만료됨");
+        } catch (UnsupportedJwtException e) {
+            System.out.println("지원하지 않는 토큰");
+        } catch (MalformedJwtException e) {
+            System.out.println("잘못된 토큰 형식");
+        }  catch (IllegalArgumentException e) {
+            System.out.println("잘못된 인자");
         }
+        return false;
     }
 }

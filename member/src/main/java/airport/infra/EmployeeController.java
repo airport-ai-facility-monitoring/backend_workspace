@@ -20,10 +20,10 @@ public class EmployeeController {
     @Autowired
     EmployeeRepository employeeRepository;
 
-    // @GetMapping("/employees/{id}")
-    // public Optional<Employee> getEmployeeById(@PathVariable Long id) {
-    //     return employeeRepository.findById(id);
-    // }
+    @GetMapping("/employees/{id}")
+    public Optional<Employee> getEmployeeById(@PathVariable Long id) {
+         return employeeRepository.findById(id);
+    }
 
     // @GetMapping("/employees/{id}")
     // public Optional<Employee> getEmployeeById(@PathVariable Long id) {

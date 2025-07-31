@@ -1,6 +1,7 @@
 // src/component/settings/SettingsPage.jsx
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
+import api from '../../api';
 
 
 const SettingsPage = () => {
@@ -8,7 +9,7 @@ const SettingsPage = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    axios.get('/members/employees/1')
+    api.get('/employees/1')
       .then(response => {
         setUser(response.data);
       })
