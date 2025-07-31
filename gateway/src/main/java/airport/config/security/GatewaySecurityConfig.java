@@ -21,13 +21,10 @@ public class GatewaySecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-        var matcher = new OrServerWebExchangeMatcher(
-                new PathPatternParserServerWebExchangeMatcher("/users/**"),
-                new PathPatternParserServerWebExchangeMatcher("/employees/**")
-            );
+
 
         return http
-                .securityMatcher(matcher)
+                // .securityMatcher(matcher)
                 .cors().and()
                 .httpBasic().disable()
                 .csrf().disable()
