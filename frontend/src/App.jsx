@@ -24,14 +24,48 @@ function App() {
         <Route
           path="/signup"
           element={
-            <ProtectedRoute>
-              {adminRoutes}
-            </ProtectedRoute>
+            <RedirectIfAuth>
+              <SignUp />
+            </RedirectIfAuth>
           }
         />
-        
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+
+
+        {/* mainRoutes */}
+        {mainRoutes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+          >
+            {route.children &&
+              route.children.map((child) => (
+                <Route
+                  key={child.path}
+                  path={child.path}
+                  element={<ProtectedRoute>{child.element}</ProtectedRoute>}
+                />
+              ))}
+          </Route>
+        ))}
+
+        {/* adminRoutes */}
+        {adminRoutes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+          >
+            {route.children &&
+              route.children.map((child) => (
+                <Route
+                  key={child.path}
+                  path={child.path}
+                  element={<ProtectedRoute>{child.element}</ProtectedRoute>}
+                />
+              ))}
+          </Route>
+        ))}
       </Routes>
     </Router>
   );
