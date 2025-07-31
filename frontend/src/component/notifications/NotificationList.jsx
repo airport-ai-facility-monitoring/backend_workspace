@@ -1,19 +1,45 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import NotificationItem from './NotificationItem'
-
-const DUMMY = [
-  { id: 1, time: 'Yesterday 23:47', tag: '중요', text: '[통합] 김해공항 공지사항 작성 가이드' },
-  { id: 2, time: 'Yesterday 23:47', tag: '중요', text: '[통합] 7월16일 김해공항 일일 종합상황' },
-  { id: 3, time: 'Yesterday 23:47', tag: '중요', text: '[통합] 7월16일 김해공항 주의 안내' },
-  { id: 4, time: 'Today 23:25',   tag: '1',     text: '[관리자] 7월17일 공항운영부 일일 종합상황' },
-  { id: 5, time: 'Yesterday 23:23', tag: '2',    text: '[관리자] 7월16일 시설관리부 일일 종합상황' },
-]
+import api from '../../api/axios' // axios 인스턴스 경로에 따라 조정
 
 export default function NotificationList() {
-  const [items] = useState(DUMMY)
+  const [items, setItems] = useState([])
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await api.get('/notifications')
+        const data = response.data
+
+        const transformed = data.map((n) => ({
+          id: n.notificationsId,
+          time: formatDateTime(n.writeDate),
+          tag: n.writerId?.toString(), // 작성자 ID
+          text: n.title,
+        }))
+
+        setItems(transformed)
+      } catch (error) {
+        console.error('공지 불러오기 실패:', error)
+      }
+    }
+
+    fetchNotifications()
+  }, [])
+
+  const formatDateTime = (isoDate) => {
+    const date = new Date(isoDate)
+    const today = new Date()
+    const isToday = date.toDateString() === today.toDateString()
+    const hours = date.getHours().toString().padStart(2, '0')
+    const minutes = date.getMinutes().toString().padStart(2, '0')
+
+    return `${isToday ? 'Today' : 'Yesterday'} ${hours}:${minutes}`
+  }
+
   return (
     <div className="notification-list">
-      {items.map(item => (
+      {items.map((item) => (
         <NotificationItem key={item.id} {...item} />
       ))}
     </div>
