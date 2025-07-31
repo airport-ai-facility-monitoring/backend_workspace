@@ -1,4 +1,3 @@
-import { Route } from "react-router-dom";
 import Layout from "../layout/Layout";
 import Home from "../component/Home/Home";
 import NotificationsPage from "../component/notifications/NotificationsPage";
@@ -13,21 +12,25 @@ import Anomalyreport from "../component/anomalyreport/Anomalyreport";
 import AnomalyReportEdit from "../component/anomalyreport/AnomalyreportEdit";
 import Facility from "../component/facility/Facility";
 
-const mainRoutes = (
-  <Route path="/" element={<Layout />}>
-    <Route path="/home" element={<Home />} />
-    <Route path="/notifications" element={<NotificationsPage />} />
-    <Route path="/notifications/:id" element={<NotificationDetail />} />
-    <Route path="notifications/new" element={<NotificationWrite />} />
-    <Route path="/alert" element={<Alert />} />
-    <Route path="/dash" element={<Dashboard />} />
-    <Route path="/settings" element={<SettingsPage />} />
-    <Route path="/anomaly" element={<Anomaly />} />
-    <Route path="/dashdetail" element={<DashDetail />} />
-    <Route path="/anomalyreport" element={<Anomalyreport />} />
-    <Route path="/anomalyreport/edit" element={<AnomalyReportEdit />} />
-    <Route path="facility" element={<Facility />} />
-  </Route>
-);
+const mainRoutes = [
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      { path: "home", element: <Home /> },
+      { path: "notifications", element: <NotificationsPage /> },
+      { path: "notifications/:id", element: <NotificationDetail /> },
+      { path: "notifications/new", element: <NotificationWrite /> },
+      { path: "alert", element: <Alert /> },
+      { path: "dash", element: <Dashboard /> },
+      { path: "dashdetail", element: <DashDetail /> },
+      { path: "settings", element: <SettingsPage /> },
+      { path: "anomaly", element: <Anomaly /> },
+      { path: "anomalyreport", element: <Anomalyreport /> },
+      { path: "anomalyreport/edit", element: <AnomalyReportEdit /> },
+      { path: "facility", element: <Facility /> },
+    ],
+  },
+];
 
 export default mainRoutes;

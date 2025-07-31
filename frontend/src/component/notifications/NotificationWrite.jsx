@@ -1,8 +1,8 @@
-// src/component/notifications/NotificationWrite.jsx
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AiOutlineFileImage, AiOutlineFolderOpen } from 'react-icons/ai'
 import './notifications-write.css'
+import api from '../../api/axios' // axios 인스턴스 import
 
 export default function NotificationWrite() {
   const navigate = useNavigate()
@@ -12,10 +12,22 @@ export default function NotificationWrite() {
   const [body, setBody]     = useState('')
   const [important, setImportant] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // TODO: API 호출 or 상태 업데이트
-    navigate('/notifications')  // 등록 후 목록으로
+
+    const requestBody = {
+      writerId: Number(author),      // writerId는 Long이므로 숫자로 변환
+      title: title,
+      contents: (important ? '[중요] ' : '') + body,  // 중요 표시
+    }
+
+    try {
+      await api.post('/notifications', requestBody)
+      navigate('/notifications')  // 등록 후 목록으로 이동
+    } catch (error) {
+      console.error('공지 등록 실패:', error)
+      alert('공지 등록 중 오류가 발생했습니다.')
+    }
   }
 
   const handleCancel = () => {
@@ -30,9 +42,10 @@ export default function NotificationWrite() {
           <label>작성자</label>
           <input
             type="text"
-            placeholder="이름을 입력해 주세요."
+            placeholder="숫자 ID를 입력해 주세요." // 현재는 writerId 숫자 기반이므로
             value={author}
             onChange={e => setAuthor(e.target.value)}
+            required
           />
         </div>
         <div className="form-row">
@@ -42,6 +55,7 @@ export default function NotificationWrite() {
             placeholder="제목을 입력해 주세요."
             value={title}
             onChange={e => setTitle(e.target.value)}
+            required
           />
           <div className="important-switch">
             <span>중요 공지 사항으로 등록</span>
@@ -58,12 +72,12 @@ export default function NotificationWrite() {
             placeholder="내용을 입력해 주세요."
             value={body}
             onChange={e => setBody(e.target.value)}
+            required
           />
         </div>
         <div className="form-row file-row">
           <label>첨부 파일</label>
           <div className="file-buttons">
-            {/* 실제로는 <input type="file"> 를 숨겨두고 라벨을 꾸며도 좋습니다 */}
             <button type="button" className="file-btn">
               <AiOutlineFileImage size={24}/>  
             </button>

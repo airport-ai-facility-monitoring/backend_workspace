@@ -30,10 +30,20 @@ public class User {
 
     private String password;
 
-    @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", unique = true)
-    private Employee employee;
+    private Long employeeId;
+
+    private String name;
+
+    private String department;
+
+    private String position;
+
+    private Date hireDate;
+
+    private String phoneNumber;
+
+    private String email;
+
 
     private String status;
 

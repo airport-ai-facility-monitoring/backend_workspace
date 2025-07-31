@@ -31,9 +31,7 @@ const Login = () => {
           employeeId,
           password,
         },
-        {
-          withCredentials: true, // 쿠키 전달 허용
-        }
+
       );
 
       console.log("로그인 성공:", response.data);

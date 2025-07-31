@@ -12,32 +12,39 @@ import React, { useState } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
 
-
 const SignUp = () => {
-  // 사번과 비밀번호 상태 추가
-  const [employeeId, setEmployeeId] = useState("");
-  const [password, setPassword] = useState("");
+  // 상태 관리 (id 제외 모든 필드)
+  const [form, setForm] = useState({
+    employeeId: "",
+    password: "",
+    name: "",
+    department: "",
+    position: "",
+    hireDate: "",
+    phoneNumber: "",
+    email: "",
+  });
   const navigate = useNavigate();
 
-  // 입력 핸들러
-  const handleEmployeeIdChange = (e) => setEmployeeId(e.target.value);
-  const handlePasswordChange = (e) => setPassword(e.target.value);
+  // 입력 핸들러 (모든 필드 공통 처리)
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
+  // 회원가입 요청
   const handleSignUp = async () => {
     try {
-      const response = await api.post("/users", {
-        employeeId,
-        password,
-      });
+      const response = await api.post("/users", form);
       alert("회원가입 성공!");
-      setEmployeeId("");
-      setPassword("");
-      console.log(response.data)
+      console.log(response.data);
       navigate("/login");
     } catch (error) {
       console.error(error);
       if (error.response) {
-        alert("회원가입 실패: " + (error.response.data.message || error.response.statusText));
+        alert(
+          "회원가입 실패: " +
+            (error.response.data.message || error.response.statusText)
+        );
       } else {
         alert("서버 통신 중 오류가 발생했습니다.");
       }
@@ -57,7 +64,7 @@ const SignUp = () => {
         overflow: "hidden",
       }}
     >
-      {/* Background circles */}
+      {/* 배경 원 */}
       <Box
         sx={{
           position: "absolute",
@@ -94,7 +101,7 @@ const SignUp = () => {
         </Box>
       </Box>
 
-      {/* Form container */}
+      {/* 폼 */}
       <Container maxWidth="sm">
         <Box
           sx={{
@@ -115,120 +122,176 @@ const SignUp = () => {
               mb: 2,
             }}
           >
-            PRINCESS AIRPORTS SERVICE
+            PRINCESS AIRPORTS SIGN UP
           </Typography>
 
-          {/* 사번 입력 */}
+          {/* 사번 */}
           <TextField
-            id="employee-id"
+            name="employeeId"
             placeholder="사번을 입력하세요"
             variant="outlined"
             fullWidth
-            value={employeeId}
-            onChange={handleEmployeeIdChange}
+            value={form.employeeId}
+            onChange={handleChange}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <Badge fontSize="small" />
                 </InputAdornment>
               ),
-              sx: {
-                color: "white",
-                borderColor: "white",
-                height: "45px",
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "white",
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "white",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "white",
-                },
-                "& .MuiInputAdornment-root": {
-                  color: "white",
-                },
-              },
+              sx: inputStyle,
             }}
-            sx={{
-              "& .MuiInputBase-input::placeholder": {
-                color: "white",
-                opacity: 1,
-                fontFamily: "Montserrat",
-                fontWeight: 300,
-                fontSize: "14px",
-              },
-            }}
+            sx={placeholderStyle}
           />
 
-          {/* 비밀번호 입력 */}
+          {/* 비밀번호 */}
           <TextField
-            id="password"
+            name="password"
             placeholder="비밀번호를 입력하세요"
             variant="outlined"
             fullWidth
             type="password"
-            value={password}
-            onChange={handlePasswordChange}
+            value={form.password}
+            onChange={handleChange}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <Lock fontSize="small" />
                 </InputAdornment>
               ),
-              sx: {
-                color: "white",
-                borderColor: "white",
-                height: "45px",
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "white",
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "white",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "white",
-                },
-                "& .MuiInputAdornment-root": {
-                  color: "white",
-                },
-              },
+              sx: inputStyle,
             }}
-            sx={{
-              "& .MuiInputBase-input::placeholder": {
-                color: "white",
-                opacity: 1,
-                fontFamily: "Montserrat",
-                fontWeight: 300,
-                fontSize: "14px",
-              },
-            }}
+            sx={placeholderStyle}
+          />
+
+          {/* 이름 */}
+          <TextField
+            name="name"
+            placeholder="이름"
+            variant="outlined"
+            fullWidth
+            value={form.name}
+            onChange={handleChange}
+            InputProps={{ sx: inputStyle }}
+            sx={placeholderStyle}
+          />
+
+          {/* 부서 */}
+          <TextField
+            name="department"
+            placeholder="부서"
+            variant="outlined"
+            fullWidth
+            value={form.department}
+            onChange={handleChange}
+            InputProps={{ sx: inputStyle }}
+            sx={placeholderStyle}
+          />
+
+          {/* 직책 */}
+          <TextField
+            name="position"
+            placeholder="직책"
+            variant="outlined"
+            fullWidth
+            value={form.position}
+            onChange={handleChange}
+            InputProps={{ sx: inputStyle }}
+            sx={placeholderStyle}
+          />
+
+          {/* 입사일 */}
+          <TextField
+            name="hireDate"
+            type="date"
+            variant="outlined"
+            fullWidth
+            value={form.hireDate}
+            onChange={handleChange}
+            InputLabelProps={{ shrink: true }}
+            InputProps={{ sx: inputStyle }}
+            sx={placeholderStyle}
+          />
+
+          {/* 전화번호 */}
+          <TextField
+            name="phoneNumber"
+            placeholder="전화번호"
+            variant="outlined"
+            fullWidth
+            value={form.phoneNumber}
+            onChange={handleChange}
+            InputProps={{ sx: inputStyle }}
+            sx={placeholderStyle}
+          />
+
+          {/* 이메일 */}
+          <TextField
+            name="email"
+            placeholder="이메일"
+            type="email"
+            variant="outlined"
+            fullWidth
+            value={form.email}
+            onChange={handleChange}
+            InputProps={{ sx: inputStyle }}
+            sx={placeholderStyle}
           />
 
           <Button
             variant="contained"
             fullWidth
-            sx={{
-              bgcolor: "white",
-              color: "#3150b0",
-              height: "45px",
-              fontFamily: "Montserrat",
-              fontWeight: 600,
-              fontSize: "16px",
-              mt: 2,
-              "&:hover": {
-                bgcolor: "#f5f5f5",
-              },
-              boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.3)",
-            }}
+            sx={buttonStyle}
             onClick={handleSignUp}
           >
             SIGN UP
+          </Button>
+
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{ color: "white", borderColor: "white", mt: 1 }}
+            onClick={() => navigate("/login")}
+          >
+            BACK TO LOGIN
           </Button>
         </Box>
       </Container>
     </Box>
   );
+};
+
+// 스타일 상수 분리
+const inputStyle = {
+  color: "white",
+  borderColor: "white",
+  height: "45px",
+  "& .MuiOutlinedInput-notchedOutline": { borderColor: "white" },
+  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "white" },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "white" },
+  "& .MuiInputAdornment-root": { color: "white" },
+};
+
+const placeholderStyle = {
+  "& .MuiInputBase-input::placeholder": {
+    color: "white",
+    opacity: 1,
+    fontFamily: "Montserrat",
+    fontWeight: 300,
+    fontSize: "14px",
+  },
+};
+
+const buttonStyle = {
+  bgcolor: "white",
+  color: "#3150b0",
+  height: "45px",
+  fontFamily: "Montserrat",
+  fontWeight: 600,
+  fontSize: "16px",
+  mt: 2,
+  "&:hover": { bgcolor: "#f5f5f5" },
+  boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.3)",
 };
 
 export default SignUp;
