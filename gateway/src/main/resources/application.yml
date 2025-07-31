@@ -39,24 +39,20 @@ spring:
           predicates:
             - Path=/equipmentReports/**
         - id: equipmentdashboard
-          uri: http://localhost:8088
+          uri: http://localhost:8089
           predicates:
             - Path=/equipment/**
         - id: frontend
-          uri: http://localhost:5173
+          uri: https://scaling-space-meme-jpvvjq4rvprh5pxp-5173.app.github.dev
           predicates:
             - Path=/**
       globalcors:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://scaling-space-meme-jpvvjq4rvprh5pxp-5173.app.github.dev"
+              - "*"
             allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
+              - "*"
             allowedHeaders:
               - "*"
             allowCredentials: true
