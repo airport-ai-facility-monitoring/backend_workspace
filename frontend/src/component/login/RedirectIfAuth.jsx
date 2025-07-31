@@ -1,9 +1,9 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { logout } from "./logout";
 
-const ProtectedRoute = ({ children }) => {
+const RedirectIfAuth = ({ children }) => {
   const token = localStorage.getItem("accessToken");
 
   const isTokenValid = (token) => {
@@ -16,19 +16,17 @@ const ProtectedRoute = ({ children }) => {
     }
   };
 
-  // 토큰 없으면 로그인 페이지
-  if (!token) {
-    logout();
-    return <Navigate to="/login" replace />;
-  }
-
-  // 토큰 만료 시 로그아웃
-  if (!isTokenValid(token)) {
-    logout();
-    return <Navigate to="/login" replace />;
+  if (token) {
+    if (isTokenValid(token)) {
+      return <Navigate to="/home" replace />;
+    } else {
+      // 만료된 토큰 있으면 정리하고 로그인으로
+      logout();
+      return <Navigate to="/login" replace />;
+    }
   }
 
   return children;
 };
 
-export default ProtectedRoute;
+export default RedirectIfAuth;

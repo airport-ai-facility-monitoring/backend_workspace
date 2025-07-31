@@ -20,7 +20,7 @@ public class JwtUtil {
         this.key = jwtConfig.getSecretKey();  // 여기서 초기화
     }
 
-    public String createToken(Authentication auth) {
+    public String createAccessToken(Authentication auth) {
 
         CustomUser user = (CustomUser) auth.getPrincipal();
         var authorities = auth.getAuthorities().stream()
@@ -30,7 +30,24 @@ public class JwtUtil {
                 .claim("employeeId", user.getUsername())
                 .claim("authorities", authorities)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 1000))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 10))
+                .signWith(key)
+                .compact();
+
+        return jwt;
+    }
+
+    public String createRefreshToken(Authentication auth) {
+
+        CustomUser user = (CustomUser) auth.getPrincipal();
+        var authorities = auth.getAuthorities().stream()
+                .map(a-> a.getAuthority())
+                .collect(Collectors.joining(","));
+        String jwt = Jwts.builder()
+                .claim("employeeId", user.getUsername())
+                .claim("authorities", authorities)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7))
                 .signWith(key)
                 .compact();
 
@@ -43,6 +60,18 @@ public class JwtUtil {
                 .parseSignedClaims(token).getPayload();
 
         return claims;
+    }
+
+     // 토큰 유효성 체크
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().verifyWith(key).build()
+                .parseSignedClaims(token);
+            return true;
+        } catch (Exception e) {
+            // 만료, 위변조 등 예외 발생 시 false 반환
+            return false;
+        }
     }
 
 }

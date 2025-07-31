@@ -37,13 +37,17 @@ public class JwtFilter implements WebFilter {
         }
 
         if (request.getPath().toString().startsWith("/users") 
-            || request.getPath().toString().startsWith("/users/login/jwt")) {
+            || request.getPath().toString().startsWith("/users/login/jwt")
+        || request.getPath().toString().startsWith("users/refresh-token")) {
             return chain.filter(exchange); // 토큰 검사 안 함
         }
 
         MultiValueMap<String, HttpCookie> cookies = request.getCookies();
         if (cookies != null && cookies.containsKey("jwt")) {
-            token = cookies.getFirst("jwt").getValue();
+            HttpCookie jwtCookie = cookies.getFirst("jwt");
+            if (jwtCookie != null) {
+                token = jwtCookie.getValue();
+            }
         }
 
         if (token == null) {
@@ -52,13 +56,6 @@ public class JwtFilter implements WebFilter {
                 token = authHeader.substring(7);
             }
         }
-
-        if (token == null) {
-            response.setStatusCode(HttpStatus.FOUND);
-            response.getHeaders().setLocation(URI.create("/login"));
-            return response.setComplete();
-        }
-
 
         // 토큰 검증
         if (!jwtUtil.validateToken(token)) {
