@@ -2,6 +2,7 @@ import React from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CCTVFeed from "./CCTVFeed";
+import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Box,
@@ -13,13 +14,14 @@ import {
 
 const DashBoardMg = () => {
   const cameraList = [
-    { id: 1, src: "/videos/856984-sd_640_360_30fps.mp4" },
-    { id: 2, src: "/videos/3678380-sd_640_360_30fps.mp4" },
-    { id: 3, src: "/videos/3678399-sd_640_360_30fps.mp4" },
-    { id: 4, src: "/videos/4285866-sd_640_360_30fps.mp4" },
-    { id: 5, src: "/videos/6472912-sd_640_360_24fps.mp4" },
-    { id: 6, src: "/videos/14151332_640_360_30fps.mp4" },
+    { id: 1, src: "/videos/1.mp4" },
+    { id: 2, src: "/videos/2.mp4" },
+    { id: 3, src: "/videos/3.mp4" },
+    { id: 4, src: "/videos/4.mp4" },
+    { id: 5, src: "/videos/5.mp4" },
+    { id: 6, src: "/videos/6.mp4" },
   ];
+  const navigate = useNavigate();
 
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f3f6fe" }}>
@@ -80,12 +82,19 @@ const DashBoardMg = () => {
             {cameraList.map((cam) => (
               <Paper
                 key={cam.id}
+                onClick={() => navigate(`/dashdetail/${cam.id}`)}
                 sx={{
                   width: "32%",
                   minWidth: 250,
                   height: 140,
                   bgcolor: "#fff",
                   overflow: "hidden",
+                  cursor: "pointer",
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                  "&:hover": {
+                    transform: "scale(1.02)",
+                    boxShadow: 4,
+                  },
                 }}
               >
                 <CCTVFeed videoSrc={cam.src} cameraId={cam.id} />
