@@ -4,32 +4,32 @@ import adminRoutes from "./routes/adminRoutes";
 import Login from "./component/login/login";
 import SignUp from "./component/Signup/singup";
 import ProtectedRoute from "./component/login/ProtectedRoute";
+import RedirectIfAuth from "./component/login/RedirectIfAuth";
 
 function App() {
+
+
   return (
     <Router>
       <Routes>
-        {/* mainRoutes 보호 */}
+        {/* 로그인, 회원가입은 RedirectIfAuth로 감싸기 */}
         <Route
-          path="/*"
+          path="/login"
+          element={
+            <RedirectIfAuth>
+              <Login />
+            </RedirectIfAuth>
+          }
+        />
+        <Route
+          path="/signup"
           element={
             <ProtectedRoute>
-              {/*mainRoutes*/}
+              {adminRoutes}
             </ProtectedRoute>
           }
         />
-
-        {/* adminRoutes 보호 */}
-        <Route
-          path="/admin/*"
-          element={
-            <ProtectedRoute>
-              {/*adminRoutes*/}
-            </ProtectedRoute>
-          }
-        />
-        {mainRoutes}
-        {adminRoutes}
+        
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>

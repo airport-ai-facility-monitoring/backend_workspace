@@ -33,8 +33,7 @@ public class MyUserDetailService implements UserDetailsService {
         } catch (NumberFormatException e) {
             throw new UsernameNotFoundException("Employee ID가 올바른 숫자가 아닙니다: " + employeeId);
         }
-        Employee employee = employeeRepository.findById(empId).orElseThrow();
-        var result = userRepository.findByEmployee(employee);
+        var result = userRepository.findByEmployeeId(empId);
         
         if(result.isEmpty()){
             throw new UsernameNotFoundException("에러");
