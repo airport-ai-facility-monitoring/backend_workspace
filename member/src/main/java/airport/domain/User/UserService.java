@@ -28,7 +28,7 @@ public class UserService {
         if(user.getEmployeeId() == 1){
             user.setStatus("APPROVE");
         }else{
-            user.setStatus("PENDING");
+            user.setStatus("APPROVE");
         }
         // 패스워드 암호화
         user.setPassword(passwordEncoder.encode(user.getPassword()));

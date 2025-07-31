@@ -39,7 +39,7 @@ public class JwtFilter implements WebFilter {
 
         // 토큰 가져오기 (쿠키 or Authorization 헤더)
         String token = null;
-        
+        System.out.println("1번쨰");
         // ✅ OPTIONS 요청은 무조건 통과시킴 (Preflight)
         if (request.getMethod() == HttpMethod.OPTIONS) {
             return chain.filter(exchange);
@@ -97,11 +97,14 @@ public class JwtFilter implements WebFilter {
                 .header("X-Authorities", authoritiesString)
                 .build();
 
+                
+        ServerWebExchange mutatedExchange = exchange.mutate()
+                .request(mutatedRequest)
+                .build();
+
         System.out.println("헤더 붙은 후: " + mutatedRequest.getHeaders());
 
-        return chain.filter(exchange.mutate().request(mutatedRequest).build())
-    .subscriberContext(ctx -> ReactiveSecurityContextHolder.withSecurityContext(
-        Mono.just(new SecurityContextImpl(authentication))
-    ).get(ctx));
+        return chain.filter(mutatedExchange)
+            .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
     }
 }

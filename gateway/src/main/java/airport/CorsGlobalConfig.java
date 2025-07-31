@@ -15,7 +15,7 @@ public class CorsGlobalConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("https://scaling-space-meme-jpvvjq4rvprh5pxp-5173.app.github.dev"); // 프론트 URL
+        config.addAllowedOrigin("https://effective-waffle-gvjj475xjv6fv6q5-5173.app.github.dev"); // 프론트 URL
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
