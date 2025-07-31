@@ -15,6 +15,7 @@ public class MemberApplication {
     public static ApplicationContext applicationContext;
 
     public static void main(String[] args) {
+        System.out.println("aa");
         applicationContext =
             SpringApplication.run(MemberApplication.class, args);
     }

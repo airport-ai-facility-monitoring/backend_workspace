@@ -4,7 +4,7 @@ server:
 # 모든 프로필에 공통으로 적용될 JWT 설정
 # 임의로 추가
 jwt:
-  secret: ThisIsAReallySecureJWTKeyWithMoreThan32Bytes!!
+  secret: ${JWT_SECRET}
 
 
 ---
@@ -39,27 +39,23 @@ spring:
           predicates:
             - Path=/equipmentReports/**
         - id: equipmentdashboard
-          uri: http://localhost:8088
+          uri: http://localhost:8089
           predicates:
             - Path=/equipment/**
         - id: frontend
           uri: https://scaling-space-meme-jpvvjq4rvprh5pxp-5173.app.github.dev
           predicates:
             - Path=/**
-      # globalcors:
-      #   corsConfigurations:
-      #     '[/**]':
-      #       allowedOrigins:
-      #         - "https://scaling-space-meme-jpvvjq4rvprh5pxp-5173.app.github.dev"
-      #       allowedMethods:
-      #         - GET
-      #         - POST
-      #         - PUT
-      #         - DELETE
-      #         - OPTIONS
-      #       allowedHeaders:
-      #         - "*"
-      #       allowCredentials: true
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
 
 ---
 

@@ -37,11 +37,11 @@ api.interceptors.response.use(
       !originalRequest._retry // 무한 재요청 방지용 플래그
     ) {
       originalRequest._retry = true;
-      console.log("재발급됨");
+
       try {
         // refresh token으로 access token 재발급 요청
-        const refreshResponse = await api.post(
-          "/users/refresh-token",
+        const refreshResponse = await axios.post(
+          "https://scaling-space-meme-jpvvjq4rvprh5pxp-8088.app.github.dev/users/refresh-token",
           {}, // 보통 본문이 비어있거나 refresh token 쿠키만으로 처리함
           { withCredentials: true } // 쿠키 전송 필수
         );
