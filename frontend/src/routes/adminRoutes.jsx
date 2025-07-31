@@ -4,14 +4,17 @@ import AdminHome from "../component/admin/AdminHome";
 import UsersList from "../component/admin/UsersList";
 import UserDetail from "../component/admin/UserDetail";
 import NotificationsPage from "../component/notifications/NotificationsPage";
-//수정
-const adminRoutes = (
-  <Route path="/admin" element={<AdminLayout />}>
-    <Route path="home" element={<AdminHome />} />
-    <Route path="management" element={<UsersList />} />
-    <Route path="users/:id" element={<UserDetail />} />
-    <Route path="notifications" element={<NotificationsPage />} />
-  </Route>
-);
 
+const adminRoutes = [
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      { path: "home", element: <AdminHome /> },
+      { path: "management", element: <UsersList /> },
+      { path: "users/:id", element: <UserDetail /> },
+      { path: "notifications", element: <NotificationsPage /> },
+    ],
+  },
+];
 export default adminRoutes;
