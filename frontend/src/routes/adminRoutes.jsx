@@ -4,7 +4,7 @@ import AdminHome from "../component/admin/AdminHome";
 import UsersList from "../component/admin/UsersList";
 import UserDetail from "../component/admin/UserDetail";
 import NotificationsPage from "../component/notifications/NotificationsPage";
-
+//수정
 const adminRoutes = (
   <Route path="/admin" element={<AdminLayout />}>
     <Route path="home" element={<AdminHome />} />

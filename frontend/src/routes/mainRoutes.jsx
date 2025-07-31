@@ -13,6 +13,7 @@ import Anomalyreport from "../component/anomalyreport/Anomalyreport";
 import AnomalyReportEdit from "../component/anomalyreport/AnomalyreportEdit";
 import Facility from "../component/facility/Facility";
 
+//수정
 const mainRoutes = (
   <Route path="/" element={<Layout />}>
     <Route path="/home" element={<Home />} />
