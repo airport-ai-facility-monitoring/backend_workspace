@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://effective-waffle-gvjj475xjv6fv6q5-8088.app.github.dev",
+  baseURL: "https://special-fishstick-v676qp7v9x962xrw9-8088.app.github.dev",
   headers: {
     "Content-Type": "application/json",
   },
@@ -42,7 +42,7 @@ api.interceptors.response.use(
         // refresh token으로 access token 재발급 요청
         
         const refreshResponse = await axios.post(
-          "https://scaling-space-meme-jpvvjq4rvprh5pxp-8088.app.github.dev/users/refresh-token",
+          "https://special-fishstick-v676qp7v9x962xrw9-8088.app.github.dev/users/refresh-token",
           {}, // 보통 본문이 비어있거나 refresh token 쿠키만으로 처리함
           { withCredentials: true } // 쿠키 전송 필수
         );
