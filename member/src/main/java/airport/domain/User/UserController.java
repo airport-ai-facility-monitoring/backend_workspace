@@ -103,7 +103,7 @@ public class UserController {
     //     }
     // }
 
-    @PostMapping()
+    @PostMapping("/signup")
     public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User user) {
         try {
             userService.join(user);

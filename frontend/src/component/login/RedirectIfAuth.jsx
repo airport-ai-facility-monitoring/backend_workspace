@@ -22,7 +22,7 @@ const RedirectIfAuth = ({ children }) => {
     } else {
       // 만료된 토큰 있으면 정리하고 로그인으로
       logout();
-      return <Navigate to="/login" replace />;
+      return null;
     }
   }
 
