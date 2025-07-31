@@ -50,10 +50,14 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "*"
+              - "https://scaling-space-meme-jpvvjq4rvprh5pxp-5173.app.github.dev"
             allowedMethods:
               - "*"
             allowedHeaders:
+              - "X-Employee-Id"
+              - "X-Authorities"
+              - "Authorization"
+              - "Content-Type"
               - "*"
             allowCredentials: true
 

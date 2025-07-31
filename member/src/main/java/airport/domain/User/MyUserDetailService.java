@@ -42,9 +42,9 @@ public class MyUserDetailService implements UserDetailsService {
         var user = result.get();
         List<GrantedAuthority> authorities = new ArrayList<>();
         if(empId == 1L){
-            authorities.add(new SimpleGrantedAuthority("관리자"));
+            authorities.add(new SimpleGrantedAuthority("ADMIN"));
         }else{
-            authorities.add(new SimpleGrantedAuthority("사용자"));
+            authorities.add(new SimpleGrantedAuthority("USER"));
         }
 
         var a = new CustomUser(employeeId, user.getPassword(), authorities);

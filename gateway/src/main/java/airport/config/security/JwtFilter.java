@@ -97,6 +97,8 @@ public class JwtFilter implements WebFilter {
                 .header("X-Authorities", authoritiesString)
                 .build();
 
+        System.out.println("헤더 붙은 후: " + mutatedRequest.getHeaders());
+
         return chain.filter(exchange.mutate().request(mutatedRequest).build())
     .subscriberContext(ctx -> ReactiveSecurityContextHolder.withSecurityContext(
         Mono.just(new SecurityContextImpl(authentication))

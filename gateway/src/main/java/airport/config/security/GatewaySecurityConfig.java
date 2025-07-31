@@ -24,8 +24,6 @@ public class GatewaySecurityConfig {
                 .csrf().disable()
                 .authorizeExchange()
                     .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                    .pathMatchers("/").permitAll()
-                    .pathMatchers("/users/signup", "/users/login/jwt", "/users/refresh-token").permitAll()
                     .anyExchange().authenticated()
                 .and()
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)

@@ -9,9 +9,10 @@ const SettingsPage = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    api.get('/employees/1')
+    api.get('/employees/setting')
       .then(response => {
         setUser(response.data);
+        console.log(response.data)
       })
       .catch(error => {
         console.error('Error fetching user data:', error);

@@ -40,6 +40,7 @@ api.interceptors.response.use(
 
       try {
         // refresh token으로 access token 재발급 요청
+        
         const refreshResponse = await axios.post(
           "https://scaling-space-meme-jpvvjq4rvprh5pxp-8088.app.github.dev/users/refresh-token",
           {}, // 보통 본문이 비어있거나 refresh token 쿠키만으로 처리함
@@ -48,7 +49,7 @@ api.interceptors.response.use(
 
         const newAccessToken = refreshResponse.data.accessToken;
         setAccessToken(newAccessToken);
-
+        console.log("재발급")
         // 새 토큰으로 원래 요청 헤더 변경 후 재요청
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
