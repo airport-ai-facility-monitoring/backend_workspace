@@ -2,8 +2,10 @@ server:
   port: 8088
 
 # 모든 프로필에 공통으로 적용될 JWT 설정
+# 임의로 추가
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ThisIsAReallySecureJWTKeyWithMoreThan32Bytes!!
+
 
 ---
 

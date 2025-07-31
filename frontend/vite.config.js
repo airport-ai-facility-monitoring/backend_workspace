@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/members': {
-        target: 'http://localhost:8088',
+        target: 'http://localhost:8082',//백엔드포트8088->8082로수정
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/members/, ''),
       },
