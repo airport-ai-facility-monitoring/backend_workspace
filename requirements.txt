@@ -3,7 +3,7 @@ uvicorn[standard]
 pydantic
 python-multipart
 opencv-python
-numpy
+numpy==1.26.4
 ultralytics==8.0.206
 torch>=2.2.0
 torchvision>=0.16.0

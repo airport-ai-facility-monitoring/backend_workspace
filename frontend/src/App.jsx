@@ -14,7 +14,7 @@ function App() {
           path="/*"
           element={
             <ProtectedRoute>
-              {mainRoutes}
+              {/*mainRoutes*/}
             </ProtectedRoute>
           }
         />
@@ -24,11 +24,12 @@ function App() {
           path="/admin/*"
           element={
             <ProtectedRoute>
-              {adminRoutes}
+              {/*adminRoutes*/}
             </ProtectedRoute>
           }
         />
-        
+        {mainRoutes}
+        {adminRoutes}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
