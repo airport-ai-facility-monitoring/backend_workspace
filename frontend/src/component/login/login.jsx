@@ -33,8 +33,6 @@ const Login = () => {
         },
 
       );
-
-      console.log("로그인 성공:", response.data);
       localStorage.setItem("accessToken", response.data.accessToken);
       navigate("/home"); 
     } catch (err) {
