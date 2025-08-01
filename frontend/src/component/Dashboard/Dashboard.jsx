@@ -14,12 +14,12 @@ import {
 
 const DashBoardMg = () => {
   const cameraList = [
-    { id: 1, src: "/videos/1.mp4" },
-    { id: 2, src: "/videos/2.mp4" },
-    { id: 3, src: "/videos/3.mp4" },
-    { id: 4, src: "/videos/4.mp4" },
-    { id: 5, src: "/videos/5.mp4" },
-    { id: 6, src: "/videos/6.mp4" },
+    { id: 1, src: "/app/videos/1.mp4" },
+    { id: 2, src: "/app/videos/2.mp4" },
+    { id: 3, src: "/app/videos/3.mp4" },
+    { id: 4, src: "/app/videos/4.mp4" },
+    { id: 5, src: "/app/videos/5.mp4" },
+    { id: 6, src: "/app/videos/6.mp4" },
   ];
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ const DashBoardMg = () => {
         {/* Breadcrumb */}
         <Box sx={{ px: 3, py: 2, display: "flex", alignItems: "center" }}>
           <Typography variant="caption" color="textSecondary">Welcome</Typography>
-          <Box component="img" src="/path2.svg" sx={{ width: 8, height: 8, mx: 1 }} />
+          <Box component="img" src="/app/path2.svg" sx={{ width: 8, height: 8, mx: 1 }} />
           <Typography variant="caption" color="primary" fontWeight="bold">Dashboard</Typography>
         </Box>
 
@@ -41,14 +41,23 @@ const DashBoardMg = () => {
               sx={{
                 height: 500,
                 flex: 1,
-                p: 6,
+                p: 2,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 bgcolor: "#e0e7ff",
               }}
             >
-              <Typography variant="h6">왼쪽 상단 박스 (예: 차트/지도)</Typography>
+              <Box
+                component="img"
+                src="/app/chart.png"
+                alt="차트"
+                sx={{
+                  maxHeight: "100%",
+                  maxWidth: "100%",
+                  objectFit: "cover",
+                }}
+              />
             </Paper>
 
             <Paper
