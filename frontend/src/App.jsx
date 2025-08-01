@@ -6,6 +6,7 @@ import Login from "./component/login/login";
 import SignUp from "./component/Signup/singup";
 import ProtectedRoute from "./component/login/ProtectedRoute";
 import RedirectIfAuth from "./component/login/RedirectIfAuth";
+import PrivacyConsent from './component/Signup/TermsAgreementPage';
 
 function App() {
 
@@ -29,6 +30,13 @@ function App() {
             </RedirectIfAuth>
           }
         />
+        <Route
+          path="/signup/privacy-consent"
+          element={
+              <PrivacyConsent />
+          }
+        />
+        
 
 
         {/* mainRoutes */}

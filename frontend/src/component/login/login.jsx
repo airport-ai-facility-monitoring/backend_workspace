@@ -182,7 +182,7 @@ const Login = () => {
           <Button
             variant="contained"
             fullWidth
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate("/signup/privacy-consent")}
             sx={{
               bgcolor: "white",
               color: "#2148c0",
