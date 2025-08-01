@@ -27,6 +27,9 @@ export default function NotificationDetail() {
 
   return (
     <div className="detail-wrapper">
+      <div className="back-link" onClick={() => navigate(-1)}>
+        <span style={{ marginRight: '6px' }}>←</span> 뒤로가기
+      </div>
       <div className="detail-header">
         <h1 className="detail-title">Notifications Detail</h1>
       </div>
