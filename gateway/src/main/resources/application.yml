@@ -43,23 +43,9 @@ spring:
           predicates:
             - Path=/equipment/**
         - id: frontend
-          uri: https://localhost:5173
+          uri: http://localhost:5173
           predicates:
             - Path=/**
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "https://glowing-space-fiesta-g4w47xwqjgj525qp-5173.app.github.dev"
-            allowedMethods:
-              - "*"
-            allowedHeaders:
-              - "X-Employee-Id"
-              - "X-Authorities"
-              - "Authorization"
-              - "Content-Type"
-              - "*"
-            allowCredentials: true
       # globalcors:
       #   corsConfigurations:
       #     '[/**]':
