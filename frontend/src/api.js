@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://bug-free-waffle-wwpr5jr4jjc55x-8088.app.github.dev",
+  baseURL: "https://glowing-space-fiesta-g4w47xwqjgj525qp-8088.app.github.dev",
   headers: {
     "Content-Type": "application/json",
   },
