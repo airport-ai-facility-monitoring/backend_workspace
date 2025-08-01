@@ -42,33 +42,7 @@ const SettingsPage = () => {
     content: {
       display: 'flex',
       gap: '4rem',
-      alignItems :'center',
-    },
-    profile: {
-      position: 'relative',
-      width: '300px',
-      height: '300px'
-    },
-    avatar: {
-      width: '100%',
-      height: '100%',
-      borderRadius: '75px',
-      objectFit: 'cover',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-    },
-    changeIcon: {
-      position: 'absolute',
-      bottom: 0,
-      right: 0,
-      background: 'white',
-      borderRadius: '50%',
-      width: '32px',
-      height: '32px',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-      display: 'flex',
-      alignItems: 'center',
       justifyContent: 'center',
-      cursor: 'pointer'
     },
     fields: {
       flex: 0.5,
@@ -116,7 +90,8 @@ const SettingsPage = () => {
       position: 'fixed',
       bottom: '20px',
       right: '20px',
-      width: '320px',
+      width:
+       '320px',
       background: 'white',
       borderRadius: '12px',
       boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
@@ -163,19 +138,6 @@ const SettingsPage = () => {
     <div style={styles.container}>
       <div style={styles.header}>Settings</div>
       <div style={styles.content}>
-        {/* Profile Area */}
-        <div style={styles.profile}>
-          {/* Replace src with your photo URL */}
-          <img
-            src="/karina.jpg"
-            alt="avatar"
-            style={styles.avatar}
-          />
-          <div style={styles.changeIcon}>
-            ✎
-          </div>
-        </div>
-
         {/* Fields */}
         <div style={styles.fields}>
           <div style={styles.label}>이름</div>
