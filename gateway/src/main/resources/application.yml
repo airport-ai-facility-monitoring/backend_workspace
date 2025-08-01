@@ -46,20 +46,20 @@ spring:
           uri: http://localhost:5173
           predicates:
             - Path=/**
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "https://bug-free-waffle-wwpr5jr4jjc55x-5173ㅁ.app.github.dev"
-            allowedMethods:
-              - "*"
-            allowedHeaders:
-              - "X-Employee-Id"
-              - "X-Authorities"
-              - "Authorization"
-              - "Content-Type"
-              - "*"
-            allowCredentials: true
+      # globalcors:
+      #   corsConfigurations:
+      #     '[/**]':
+      #       allowedOrigins:
+      #         - "https://bug-free-waffle-wwpr5jr4jjc55x-5173ㅁ.app.github.dev"
+      #       allowedMethods:
+      #         - "*"
+      #       allowedHeaders:
+      #         - "X-Employee-Id"
+      #         - "X-Authorities"
+      #         - "Authorization"
+      #         - "Content-Type"
+      #         - "*"
+      #       allowCredentials: true
 
 ---
 
