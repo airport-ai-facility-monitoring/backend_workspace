@@ -43,14 +43,14 @@ spring:
           predicates:
             - Path=/equipment/**
         - id: frontend
-          uri: https://special-fishstick-v676qp7v9x962xrw9-5173.app.github.dev
+          uri: https://glowing-space-fiesta-g4w47xwqjgj525qp-5173.app.github.dev
           predicates:
             - Path=/**
       globalcors:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://special-fishstick-v676qp7v9x962xrw9-5173.app.github.dev"
+              - "https://glowing-space-fiesta-g4w47xwqjgj525qp-5173.app.github.dev"
             allowedMethods:
               - "*"
             allowedHeaders:

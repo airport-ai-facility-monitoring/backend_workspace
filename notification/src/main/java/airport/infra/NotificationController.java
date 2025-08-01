@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.time.LocalDateTime;
 
 //<<< Clean Arch / Inbound Adaptor
 @CrossOrigin(origins = "*")
@@ -58,9 +59,16 @@ public class NotificationController {
         return notificationRepository.save(existing);
     }
 
-    @PostMapping
+    @PostMapping    
     public Notification registerNotification(@RequestBody NotificationsRegistered command) {
-        return Notification.register(command);
+        Notification notification = new Notification();
+        notification.setWriterId(command.getWriterId());
+        notification.setTitle(command.getTitle());
+        notification.setContents(command.getContents());
+        notification.setWriteDate(LocalDateTime.now());
+
+        return notificationRepository.save(notification);
+        // return Notification.register(command);
     }
 
     // -------------------------------------
