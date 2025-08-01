@@ -1,3 +1,4 @@
+import React from 'react';
 import { Route } from "react-router-dom";
 import Layout from "../layout/Layout";
 import Home from "../component/Home/Home";
@@ -12,6 +13,7 @@ import Anomaly from "../component/anomaly/Anomaly";
 import Anomalyreport from "../component/anomalyreport/Anomalyreport";
 import AnomalyReportEdit from "../component/anomalyreport/AnomalyreportEdit";
 import Facility from "../component/facility/Facility";
+
 
 const mainRoutes = [
   {

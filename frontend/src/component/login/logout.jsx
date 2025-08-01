@@ -7,5 +7,5 @@ export const logout = () => {
     .catch(() => console.log("로그아웃 API 호출 실패"));
 
   // 3. 로그인 페이지로 이동
-  window.location.href = "/login";
+  window.location.href = "login";
 };

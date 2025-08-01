@@ -28,11 +28,14 @@ public class GatewaySecurityConfig {
                 .cors().and()
                 .httpBasic().disable()
                 .csrf().disable()
-                .authorizeExchange()
-                    .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                    .pathMatchers("/", "/users/signup", "/users/login/jwt").permitAll()
-                    .anyExchange().authenticated()
-                .and()
+                .authorizeExchange(exchanges -> exchanges
+                .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                .pathMatchers("/", "/app/", "/app/**", "/users/signup", "/users/login/jwt", "/path2.svg").permitAll()
+                .anyExchange().authenticated()
+                )
+                .formLogin(form -> form
+                    .loginPage("/app/login")
+                )
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }

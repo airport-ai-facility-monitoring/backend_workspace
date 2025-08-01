@@ -25,13 +25,16 @@ public class StrangeObjectController {
     public void handleObjectDetectedClassified(@Payload ObjectDetectedClassified event) {
         Integer classId = event.getClassId();
         Integer count = event.getCount();
+        Long cctvId = event.getCctvId();
 
         switch (classId) {
             case 5: case 6: case 7: case 8: case 9: case 11:
                 DangerDetected dangerDetected = new DangerDetected();
                 dangerDetected.setClassId(classId);
                 dangerDetected.setCount(count);
+                dangerDetected.setCctvId(cctvId);
                 dangerDetected.publish();
+                break;
             case 10:
                 long dbWorkerCount = workerRepository.count();
                 if (count > dbWorkerCount) {
@@ -40,6 +43,7 @@ public class StrangeObjectController {
                     workerCountExceeded.setDbCount(dbWorkerCount);
                     workerCountExceeded.publish();
                 }
+                break;
             case 13: case 14: case 15: case 16: case 17:
             case 18: case 19: case 20: case 21: case 22:
                 boolean timeMismatch = !workTruckRepository.isWorkTimeMatched(classId);
@@ -48,6 +52,7 @@ public class StrangeObjectController {
                     workTimeNotMatched.setClassId(classId);
                     workTimeNotMatched.publish();
                 }
+                break;
             default:
                 break;
         }

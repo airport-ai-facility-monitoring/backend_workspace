@@ -1,16 +1,10 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+// vite.config.js
+import { defineConfig } from 'vite';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  base: '/app/', // 기본값: 루트 경로
+  // base: '/app', // 예: /app 아래에서 제공하려면 이렇게 설정
   server: {
-    proxy: {
-      '/members': {
-        target: 'http://localhost:8082',//백엔드포트8088->8082로수정
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/members/, ''),
-      },
-    },
+    port: 5173,
   },
-})
+});

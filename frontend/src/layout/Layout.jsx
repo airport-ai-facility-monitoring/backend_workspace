@@ -1,3 +1,4 @@
+import React from 'react';
 import { Outlet } from "react-router-dom"; 
 import Navbar from "../component/header/Navbar";
 import Side from "../component/header/Side";

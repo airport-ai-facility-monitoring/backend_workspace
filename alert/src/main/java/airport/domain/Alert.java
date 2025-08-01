@@ -34,117 +34,105 @@ public class Alert {
 
     //<<< Clean Arch / Port Method
     public static void sendAlert(DangerDetected dangerDetected) {
-        //implement business logic here:
+        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
+            CctvRepository.class
+        );
+        cctvRepository
+            .findById(dangerDetected.getCctvId())
+            .ifPresent(cctv -> {
+                Alert alert = new Alert();
+                alert.setAlertLog(
+                    "[" +
+                    cctv.getCctvArea() +
+                    "] " +
+                    "FOD 감지"
+                );
+                alert.setAlertDate(new Date());
+                repository().save(alert);
 
-        /** Example 1:  new item 
-        Alert alert = new Alert();
-        repository().save(alert);
+                System.out.println("##### alert log : " + alert.getAlertLog());
 
-        AlertSent alertSent = new AlertSent(alert);
-        alertSent.publishAfterCommit();
-        */
-
-        /** Example 2:  finding and process
-        
-
-        repository().findById(dangerDetected.get???()).ifPresent(alert->{
-            
-            alert // do something
-            repository().save(alert);
-
-            AlertSent alertSent = new AlertSent(alert);
-            alertSent.publishAfterCommit();
-
-         });
-        */
-
+                AlertSent alertSent = new AlertSent(alert);
+                alertSent.publishAfterCommit();
+            });
     }
 
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method
     public static void sendAlert(WorkerCountExceeded workerCountExceeded) {
-        //implement business logic here:
+        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
+            CctvRepository.class
+        );
+        cctvRepository
+            .findById(workerCountExceeded.getCctvId())
+            .ifPresent(cctv -> {
+                Alert alert = new Alert();
+                alert.setAlertLog(
+                    "[" +
+                    cctv.getCctvArea() +
+                    "] " +
+                    "작업자 수 초과"
+                );
+                alert.setAlertDate(new Date());
+                repository().save(alert);
 
-        /** Example 1:  new item 
-        Alert alert = new Alert();
-        repository().save(alert);
+                System.out.println("##### alert log : " + alert.getAlertLog());
 
-        AlertSent alertSent = new AlertSent(alert);
-        alertSent.publishAfterCommit();
-        */
-
-        /** Example 2:  finding and process
-        
-
-        repository().findById(workerCountExceeded.get???()).ifPresent(alert->{
-            
-            alert // do something
-            repository().save(alert);
-
-            AlertSent alertSent = new AlertSent(alert);
-            alertSent.publishAfterCommit();
-
-         });
-        */
-
+                AlertSent alertSent = new AlertSent(alert);
+                alertSent.publishAfterCommit();
+            });
     }
 
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method
     public static void sendAlert(WorkTimeNotMatched workTimeNotMatched) {
-        //implement business logic here:
+        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
+            CctvRepository.class
+        );
+        cctvRepository
+            .findById(workTimeNotMatched.getCctvId())
+            .ifPresent(cctv -> {
+                Alert alert = new Alert();
+                alert.setAlertLog(
+                    "[" +
+                    cctv.getCctvArea() +
+                    "] " +
+                    "작업 시간 불일치"
+                );
+                alert.setAlertDate(new Date());
+                repository().save(alert);
 
-        /** Example 1:  new item 
-        Alert alert = new Alert();
-        repository().save(alert);
+                System.out.println("##### alert log : " + alert.getAlertLog());
 
-        AlertSent alertSent = new AlertSent(alert);
-        alertSent.publishAfterCommit();
-        */
-
-        /** Example 2:  finding and process
-        
-
-        repository().findById(workTimeNotMatched.get???()).ifPresent(alert->{
-            
-            alert // do something
-            repository().save(alert);
-
-            AlertSent alertSent = new AlertSent(alert);
-            alertSent.publishAfterCommit();
-
-         });
-        */
-
+                AlertSent alertSent = new AlertSent(alert);
+                alertSent.publishAfterCommit();
+            });
     }
 
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method
     public static void sendAlert(DamageDetected damageDetected) {
-        //implement business logic here:
+        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
+            CctvRepository.class
+        );
+        cctvRepository
+            .findById(damageDetected.getCctvId())
+            .ifPresent(cctv -> {
+                Alert alert = new Alert();
+                alert.setAlertLog(
+                    "[" +
+                    cctv.getCctvArea() +
+                    "] " +
+                    "활주로 손상 감지"
+                );
+                alert.setAlertDate(new Date());
+                repository().save(alert);
 
-        /** Example 1:  new item 
-        Alert alert = new Alert();
-        repository().save(alert);
+                System.out.println("##### alert log : " + alert.getAlertLog());
 
-        AlertSent alertSent = new AlertSent(alert);
-        alertSent.publishAfterCommit();
-        */
-
-        /** Example 2:  finding and process
-        
-
-        repository().findById(damageDetected.get???()).ifPresent(alert->{
-            
-            alert // do something
-            repository().save(alert);
-
-            AlertSent alertSent = new AlertSent(alert);
-            alertSent.publishAfterCommit();
-
-         });
-        */
-
+                AlertSent alertSent = new AlertSent(alert);
+                alertSent.publishAfterCommit();
+            });
     }
     //>>> Clean Arch / Port Method
 

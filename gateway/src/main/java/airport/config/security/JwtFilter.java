@@ -39,7 +39,6 @@ public class JwtFilter implements WebFilter {
 
         // 토큰 가져오기 (쿠키 or Authorization 헤더)
         String token = null;
-        System.out.println("1번쨰");
         // ✅ OPTIONS 요청은 무조건 통과시킴 (Preflight)
         if (request.getMethod() == HttpMethod.OPTIONS) {
             return chain.filter(exchange);
@@ -47,7 +46,6 @@ public class JwtFilter implements WebFilter {
 
 
         String path = request.getPath().toString();
-        System.out.println(path);
         if (path.equals("/") || 
             path.equals("/users/signup") || 
             path.equals("/users/login/jwt") || 
@@ -63,7 +61,6 @@ public class JwtFilter implements WebFilter {
                 token = jwtCookie.getValue();
             }
         }
-        System.out.println("쿠키 값: " + token);
 
         if (token == null) {
             String authHeader = request.getHeaders().getFirst("Authorization");
@@ -71,7 +68,12 @@ public class JwtFilter implements WebFilter {
                 token = authHeader.substring(7);
             }
         }
-            System.out.println("토큰 값: " + token);
+
+
+        if(token == null || !jwtUtil.validateToken(token)) {
+            return chain.filter(exchange);
+        }
+                    System.out.println("토큰 값: " + token);
             System.out.println("토큰 유효 여부: " + jwtUtil.validateToken(token));
         // 토큰 검증
         if (!jwtUtil.validateToken(token)) {
