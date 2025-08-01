@@ -116,3 +116,17 @@
   background: #e0e0e0;
   color: #666;
 }
+
+.btn-back {
+  font-size: 1rem;
+  color: #1e40af; /* 파란색 */
+  margin-bottom: 1rem;
+  margin-left: 1rem; /* 왼쪽 살짝 여백 */
+  cursor: pointer;
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 500;
+}
+.btn-back:hover {
+  text-decoration: underline;
+}

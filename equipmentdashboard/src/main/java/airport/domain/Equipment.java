@@ -4,13 +4,14 @@ import airport.EquipmentdashboardApplication;
 import airport.domain.EquipmentIAnalyRequested;
 import airport.domain.EquipmentRegistered;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import lombok.Data;
+
 
 @Entity
 @Table(name = "Equipment_table")
@@ -22,11 +23,57 @@ public class Equipment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long equipmentId;
 
-    private String equipmentType;
+    private String equipmentType; // 조명, 기상, 표지판
 
     private String equipmentName;
 
     private String state;
+
+    // 분류 column
+    private String category; // REL, RCL, TDZL, REIL
+
+    private String manufacturer; //Samsung, Honeywell, GE, LSElectric
+
+    private String protectionRating; //IP65, IP66, IP67
+
+    //column
+    private Integer purchase;
+
+    private LocalDateTime purchaseDate;
+
+    private Integer failure;
+
+    private Integer runtime;
+
+    private Integer serviceYears;
+
+    private Integer repairCost;
+
+    private Integer repairTime;
+
+    private Integer laborRate;
+
+    private Integer avgLife;
+
+    //이거 지금 넣는거 맞나
+    private Integer maintenanceCost;
+
+    // 조명 장비 상세
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "lighting_detail_id")
+    private LightingEquipmentDetail lightingDetail;
+
+    // 기상 장비 상세
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "weather_detail_id")
+    private WeatherEquipmentDetail weatherDetail;
+
+    // 표지판 장비 상세
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "sign_detail_id")
+    private SignEquipmentDetail signDetail;
+
+
 
     @PostPersist
     public void onPostPersist() {

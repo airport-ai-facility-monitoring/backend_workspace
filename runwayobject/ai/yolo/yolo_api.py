@@ -11,7 +11,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:5173",
-    "https://special-fishstick-v676qp7v9x962xrw9-5173.app.github.dev",
+    "https://glowing-space-fiesta-g4w47xwqjgj525qp-5173.app.github.dev",
 ]
 
 # CORS 설정 (React에서 접근 허용)

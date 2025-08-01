@@ -36,6 +36,9 @@ export default function NotificationWrite() {
 
   return (
     <div className="write-wrapper">
+      <div className="back-link" onClick={() => navigate(-1)}>
+        <span style={{ marginRight: '6px' }}>←</span> 뒤로가기
+      </div>
       <h1 className="write-header">Notifications Write</h1>
       <form className="write-form" onSubmit={handleSubmit}>
         <div className="form-row">

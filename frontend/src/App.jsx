@@ -3,9 +3,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import mainRoutes from "./routes/mainRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import Login from "./component/login/login";
-import SignUp from "./component/Signup/singup";
+import SignUp from "./component/Signup/index";
 import ProtectedRoute from "./component/login/ProtectedRoute";
 import RedirectIfAuth from "./component/login/RedirectIfAuth";
+import PrivacyConsent from './component/Signup/TermsAgreementPage';
 
 function App() {
 
@@ -29,6 +30,13 @@ function App() {
             </RedirectIfAuth>
           }
         />
+        <Route
+          path="/signup/privacy-consent"
+          element={
+              <PrivacyConsent />
+          }
+        />
+        
 
 
         {/* mainRoutes */}
