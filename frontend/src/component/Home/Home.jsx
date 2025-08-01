@@ -1,6 +1,8 @@
 import React from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import WeatherBox from "./WeatherBox";
+import NotificationBox from "./NotificationBox";
+
 import {
   Box,
   IconButton,
@@ -99,9 +101,7 @@ const MainHomeMg = () => {
                 <MoreVertIcon />
               </IconButton>
             </Box>
-            <Typography variant="body2" color="textSecondary">
-              연결된 공지사항이 여기에 표시됩니다.
-            </Typography>
+            <NotificationBox />
           </Paper>
 
           {/* 알림 로그 카드 */}
