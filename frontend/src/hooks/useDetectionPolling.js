@@ -16,7 +16,7 @@ const useDetectionPolling = (videoRef, cameraId) => {
       const dataUrl = canvas.toDataURL("image/jpeg");
 
       try {
-        const res = await fetch("https://special-fishstick-v676qp7v9x962xrw9-8000.app.github.dev/detect", {
+        const res = await fetch("https://glowing-space-fiesta-g4w47xwqjgj525qp-8000.app.github.dev/detect", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
