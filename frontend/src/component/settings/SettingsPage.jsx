@@ -12,6 +12,9 @@ const SettingsPage = () => {
     api.get('/employees/setting')
       .then(response => {
         setUser(response.data);
+        console.log("성공")
+        console.log('저장된 토큰:', localStorage.getItem("accessToken"));
+        console.log(response.data);
       })
       .catch(error => {
         console.error('Error fetching user data:', error);

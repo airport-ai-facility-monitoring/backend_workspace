@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import mainRoutes from "./routes/mainRoutes";
 import adminRoutes from "./routes/adminRoutes";
@@ -10,7 +11,6 @@ function App() {
 
 
   return (
-    <Router>
       <Routes>
         {/* 로그인, 회원가입은 RedirectIfAuth로 감싸기 */}
         <Route
@@ -67,7 +67,6 @@ function App() {
           </Route>
         ))}
       </Routes>
-    </Router>
   );
 }
 
