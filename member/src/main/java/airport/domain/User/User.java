@@ -71,23 +71,3 @@ public class User {
 }
 //>>> DDD / Aggregate Root
 
-class UserDto{
-        private Long id;
-
-    private String password;
-
-    private Long employeeId;
-
-    private String name;
-
-    private String department;
-
-    private String position;
-
-    private Date hireDate;
-
-    private String phoneNumber;
-
-    private String email;
-
-}

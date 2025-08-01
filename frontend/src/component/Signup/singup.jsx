@@ -4,6 +4,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import CheckCircle from "@mui/icons-material/CheckCircle";
 import Cancel from "@mui/icons-material/Cancel";
+import { FormHelperText } from "@mui/material"; // 추가 임포트 필요
 import {
   Box,
   Button,
@@ -32,10 +33,14 @@ const SignUp = () => {
     department: "",
     position: "",
     hireDate: "",
-    phoneNumber: "",
-    email: "",
+    phone1: "", // 앞 3자리
+    phone2: "", // 중간 4자리
+    phone3: "", // 끝 4자리
+    emailLocal: "",
+    emailDomain: "",
+    customEmailDomain: "",
   });
-  
+  const [useCustomDomain, setUseCustomDomain] = useState(false);
   const [showPassword, setShowPassword] = useState({
     password: false,
     confirmPassword: false,
@@ -101,42 +106,100 @@ const SignUp = () => {
       const { length, alphanumeric, number, special, match } = passwordValidation;
       const passwordValid = length && alphanumeric && number && special && match;
 
-      const requiredFields = ['employeeId', 'password', 'confirmPassword', 'name', 'department', 'position', 'hireDate'];
-      const fieldsValid = requiredFields.every(field => form[field].trim() !== '');
+      const requiredFields = [
+        "employeeId",
+        "password",
+        "confirmPassword",
+        "name",
+        "department",
+        "position",
+        "hireDate",
+      ];
+      const fieldsValid = requiredFields.every(
+        (field) => form[field] && form[field].trim() !== ""
+      );
 
-      return passwordValid && fieldsValid;
+      // 전화번호: 하나라도 입력되면 모두 채워져야 (3-4-4)
+      const phonePartsFilled =
+        form.phone1.trim() !== "" ||
+        form.phone2.trim() !== "" ||
+        form.phone3.trim() !== "";
+      let phoneValid = true;
+      if (phonePartsFilled) {
+        phoneValid =
+          form.phone1.trim().length === 3 &&
+          form.phone2.trim().length === 4 &&
+          form.phone3.trim().length === 4;
+      }
+
+      // 이메일: 앞부분이 있으면 도메인도 있고 기본 형식 검사
+      const emailLocalFilled = form.emailLocal && form.emailLocal.trim() !== "";
+      let emailValid = true;
+      if (emailLocalFilled) {
+        const domain = useCustomDomain ? form.customEmailDomain : form.emailDomain;
+        emailValid =
+          !!domain &&
+          /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(`${form.emailLocal}@${domain}`);
+      }
+
+      return passwordValid && fieldsValid && phoneValid && emailValid;
     };
 
-  // 회원가입 요청
-  const handleSignUp = async () => {
-    if (!isFormValid()) {
-      alert('모든 필수 항목을 올바르게 입력해주세요.');
-      return;
-    }
-
-    try {
-      // confirmPassword 제외하고 전송
-      const { confirmPassword, ...submitData } = form;
-      const response = await api.post("/users/signup", submitData);
-      
-      // 동의 정보 제거 (회원가입 완료 후)
-      localStorage.removeItem('privacyConsent');
-      
-      alert("회원가입 성공!");
-      console.log(response.data);
-      navigate("/login");
-    } catch (error) {
-      console.error(error);
-      if (error.response) {
-        alert(
-          "회원가입 실패: " +
-            (error.response.data.message || error.response.statusText)
-        );
-      } else {
-        alert("서버 통신 중 오류가 발생했습니다.");
+    // === handleSignUp ===
+    const handleSignUp = async () => {
+      if (!isFormValid()) {
+        alert("모든 필수 항목을 올바르게 입력해주세요.");
+        return;
       }
-    }
-  };
+
+      try {
+        // 전화번호/이메일 조합
+        const phoneNumber =
+          form.phone1 && form.phone2 && form.phone3
+            ? `${form.phone1}-${form.phone2}-${form.phone3}`
+            : null;
+        const email =
+          form.emailLocal && (useCustomDomain ? form.customEmailDomain : form.emailDomain)
+            ? `${form.emailLocal}@${useCustomDomain ? form.customEmailDomain : form.emailDomain}`
+            : null;
+
+        // 보내는 payload: confirmPassword 제외, 조합된 phone/email 사용
+        const {
+          confirmPassword,
+          phone1,
+          phone2,
+          phone3,
+          emailLocal,
+          emailDomain,
+          customEmailDomain,
+          ...rest
+        } = form;
+
+        const submitData = {
+          ...rest,
+          phoneNumber,
+          email,
+        };
+
+        const response = await api.post("/users/signup", submitData);
+
+        localStorage.removeItem("privacyConsent");
+
+        alert("회원가입 성공!");
+        console.log(response.data);
+        navigate("/login");
+      } catch (error) {
+        console.error(error);
+        if (error.response) {
+          alert(
+            "회원가입 실패: " +
+              (error.response.data.message || error.response.statusText)
+          );
+        } else {
+          alert("서버 통신 중 오류가 발생했습니다.");
+        }
+      }
+    };
 
   return (
     <Box
@@ -372,31 +435,89 @@ const SignUp = () => {
               sx={placeholderStyle}
             />
 
-            {/* 전화번호 */}
-            <TextField
-              name="phoneNumber"
-              placeholder="전화번호 (선택사항)"
-              variant="outlined"
-              fullWidth
-              value={form.phoneNumber}
-              onChange={handleChange}
-              InputProps={{ sx: inputStyle }}
-              sx={placeholderStyle}
-            />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <TextField
+                name="phone1"
+                placeholder="010"
+                variant="outlined"
+                inputProps={{ maxLength: 3 }}
+                value={form.phone1}
+                onChange={(e) => setForm(f => ({ ...f, phone1: e.target.value.replace(/\D/g, "") }))}
+                sx={{ flex: "0 0 80px" }}
+                InputProps={{ sx: inputStyle }}
+              />
+              <Typography sx={{ color: "rgba(255,255,255,0.6)", fontSize: "12px", userSelect: "none" }}>
+                (ex 010)
+              </Typography>
 
-            {/* 이메일 */}
-            <TextField
-              name="email"
-              placeholder="이메일 (선택사항)"
-              type="email"
-              variant="outlined"
-              fullWidth
-              value={form.email}
-              onChange={handleChange}
-              InputProps={{ sx: inputStyle }}
-              sx={placeholderStyle}
-            />
+              <TextField
+                name="phone2"
+                placeholder="1234"
+                variant="outlined"
+                inputProps={{ maxLength: 4 }}
+                value={form.phone2}
+                onChange={(e) => setForm(f => ({ ...f, phone2: e.target.value.replace(/\D/g, "") }))}
+                sx={{ flex: "0 0 100px" }}
+                InputProps={{ sx: inputStyle }}
+              />
+              <Typography sx={{ color: "rgba(255,255,255,0.6)", fontSize: "12px", userSelect: "none" }}>
+                (ex 1234)
+              </Typography>
 
+              <TextField
+                name="phone3"
+                placeholder="5678"
+                variant="outlined"
+                inputProps={{ maxLength: 4 }}
+                value={form.phone3}
+                onChange={(e) => setForm(f => ({ ...f, phone3: e.target.value.replace(/\D/g, "") }))}
+                sx={{ flex: "0 0 100px" }}
+                InputProps={{ sx: inputStyle }}
+              />
+              <Typography sx={{ color: "rgba(255,255,255,0.6)", fontSize: "12px", userSelect: "none" }}>
+                (ex 5678)
+              </Typography>
+            </Box>
+            
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2 }}>
+                <TextField
+                  name="emailLocal"
+                  placeholder="이메일 앞부분"
+                  variant="outlined"
+                  value={form.emailLocal}
+                  onChange={(e) => setForm(f => ({ ...f, emailLocal: e.target.value }))}
+                  sx={{ flex: 1 }}
+                  InputProps={{ sx: inputStyle }}
+                />
+                <Typography sx={{ color: "white", fontWeight: "bold" }}>@</Typography>
+
+                <TextField
+                  name="emailDomain"
+                  placeholder="도메인 입력 또는 선택"
+                  variant="outlined"
+                  value={form.emailDomain}
+                  onChange={(e) => setForm(f => ({ ...f, emailDomain: e.target.value }))}
+                  sx={{ flex: 1 }}
+                  InputProps={{ sx: inputStyle }}
+                  select
+                  SelectProps={{
+                    native: true,
+                    onChange: (e) => {
+                      // 선택 옵션 변경 시 직접입력값 덮어쓰기
+                      setForm(f => ({ ...f, emailDomain: e.target.value }));
+                    }
+                  }}
+                >
+                  <option value="">도메인 선택</option>
+                  <option value="gmail.com">gmail.com</option>
+                  <option value="naver.com">naver.com</option>
+                  <option value="daum.net">daum.net</option>
+                  <option value="hotmail.com">hotmail.com</option>
+                </TextField>
+              </Box>
+              <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.7)", mt: 0.5 }}>
+                이메일은 선택사항이며, 직접 입력하거나 도메인을 선택할 수 있습니다.
+              </Typography>
             <Button
               variant="contained"
               fullWidth
