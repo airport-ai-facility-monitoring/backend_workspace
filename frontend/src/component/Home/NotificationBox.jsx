@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../../api/axios"; // api.js 경로에 따라 수정
+import api from "../../api"; // api.js 경로에 따라 수정
 import { Box, Typography, List, ListItem, ListItemText } from "@mui/material";
 
 const NotificationBox = () => {
