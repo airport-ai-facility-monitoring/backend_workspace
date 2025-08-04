@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 import java.time.LocalDateTime;
 
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+
 //<<< Clean Arch / Inbound Adaptor
 @CrossOrigin(origins = "*")
 @RestController

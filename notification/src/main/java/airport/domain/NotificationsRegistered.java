@@ -7,6 +7,7 @@ import java.util.*;
 import lombok.*;
 import java.time.LocalDateTime;
 //<<< DDD / Domain Event
+
 @Data
 @ToString
 public class NotificationsRegistered extends AbstractEvent {

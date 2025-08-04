@@ -103,6 +103,18 @@ public class UserController {
     //     }
     // }
 
+    @GetMapping("/setting")
+    public UserDto getEmployeeById(
+        @RequestHeader("X-Employee-Id") String employeeId
+     ) {
+        System.out.println("🚀 [employeeId 헤더 값]: " + employeeId); // 로그 확인용
+        Long employeeIdLong = Long.valueOf(employeeId);
+        User user =  userRepository.findByEmployeeId(employeeIdLong)
+                .orElseThrow(() -> new RuntimeException("해당 직원이 없습니다."));
+
+        return new UserDto(user);
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User user) {
         try {

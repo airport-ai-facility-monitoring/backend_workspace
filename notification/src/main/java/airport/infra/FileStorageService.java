@@ -1,4 +1,4 @@
-package airport.service;
+package airport.infra;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

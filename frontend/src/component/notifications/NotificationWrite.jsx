@@ -12,42 +12,57 @@ export default function NotificationWrite() {
   const [body, setBody] = useState('')
   const [important, setImportant] = useState(false)
   const [file, setFile] = useState(null)
-
+  const [user, setUser] = useState(null);
   // ✅ 사용자 ID를 localStorage에서 불러와 자동 입력 + 마스킹
+  // useEffect(() => {
+  //   const userId = localStorage.getItem('userId') // 실제 상황에 따라 key 확인
+  //   setAuthorId(userId || '')
+  //   setMaskedAuthor(maskUserId(userId || ''))
+  // }, [])
   useEffect(() => {
-    const userId = localStorage.getItem('userId') // 실제 상황에 따라 key 확인
-    setAuthorId(userId || '')
-    setMaskedAuthor(maskUserId(userId || ''))
-  }, [])
+    api.get('/employees/setting')
+      .then(response => {
+        setUser(response.data);
+        console.log("성공")
+        console.log('저장된 토큰:', localStorage.getItem("accessToken"));
+        console.log(response.data.employeeId);
+        setAuthorId(response.data.employeeId)
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
+  }, []);
 
   const maskUserId = (id) => {
     if (!id || id.length < 3) return id
     return id[0] + '*'.repeat(id.length - 2) + id.slice(-1)
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+const handleSubmit = async (e) => {
+  e.preventDefault()
 
-    const formData = new FormData()
-    formData.append('writerId', authorId)
-    formData.append('title', title)
-    formData.append('contents', (important ? '[중요] ' : '') + body)
-    if (file) {
-      formData.append('file', file)
-    }
-
-    try {
-      await api.post('/notifications', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      navigate('/notifications')
-    } catch (error) {
-      console.error('공지 등록 실패:', error)
-      alert('공지 등록 중 오류가 발생했습니다.')
-    }
+  if (!authorId) {
+    alert("작성자 ID가 없습니다.")
+    return
   }
+
+  const formData = new FormData()
+  formData.append('writerId', authorId)
+  formData.append('title', title)
+  formData.append('contents', (important ? '[중요] ' : '') + body)
+  formData.append('important', important) 
+  if (file) {
+    formData.append('file', file)
+  }
+
+  try {
+    await api.post('/notifications', formData) 
+    navigate('/notifications')
+  } catch (error) {
+    console.error('공지 등록 실패:', error)
+    alert('공지 등록 중 오류가 발생했습니다.')
+  }
+}
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0])
@@ -64,7 +79,7 @@ export default function NotificationWrite() {
           <label>작성자</label>
           <input
             type="text"
-            value={maskedAuthor}
+            value={authorId}
             readOnly
           />
         </div>

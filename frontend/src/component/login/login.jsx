@@ -33,6 +33,8 @@ const Login = () => {
         },
 
       );
+      console.log("로그인 응답:", response.data); // 이 부분 추가
+      localStorage.setItem("employeeId", response.data.employeeId);
       localStorage.setItem("accessToken", response.data.accessToken);
       navigate("/home"); 
     } catch (err) {
