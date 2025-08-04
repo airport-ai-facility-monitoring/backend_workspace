@@ -1,7 +1,7 @@
 import React from 'react';
-import { Outlet } from "react-router-dom"; 
-import Navbar from "../component/header/Navbar";
-import Side from "../component/header/Side";
+import { Outlet } from "react-router-dom";
+import Navbar from "./header/Navbar";
+import Side from "./header/Side";
 import { useState } from "react";
 import Box from "@mui/material/Box";
 
@@ -17,27 +17,31 @@ const Layout = () => {
 
       {/* 오른쪽 메인 영역: 상단 네비바 + 컨텐츠 */}
       <Box
-  sx={{
-    flexGrow: 1,
-    display: "flex",
-    flexDirection: "column",
-    marginLeft: open ? `${drawerWidth}px` : 0,
-    width: open ? `calc(100% - ${drawerWidth}px)` : "100%",
-  }}
->
-  <Navbar open={open} setOpen={setOpen} />
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          marginLeft: open ? `${drawerWidth}px` : 0,
+          width: open ? `calc(100% - ${drawerWidth}px)` : "100%",
+        }}
+      >
+        <Navbar open={open} setOpen={setOpen} />
 
-  <Box
-    component="main"
-    sx={{
-      flexGrow: 1,
-      overflowY: "auto",
-      p: 3,
-    }}
-  >
-    <Outlet />
-  </Box>
-</Box>
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            overflowY: "auto",
+            p: 3,
+          }}
+        >
+          <Outlet />
+        </Box>
+        {/* Footer */}
+        <Box component="div" sx={{ flexShrink: 0 }}>
+          <Footer />
+        </Box>
+      </Box>
     </Box>
   );
 };
