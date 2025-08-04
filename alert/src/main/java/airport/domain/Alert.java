@@ -134,6 +134,80 @@ public class Alert {
                 alertSent.publishAfterCommit();
             });
     }
+
+    public static void sendAlert(ForeignObjectDetected foreignObjectDetected) {
+        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
+            CctvRepository.class
+        );
+        cctvRepository
+            .findById(foreignObjectDetected.getCameraId())
+            .ifPresent(cctv -> {
+                Alert alert = new Alert();
+                alert.setAlertLog(
+                    "[" +
+                    cctv.getCctvArea() +
+                    "] " +
+                    "이물질 감지: " + foreignObjectDetected.getObjectType() + " " + foreignObjectDetected.getObjectCount() + "개"
+                );
+                alert.setAlertDate(new Date());
+                repository().save(alert);
+
+                System.out.println("##### alert log : " + alert.getAlertLog());
+
+                AlertSent alertSent = new AlertSent(alert);
+                alertSent.publishAfterCommit();
+            });
+    }
+
+    public static void sendAlert(WorkNotInProgress workNotInProgress) {
+        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
+            CctvRepository.class
+        );
+        cctvRepository
+            .findById(workNotInProgress.getCameraId())
+            .ifPresent(cctv -> {
+                Alert alert = new Alert();
+                alert.setAlertLog(
+                    "[" +
+                    cctv.getCctvArea() +
+                    "] " +
+                    "비작업 시간 활동 감지: " + workNotInProgress.getObjectType()
+                );
+                alert.setAlertDate(new Date());
+                repository().save(alert);
+
+                System.out.println("##### alert log : " + alert.getAlertLog());
+
+                AlertSent alertSent = new AlertSent(alert);
+                alertSent.publishAfterCommit();
+            });
+    }
+
+    //>>> Clean Arch / Port Method
+    //<<< Clean Arch / Port Method
+    public static void sendAlert(DamageDetected damageDetected) {
+        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
+            CctvRepository.class
+        );
+        cctvRepository
+            .findById(damageDetected.getCctvId())
+            .ifPresent(cctv -> {
+                Alert alert = new Alert();
+                alert.setAlertLog(
+                    "[" +
+                    cctv.getCctvArea() +
+                    "] " +
+                    "활주로 손상 감지"
+                );
+                alert.setAlertDate(new Date());
+                repository().save(alert);
+
+                System.out.println("##### alert log : " + alert.getAlertLog());
+
+                AlertSent alertSent = new AlertSent(alert);
+                alertSent.publishAfterCommit();
+            });
+    }
     //>>> Clean Arch / Port Method
 
 }

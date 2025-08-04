@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from "react";
+import api from "../../api"; // api.js import
 import CommuteIcon from "@mui/icons-material/Commute";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -30,22 +32,30 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import React from "react";
 
-// Mock data for the activity log
-const activityData = [
-  { date: "2018/10/02 15:57:46", detail: "2번 활주로 FOD 감지" },
-  { date: "2018/10/10 10:57:46", detail: "1번 활주로 FOD 감지" },
-  { date: "2018/10/10 10:57:46", detail: "3번 활주로 작업자 이상행동" },
-  { date: "2018/10/13 10:57:46", detail: "3번 활주로 감쇠 감지" },
-  { date: "2018/10/13 10:57:46", detail: "----------------------------" },
-  { date: "2018/10/13 10:57:46", detail: "----------------------------" },
-  { date: "2018/10/23 10:57:46", detail: "----------------------------" },
-  { date: "2018/10/23 10:57:46", detail: "----------------------------" },
-  { date: "2018/10/30 10:57:46", detail: "----------------------------" },
-];
+// ... (기존 import 문 유지)
 
 const Alert = () => {
+  const [alerts, setAlerts] = useState([]);
+  const pollingInterval = 5000; // 5초마다 폴링
+
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        const response = await api.get("/alerts");
+        setAlerts(response.data);
+      } catch (error) {
+        console.error("Error fetching alerts:", error);
+      }
+    };
+
+    fetchAlerts(); // 컴포넌트 마운트 시 즉시 호출
+
+    const intervalId = setInterval(fetchAlerts, pollingInterval); // 주기적으로 호출
+
+    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 정리
+  }, []);
+
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f3f6fe" }}>
       {/* Sidebar */}
@@ -102,16 +112,16 @@ const Alert = () => {
                       </Typography>
                     </TableCell>
                   </TableRow>
-                  {activityData.map((row, index) => (
+                  {alerts.map((row, index) => (
                     <TableRow
-                      key={index}
+                      key={row.alertId || index} // alertId가 있으면 사용, 없으면 index 사용
                       hover
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell component="th" scope="row">
-                        {row.date}
+                        {new Date(row.alertDate).toLocaleString()} {/* 날짜 형식 변환 */}
                       </TableCell>
-                      <TableCell>{row.detail}</TableCell>
+                      <TableCell>{row.alertLog}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

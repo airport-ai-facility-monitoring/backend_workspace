@@ -1,18 +1,11 @@
 package airport.domain;
 
-import airport.domain.*;
-import airport.infra.AbstractEvent;
-import java.util.*;
-import lombok.*;
+import lombok.Data;
 
 @Data
-@ToString
-public class WorkerCountExceeded extends AbstractEvent {
-
-    private Long workerId;
-    private String workArea;
-    private Integer approvalWorkerCount;
-    private Date workStartTime;
-    private Date workEndTime;
-    private Long cctvId;
+public class WorkerCountExceeded {
+    private String eventType;
+    private Long cctvId; // cctvId 필드 추가
+    private Integer workerCount;
+    private Integer limit;
 }
