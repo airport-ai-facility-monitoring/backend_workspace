@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import NotificationItem from './NotificationItem'
-import api from '../../api' // axios 인스턴스 경로에 따라 조정
+import api from '../../api'
 
 export default function NotificationList() {
   const [items, setItems] = useState([])
@@ -9,13 +9,15 @@ export default function NotificationList() {
     const fetchNotifications = async () => {
       try {
         const response = await api.get('/notifications')
+        console.log('response.data:', response.data)
         const data = response.data
 
         const transformed = data.map((n) => ({
           id: n.notificationsId,
           time: formatDateTime(n.writeDate),
-          tag: n.writerId?.toString(), // 작성자 ID
+          tag: n.writerId?.toString(),
           text: n.title,
+          isImportant: n.important ?? false // ✅ 중요 여부 수신
         }))
 
         setItems(transformed)
@@ -39,8 +41,12 @@ export default function NotificationList() {
 
   return (
     <div className="notification-list">
-      {items.map((item) => (
-        <NotificationItem key={item.id} {...item} />
+      {items.map((item, index) => (
+        <NotificationItem
+          key={item.id}
+          order={index + 1} // ✅ 순번 전달
+          {...item}
+        />
       ))}
     </div>
   )

@@ -23,6 +23,9 @@ public class NotificationController {
     @Autowired
     NotificationRepository notificationRepository;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+
     // 🔹 목록 조회
     @GetMapping
     public List<Notification> getAllNotifications() {
@@ -59,22 +62,47 @@ public class NotificationController {
         return notificationRepository.save(existing);
     }
 
-    @PostMapping    
-    public Notification registerNotification(@RequestBody NotificationsRegistered command) {
-        Notification notification = new Notification();
-        notification.setWriterId(command.getWriterId());
-        notification.setTitle(command.getTitle());
-        notification.setContents(command.getContents());
-        notification.setWriteDate(LocalDateTime.now());
 
-        return notificationRepository.save(notification);
-        // return Notification.register(command);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Notification registerNotification(
+        @RequestParam("writerId") Long writerId,
+        @RequestParam("title") String title,
+        @RequestParam("contents") String contents,
+        @RequestParam("important") boolean important,
+        @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
+        String fileUrl = null;
+
+        if (file != null && !file.isEmpty()) {
+            fileUrl = fileStorageService.save(file); // 저장 후 URL 반환 (FileStorageService는 별도 구성됨)
+        }
+
+        NotificationsRegistered command = new NotificationsRegistered();
+        command.setWriterId(writerId);
+        command.setTitle(title);
+        command.setContents(contents);
+        command.setImportant(important);
+        command.setWriteDate(LocalDateTime.now());
+
+        return Notification.register(command, fileUrl);
     }
 
-    // -------------------------------------
-    // public NotificationController(NotificationRepository notificationRepository) {
-    //     this.notificationRepository = notificationRepository;
+    // @PostMapping    
+    // public Notification registerNotification(@RequestBody NotificationsRegistered command) {
+    //     Notification notification = new Notification();
+    //     notification.setWriterId(command.getWriterId());
+    //     notification.setTitle(command.getTitle());
+    //     notification.setContents(command.getContents());
+    //     notification.setWriteDate(LocalDateTime.now());
+
+    //     return notificationRepository.save(notification);
+    //     // return Notification.register(command);
     // }
+
+    // // -------------------------------------
+    // // public NotificationController(NotificationRepository notificationRepository) {
+    // //     this.notificationRepository = notificationRepository;
+    // // }
 
     // 목록 조회 with 검색, 정렬, 필터, 페이징
     // @GetMapping

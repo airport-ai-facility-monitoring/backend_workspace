@@ -31,8 +31,13 @@ public class Notification {
 
     private String contents;
 
+    private String fileUrl;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime writeDate;
+
+    @Column(nullable = false)
+    private boolean important;
 
     @PostPersist
     public void onPostPersist() {
@@ -49,11 +54,13 @@ public class Notification {
         return notificationRepository;
     }
 
-    public static Notification register(NotificationsRegistered command) {
+    public static Notification register(NotificationsRegistered command, String fileUrl) {
         Notification notification = new Notification();
         notification.setTitle(command.getTitle());
         notification.setWriterId(command.getWriterId());
         notification.setContents(command.getContents());
+        notification.setFileUrl(fileUrl);
+        notification.setImportant(command.isImportant());
         notification.setWriteDate(LocalDateTime.now());
 
         return repository().save(notification); // 저장 후 @PostPersist에서 이벤트 자동 발생

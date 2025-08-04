@@ -16,6 +16,7 @@ public class NotificationsRegistered extends AbstractEvent {
     private Long writerId;
     private String contents;
     private LocalDateTime writeDate;
+    private boolean important;
 
     public NotificationsRegistered(Notification aggregate) {
         super(aggregate);
@@ -24,6 +25,7 @@ public class NotificationsRegistered extends AbstractEvent {
         this.writerId = aggregate.getWriterId();
         this.contents = aggregate.getContents();
         this.writeDate = aggregate.getWriteDate();
+        this.important = aggregate.isImportant();
     }
 
     public NotificationsRegistered() {
