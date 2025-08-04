@@ -1,11 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-<<<<<<< HEAD:frontend/src/api.js
   baseURL: "https://obscure-guacamole-6xqq95gq9g5f4g65-8088.app.github.dev/",
-=======
-  baseURL: "https://obscure-guacamole-6xqq95gq9g5f4g65-8088.app.github.dev",
->>>>>>> 보안:frontend/src/config/api.js
   headers: {
     "Content-Type": "application/json",
   },
