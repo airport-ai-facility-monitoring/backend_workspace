@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import api from '../../api/axios'
+import api from '../../api'
 import './notifications-detail.css'
 
 export default function NotificationDetail() {
