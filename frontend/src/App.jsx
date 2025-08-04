@@ -11,9 +11,9 @@ import { useEffect } from 'react';
 
 function App() {
 
-  useEffect(() => {
-    localStorage.setItem("accessToken", "123213");
-  }, []);
+  // useEffect(() => {
+  //   localStorage.setItem("accessToken", "123213");
+  // }, []);
 
   return (
       <Routes>
@@ -47,16 +47,15 @@ function App() {
           <Route
             key={route.path}
             path={route.path}
-            //element={<ProtectedRoute>{route.element}</ProtectedRoute>}
-            element={route.element}
+            element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+
           >
             {route.children &&
               route.children.map((child) => (
                 <Route
                   key={child.path}
                   path={child.path}
-                  //element={<ProtectedRoute>{child.element}</ProtectedRoute>}
-                  element={child.element}
+                  element={<ProtectedRoute>{child.element}</ProtectedRoute>}
                 />
               ))}
           </Route>

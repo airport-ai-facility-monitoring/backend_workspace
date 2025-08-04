@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import NotificationItem from './NotificationItem'
-import api from '../../api' // axios 인스턴스 경로에 따라 조정
+import api from '../../config/api' // axios 인스턴스 경로에 따라 조정
 
 export default function NotificationList() {
   const [items, setItems] = useState([])

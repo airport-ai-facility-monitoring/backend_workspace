@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AiOutlineFileImage, AiOutlineFolderOpen } from 'react-icons/ai'
 import './notifications-write.css'
-import api from '../../api' // axios 인스턴스 import
+import api from '../../config/api' // axios 인스턴스 import
 
 export default function NotificationWrite() {
   const navigate = useNavigate()

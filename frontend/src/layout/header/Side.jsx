@@ -19,7 +19,7 @@ import CommuteIcon from "@mui/icons-material/Commute";
 import DescriptionIcon from "@mui/icons-material/Description";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
-import api from "../../api";
+import api from "../../config/api";
 
 const drawerWidth = 220;
 

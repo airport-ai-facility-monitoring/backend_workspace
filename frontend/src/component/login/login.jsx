@@ -10,8 +10,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
-import api from "../../api";
+import api from "../../config/api";
+
+// reCAPTCHA 사이트 키를 config 파일에서 가져옵니다.
+import RECAPTCHA_SITE_KEY from '../../config/recaptchaConfig';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,20 +26,34 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       setError("");
-      // 로그인 API 호출
+      
+      // 1. reCAPTCHA v3 토큰 생성
+      // 이 코드는 public/index.html에 reCAPTCHA 스크립트가 로드되었다고 가정합니다.
+      if (!window.grecaptcha) {
+        throw new Error('reCAPTCHA 스크립트가 로드되지 않았습니다.');
+      }
+      
+      // 'login' 액션으로 토큰을 생성합니다.
+      // 상수로 정의된 사이트 키를 사용합니다.
+      const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' });
+
+      // 2. 로그인 API 호출 시 캡챠 토큰을 함께 전송
       const response = await api.post(
         "/users/login/jwt",
         {
           employeeId,
           password,
+          recaptchaToken: recaptchaToken, // 캡챠 토큰을 요청 본문에 추가
         },
-
       );
+      
       localStorage.setItem("accessToken", response.data.accessToken);
       navigate("/home"); 
     } catch (err) {
       console.error("로그인 실패:", err);
-      setError("로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.");
+      // 서버에서 반환된 오류 메시지 또는 일반 오류 메시지 표시
+      const errorMessage = err.response?.data?.message || err.message || "로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.";
+      setError(errorMessage);
     }
   };
 
