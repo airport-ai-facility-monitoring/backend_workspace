@@ -1,7 +1,7 @@
 package airport.config.security;
 
 import lombok.RequiredArgsConstructor;
-import lombok.var;
+
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,9 +9,6 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher;
-import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
-
 @Configuration
 @EnableWebFluxSecurity
 @RequiredArgsConstructor
@@ -24,7 +21,6 @@ public class GatewaySecurityConfig {
 
 
         return http
-                // .securityMatcher(matcher)
                 .cors().and()
                 .httpBasic().disable()
                 .csrf().disable()

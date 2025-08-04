@@ -43,6 +43,9 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
 
+recaptcha:
+  secret: ${CAPTCHA_SECRET}
+
 logging:
   level:
     org.hibernate.type: trace
