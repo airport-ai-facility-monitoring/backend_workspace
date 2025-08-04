@@ -30,7 +30,8 @@ public class GatewaySecurityConfig {
                 .csrf().disable()
                 .authorizeExchange(exchanges -> exchanges
                 .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                .pathMatchers("/", "/app/", "/app/**", "/users/signup", "/users/login/jwt", "/path2.svg").permitAll()
+                // 임시 /**
+                .pathMatchers("/**", "/app/", "/app/**", "/users/signup", "/users/login/jwt", "/path2.svg").permitAll()
                 .anyExchange().authenticated()
                 )
                 .formLogin(form -> form

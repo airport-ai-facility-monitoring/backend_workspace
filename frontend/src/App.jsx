@@ -7,9 +7,13 @@ import SignUp from "./component/Signup/index";
 import ProtectedRoute from "./component/login/ProtectedRoute";
 import RedirectIfAuth from "./component/login/RedirectIfAuth";
 import PrivacyConsent from './component/Signup/TermsAgreementPage';
+import { useEffect } from 'react';
 
 function App() {
 
+  useEffect(() => {
+    localStorage.setItem("accessToken", "123213");
+  }, []);
 
   return (
       <Routes>
@@ -36,7 +40,6 @@ function App() {
               <PrivacyConsent />
           }
         />
-        
 
 
         {/* mainRoutes */}
@@ -44,14 +47,16 @@ function App() {
           <Route
             key={route.path}
             path={route.path}
-            element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+            //element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+            element={route.element}
           >
             {route.children &&
               route.children.map((child) => (
                 <Route
                   key={child.path}
                   path={child.path}
-                  element={<ProtectedRoute>{child.element}</ProtectedRoute>}
+                  //element={<ProtectedRoute>{child.element}</ProtectedRoute>}
+                  element={child.element}
                 />
               ))}
           </Route>
