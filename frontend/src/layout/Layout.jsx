@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from "react-router-dom";
 import Navbar from "./header/Navbar";
 import Side from "./header/Side";
+import Footer from './header/Footer';
 import { useState } from "react";
 import Box from "@mui/material/Box";
 
