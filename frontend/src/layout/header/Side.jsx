@@ -9,7 +9,8 @@ import {
   ListItemText,
   Divider,
 } from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom"; // ✅ 추가
+import { useNavigate, useLocation } from "react-router-dom";
+
 import HomeIcon from "@mui/icons-material/Home";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -17,8 +18,10 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import WarningIcon from "@mui/icons-material/Warning";
 import CommuteIcon from "@mui/icons-material/Commute";
 import DescriptionIcon from "@mui/icons-material/Description";
+import StorageIcon from "@mui/icons-material/Storage"; // ✅ 추가
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
+
 import api from "../../api";
 
 const drawerWidth = 220;
@@ -31,20 +34,21 @@ const navItems = [
   { text: "Anomaly", icon: <WarningIcon />, path: "/anomaly" },
   { text: "Facility", icon: <CommuteIcon />, path: "/facility" },
   { text: "Daily Log", icon: <DescriptionIcon />, path: "/dailyLog" },
+
+  // ✅ 새로 추가된 메뉴
+  { text: "Equipments List", icon: <StorageIcon />, path: "/equipmentslist" },
 ];
 
 const Side = ({ open, setOpen }) => {
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ 현재 URL 경로 확인
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
-      // users/logout API 호출 (쿠키 삭제 등 서버 처리)
       localStorage.removeItem("accessToken");
       navigate("/login");
     } catch (error) {
       console.error("로그아웃 실패:", error);
-      // 실패 시 필요한 처리 (알림 등)
     }
   };
 
@@ -71,7 +75,7 @@ const Side = ({ open, setOpen }) => {
 
       <List>
         {navItems.map((item) => {
-          const selected = location.pathname === item.path; // ✅ 현재 경로와 일치하는지 확인
+          const selected = location.pathname === item.path;
           return (
             <ListItem
               button
@@ -87,7 +91,7 @@ const Side = ({ open, setOpen }) => {
             >
               <ListItemIcon
                 sx={{
-                  color: selected ? "#90caf9" : "white", // ✅ 아이콘 색 강조
+                  color: selected ? "#90caf9" : "white",
                   minWidth: 40,
                 }}
               >
@@ -97,7 +101,7 @@ const Side = ({ open, setOpen }) => {
                 primary={item.text}
                 primaryTypographyProps={{
                   fontSize: 13,
-                  fontWeight: selected ? "bold" : "normal", // ✅ 글자 강조
+                  fontWeight: selected ? "bold" : "normal",
                   opacity: selected ? 1 : 0.7,
                 }}
               />

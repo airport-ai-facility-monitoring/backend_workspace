@@ -10,10 +10,10 @@ import PrivacyConsent from './component/Signup/TermsAgreementPage';
 import { useEffect } from 'react';
 
 function App() {
-
-  useEffect(() => {
-    localStorage.setItem("accessToken", "123213");
-  }, []);
+//db안뜰때 로그인 패스하는거 주석처리하면됨
+  // useEffect(() => {
+  //   localStorage.setItem("accessToken", "123213");
+  // }, []);
 
   return (
       <Routes>
