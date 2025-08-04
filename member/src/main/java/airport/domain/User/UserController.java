@@ -115,6 +115,8 @@ public class UserController {
                 errorResponse.put("success", false);
                 errorResponse.put("message", "로봇으로 의심되는 접근입니다. 다시 시도해 주세요.");
                 return ResponseEntity.badRequest().body(errorResponse);
+            }else{
+                System.out.println("인증성공");
             }
             
             // 2. User 객체에 데이터 바인딩

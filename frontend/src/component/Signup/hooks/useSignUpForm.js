@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../config/api";
+import { useToast } from "../ToastContainer";
 
 // reCAPTCHA 사이트 키를 config 파일에서 가져옵니다.
 // 이 파일이 없다면 직접 RECAPTCHA_SITE_KEY 변수를 정의해주세요.
@@ -34,7 +35,7 @@ const useSignUpForm = () => {
   });
 
   const navigate = useNavigate();
-
+  const showToast = useToast();
   useEffect(() => {
     const consent = localStorage.getItem("privacyConsent");
     if (!consent) {
@@ -96,39 +97,37 @@ const useSignUpForm = () => {
 
   const handleSignUp = async () => {
     if (!isFormValid()) {
-      alert("모든 필수 항목을 올바르게 입력해주세요.");
+      showToast("모든 필수 항목을 올바르게 입력해주세요.", "error", 4000);
       return;
     }
 
     try {
-      // 1. reCAPTCHA v3 토큰 생성
       if (!window.grecaptcha) {
-        throw new Error('reCAPTCHA 스크립트가 로드되지 않았습니다.');
+        throw new Error("reCAPTCHA 스크립트가 로드되지 않았습니다.");
       }
-      const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'signup' });
+      const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "signup" });
 
-      // 2. 폼 데이터에 캡챠 토큰 추가
       const { confirmPassword, ...rest } = form;
       const submitData = { ...rest, recaptchaToken };
-      
-      if (submitData.email === '') {
+      if (submitData.email === "") {
         submitData.email = null;
       }
 
-      // 3. 캡챠 토큰을 포함하여 API 호출
       const response = await api.post("/users/signup", submitData);
-
       localStorage.removeItem("privacyConsent");
 
-      // alert("회원가입 성공!"); // alert 대신 다른 UI 사용 권장
-      console.log(response.data);
+      showToast("회원가입 성공!", "info", 3000);
       navigate("/login");
     } catch (error) {
       console.error(error);
       if (error.response) {
-        // alert(`회원가입 실패: ${error.response.data.message || error.response.statusText}`);
+        showToast(
+          `회원가입 실패: ${error.response.data.message || error.response.statusText}`,
+          "error",
+          5000
+        );
       } else {
-        // alert("서버 통신 중 오류가 발생했습니다.");
+        showToast("서버 통신 중 오류가 발생했습니다.", "error", 5000);
       }
     }
   };
