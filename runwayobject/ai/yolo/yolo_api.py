@@ -12,6 +12,7 @@ app = FastAPI()
 origins = [
     "http://localhost:5173",
     "https://glowing-space-fiesta-g4w47xwqjgj525qp-5173.app.github.dev",
+    "https://glowing-space-fiesta-g4w47xwqjgj525qp-8088.app.github.dev"
 ]
 
 # CORS 설정 (React에서 접근 허용)
@@ -58,7 +59,7 @@ def detect_objects(req: FrameRequest):
             "height": y2 - y1,
             "label": label,
             "score": round(score, 2)
-        })
+        }) 
 
     # 3. 이미지 결과 base64로 변환
     _, buffer = cv2.imencode('.jpg', frame)
