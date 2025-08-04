@@ -22,6 +22,10 @@ spring:
           uri: http://localhost:8083
           predicates:
             - Path=/notifications/**
+        - id: notification-websocket
+          uri: ws://localhost:8083
+          predicates:
+            - Path=/notifications/ws/**
         - id: alert
           uri: http://localhost:8084
           predicates:

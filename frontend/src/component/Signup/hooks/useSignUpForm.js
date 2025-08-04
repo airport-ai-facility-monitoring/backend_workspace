@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../../api";
+import api from "../../../config/api";
+import { useToast } from "../ToastContainer";
+
+// reCAPTCHA 사이트 키를 config 파일에서 가져옵니다.
+// 이 파일이 없다면 직접 RECAPTCHA_SITE_KEY 변수를 정의해주세요.
+import RECAPTCHA_SITE_KEY from '../../../config/recaptchaConfig';
 
 const useSignUpForm = () => {
   const [form, setForm] = useState({
@@ -30,11 +35,11 @@ const useSignUpForm = () => {
   });
 
   const navigate = useNavigate();
-
+  const showToast = useToast();
   useEffect(() => {
     const consent = localStorage.getItem("privacyConsent");
     if (!consent) {
-      alert("개인정보 수집·이용 동의가 필요합니다.");
+      // alert("개인정보 수집·이용 동의가 필요합니다."); // alert 대신 다른 UI 사용 권장
       navigate("/login");
     }
   }, [navigate]);
@@ -92,35 +97,37 @@ const useSignUpForm = () => {
 
   const handleSignUp = async () => {
     if (!isFormValid()) {
-      alert("모든 필수 항목을 올바르게 입력해주세요.");
+      showToast("모든 필수 항목을 올바르게 입력해주세요.", "error", 4000);
       return;
     }
 
     try {
-      const { confirmPassword, ...rest } = form;
+      if (!window.grecaptcha) {
+        throw new Error("reCAPTCHA 스크립트가 로드되지 않았습니다.");
+      }
+      const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "signup" });
 
-      const submitData = { ...rest };
-      if (submitData.email === '') {
+      const { confirmPassword, ...rest } = form;
+      const submitData = { ...rest, recaptchaToken };
+      if (submitData.email === "") {
         submitData.email = null;
       }
 
       const response = await api.post("/users/signup", submitData);
-
       localStorage.removeItem("privacyConsent");
 
-      alert("회원가입 성공!");
-      console.log(response.data);
+      showToast("회원가입 성공!", "info", 3000);
       navigate("/login");
     } catch (error) {
       console.error(error);
       if (error.response) {
-        alert(
-          `회원가입 실패: ${
-            error.response.data.message || error.response.statusText
-          }`
+        showToast(
+          `회원가입 실패: ${error.response.data.message || error.response.statusText}`,
+          "error",
+          5000
         );
       } else {
-        alert("서버 통신 중 오류가 발생했습니다.");
+        showToast("서버 통신 중 오류가 발생했습니다.", "error", 5000);
       }
     }
   };

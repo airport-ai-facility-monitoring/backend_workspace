@@ -8,6 +8,8 @@ import lombok.ToString;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -116,8 +118,41 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody Map<String, Object> userData, HttpServletRequest request) {
         try {
+            // 1. reCAPTCHA 토큰 검증
+            String recaptchaToken = (String) userData.get("recaptchaToken");
+            if (!userService.verifyRecaptcha(recaptchaToken, request)) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "로봇으로 의심되는 접근입니다. 다시 시도해 주세요.");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }else{
+                System.out.println("인증성공");
+            }
+            
+            // 2. User 객체에 데이터 바인딩
+            User user = new User();
+            // employeeId는 String으로 들어오므로 Long으로 변환
+            user.setEmployeeId(Long.valueOf((String) userData.get("employeeId")));
+            user.setPassword((String) userData.get("password"));
+            user.setName((String) userData.get("name"));
+            user.setDepartment((String) userData.get("department"));
+            user.setPosition((String) userData.get("position"));
+            user.setPhoneNumber((String) userData.get("phoneNumber"));
+            user.setEmail((String) userData.get("email"));
+            // hireDate는 String으로 들어오므로 Date로 변환
+            try {
+                if (userData.containsKey("hireDate") && userData.get("hireDate") != null) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    java.util.Date hireDate = sdf.parse((String) userData.get("hireDate"));
+                    user.setHireDate(hireDate);
+                }
+            } catch (ParseException e) {
+                // 날짜 형식 오류 처리
+                throw new IllegalArgumentException("입사일자 형식이 올바르지 않습니다. (yyyy-MM-dd)");
+            }
+
             userService.join(user);
 
             Map<String, Object> response = new HashMap<>();
@@ -129,11 +164,21 @@ public class UserController {
             throw new IllegalArgumentException("회원가입 실패: " + e.getMessage(), e);
         }
     }
+
     @PostMapping("/login/jwt")
     @ResponseBody
     public void loginJWT(@RequestBody Map<String, Object> data,
-                        HttpServletResponse response) {
+                        HttpServletResponse response,
+                        HttpServletRequest request) {
         try {
+            // 1. reCAPTCHA 토큰 검증
+            String recaptchaToken = (String) data.get("recaptchaToken");
+            if (!userService.verifyRecaptcha(recaptchaToken, request)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"error\": \"로봇으로 의심되는 접근입니다.\"}");
+                return;
+            }
             // 1. employeeId 가져오기
             Long employeeId = Long.valueOf(String.valueOf(data.get("employeeId")));
 
