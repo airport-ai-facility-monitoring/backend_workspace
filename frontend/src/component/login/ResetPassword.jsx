@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Badge from "@mui/icons-material/Badge";
 import Lock from "@mui/icons-material/Lock";
 import { useNavigate } from "react-router-dom";
 import {
@@ -10,46 +9,50 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import api from "../../config/api";
-import { Link } from "react-router-dom";
-// reCAPTCHA 사이트 키를 config 파일에서 가져옵니다.
-import RECAPTCHA_SITE_KEY from '../../config/recaptchaConfig';
+import api from "../../config/api"; // API 호출 경로 맞게 조정
 
-const Login = () => {
+const ResetPassword = () => {
   const navigate = useNavigate();
 
-  // 폼 상태관리
+  // 기존 상태 유지 + employeeId 추가
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleLogin = async () => {
+  const handleReset = async () => {
+    setError("");
+    setSuccess("");
+
+    if (!employeeId) {
+      setError("사원번호를 입력해주세요.");
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      setError("비밀번호와 확인이 일치하지 않습니다.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("비밀번호는 최소 6자리 이상이어야 합니다.");
+      return;
+    }
+
     try {
-      setError("");
-      if (!window.grecaptcha) {
-        throw new Error('reCAPTCHA 스크립트가 로드되지 않았습니다.');
-      }
+      await api.post("/users/reset-password", { employeeId, password });
 
-      const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' });
-
-      const response = await api.post("/users/login/jwt", {
-        employeeId,
-        password,
-        recaptchaToken,
-      });
-
-      localStorage.setItem("accessToken", response.data.accessToken);
-      navigate("/home");
+      setSuccess("비밀번호가 성공적으로 변경되었습니다.");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (err) {
-      console.error("로그인 실패:", err);
-
-      // 서버에서 반환된 error 키 메시지를 우선 표시
       const errorMessage =
-        err.response?.data?.error ||  // 서버에서 보낸 에러 메시지(예: "{\"error\": \"아이디가 잠겼습니다.\"}")
-        err.response?.data?.message || // 혹시 message로 올 경우
-        err.message ||                 // 네트워크 오류 등 일반 에러 메시지
-        "로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.";
-
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        err.message ||
+        "비밀번호 재설정에 실패했습니다.";
       setError(errorMessage);
     }
   };
@@ -66,8 +69,6 @@ const Login = () => {
         overflow: "hidden",
       }}
     >
-      {/* ...배경과 기타 UI 생략... */}
-
       <Container
         maxWidth="sm"
         sx={{
@@ -80,12 +81,7 @@ const Login = () => {
           height: "100%",
         }}
       >
-        {/* ...로고 생략... */}
-
         <Stack spacing={2} sx={{ width: 302 }}>
-
-
-
           <Typography
             variant="subtitle1"
             align="center"
@@ -96,17 +92,51 @@ const Login = () => {
               mb: 1,
             }}
           >
-            PRINCESS AIRPORTS SERVICE
+            비밀번호 재설정
           </Typography>
 
+          {/* employeeId 입력 필드 추가 */}
           <TextField
             fullWidth
-            placeholder="EMPLOYEE ID NUMBER"
+            placeholder="사원번호"
             variant="outlined"
             value={employeeId}
             onChange={(e) => setEmployeeId(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                color: "white",
+                height: 45,
+                "& fieldset": {
+                  borderColor: "white",
+                  borderRadius: 1,
+                },
+                "&:hover fieldset": {
+                  borderColor: "white",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "white",
+                },
+              },
+              "& .MuiInputBase-input::placeholder": {
+                color: "white",
+                opacity: 1,
+                fontSize: "0.875rem",
+                fontFamily: "Montserrat-Light, Helvetica",
+                fontWeight: 300,
+              },
+            }}
+          />
+
+          {/* 기존 비밀번호 입력 필드 */}
+          <TextField
+            fullWidth
+            placeholder="새 비밀번호"
+            type="password"
+            variant="outlined"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             InputProps={{
-              startAdornment: <Badge sx={{ mr: 1, color: "white" }} />,
+              startAdornment: <Lock sx={{ mr: 1, color: "white" }} />,
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -135,11 +165,11 @@ const Login = () => {
 
           <TextField
             fullWidth
-            placeholder="PASSWORD"
+            placeholder="비밀번호 확인"
             type="password"
             variant="outlined"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
             InputProps={{
               startAdornment: <Lock sx={{ mr: 1, color: "white" }} />,
             }}
@@ -174,31 +204,15 @@ const Login = () => {
             </Typography>
           )}
 
-          <Button
-            variant="contained"
-            fullWidth
-            sx={{
-              bgcolor: "white",
-              color: "#2148c0",
-              height: 45,
-              borderRadius: 1,
-              boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.3)",
-              "&:hover": {
-                bgcolor: "#f5f5f5",
-              },
-              fontFamily: "Montserrat-SemiBold, Helvetica",
-              fontWeight: 600,
-              fontSize: "1rem",
-            }}
-            onClick={handleLogin} // 로그인 핸들러 연결
-          >
-            LOGIN
-          </Button>
+          {success && (
+            <Typography color="success.main" variant="body2" align="center">
+              {success}
+            </Typography>
+          )}
 
           <Button
             variant="contained"
             fullWidth
-            onClick={() => navigate("/signup/privacy-consent")}
             sx={{
               bgcolor: "white",
               color: "#2148c0",
@@ -212,36 +226,14 @@ const Login = () => {
               fontWeight: 600,
               fontSize: "1rem",
             }}
+            onClick={handleReset}
           >
-            SIGN UP
+            비밀번호 재설정
           </Button>
-                              <Typography
-            variant="body2"
-            align="right"
-            sx={{
-              color: "white",
-              cursor: "pointer",
-              textDecoration: "underline",
-              fontFamily: "Montserrat-Light, Helvetica",
-              fontWeight: 300,
-              fontSize: "0.875rem",
-              mt: 1,
-              "&:hover": {
-                color: "#a8c1ff",
-              },
-            }}
-          >
-            <Link
-              to="/reset-password"
-              style={{ color: "inherit", textDecoration: "none" }}
-            >
-              비밀번호 재설정
-            </Link>
-          </Typography>
         </Stack>
       </Container>
     </Box>
   );
 };
 
-export default Login;
+export default ResetPassword;

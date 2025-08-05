@@ -7,6 +7,8 @@ import airport.domain.RequestRejected;
 import airport.domain.SignupRequested;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
@@ -44,8 +46,10 @@ public class User {
 
     private String email;
 
-
     private String status;
+
+    private Instant passwordChangedAt;
+    private Integer failedLoginAttempts = 0;
 
     @PostPersist
     public void onPostPersist() {

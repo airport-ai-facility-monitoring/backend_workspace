@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../../api"; // api.js import
+import api from "../../config/api"; // api.js import
 import CommuteIcon from "@mui/icons-material/Commute";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DescriptionIcon from "@mui/icons-material/Description";
