@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import api from "../../config/api"; // api.js import
 import CommuteIcon from "@mui/icons-material/Commute";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -10,6 +9,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WarningIcon from "@mui/icons-material/Warning";
+import api from "../../config/api"; // api import 추가
 import {
   AppBar,
   Avatar,
@@ -33,27 +33,53 @@ import {
   Typography,
 } from "@mui/material";
 
-// ... (기존 import 문 유지)
-
 const Alert = () => {
   const [alerts, setAlerts] = useState([]);
-  const pollingInterval = 5000; // 5초마다 폴링
 
   useEffect(() => {
-    const fetchAlerts = async () => {
+    // Fetch initial alerts (latest 10)
+    const fetchInitialAlerts = async () => {
       try {
-        const response = await api.get("/alerts");
-        setAlerts(response.data);
+        const response = await api.get('/alerts');
+        // Take only the latest 30 alerts
+        setAlerts(response.data._embedded.alerts.slice(0, 30));
       } catch (error) {
-        console.error("Error fetching alerts:", error);
+        console.error('Error fetching initial alerts:', error);
       }
     };
 
-    fetchAlerts(); // 컴포넌트 마운트 시 즉시 호출
+    fetchInitialAlerts();
 
-    const intervalId = setInterval(fetchAlerts, pollingInterval); // 주기적으로 호출
+    // Establish Server-Sent Events (SSE) connection
+    const eventSource = new EventSource('http://localhost:8088/alerts/stream'); // Adjust port if your gateway is different
 
-    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 정리
+    eventSource.onmessage = (event) => {
+      // Handle generic messages (e.g., initial data if sent as generic message)
+      console.log('SSE Message:', event.data);
+    };
+
+    eventSource.addEventListener('newAlert', (event) => {
+      const newAlert = JSON.parse(event.data);
+      setAlerts((prevAlerts) => {
+        const updatedAlerts = [newAlert, ...prevAlerts];
+        return updatedAlerts.slice(0, 30); // Keep only the latest 30 alerts
+      });
+    });
+
+    eventSource.onerror = (error) => {
+      console.error('SSE Error:', error);
+      eventSource.close();
+    };
+
+    eventSource.onopen = () => {
+      console.log('SSE connection opened.');
+    };
+
+    // Clean up on component unmount
+    return () => {
+      eventSource.close();
+      console.log('SSE connection closed.');
+    };
   }, []);
 
   return (
@@ -74,12 +100,12 @@ const Alert = () => {
           >
             Welcome
           </Typography>
-          <Box
+          {/* <Box
             component="img"
             src="/path-2.svg"
             alt="Path"
             sx={{ width: 8, height: 8, mx: 1 }}
-          />
+          /> */}
           <Typography
             variant="body2"
             sx={{ fontSize: 11, fontWeight: 700, color: "#1348fc" }}

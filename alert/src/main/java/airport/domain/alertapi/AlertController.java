@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import org.springframework.data.domain.Sort; // 올바른 위치로 이동
 
 @RestController
 @RequestMapping("/alerts")
@@ -24,11 +25,6 @@ public class AlertController {
 
     // SSE Emitter를 관리하는 리스트
     private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
-
-    @GetMapping
-    public List<Alert> getAllAlerts() {
-        return StreamSupport.stream(alertRepository.findAll().spliterator(), false).collect(Collectors.toList());
-    }
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamAlerts() {
