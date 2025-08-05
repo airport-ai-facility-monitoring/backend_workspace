@@ -22,7 +22,7 @@ import StorageIcon from "@mui/icons-material/Storage"; // ✅ 추가
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-import api from "../../api";
+// import api from "../../api";
 import api from "../../config/api";
 
 const drawerWidth = 220;

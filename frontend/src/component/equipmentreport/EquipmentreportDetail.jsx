@@ -71,7 +71,7 @@ function ReportDetail() {
 
         {/* 하단 버튼 */}
         <footer style={styles.footer}>
-          <button style={{ ...styles.button, ...styles.primaryButton }}>등록</button>
+          <button style={{ ...styles.button, ...styles.primaryButton }}>확인</button>
           <button style={{ ...styles.button, ...styles.secondaryButton }}>취소</button>
         </footer>
       </div>

@@ -55,7 +55,7 @@ public class Equipment {
 
     private Integer avgLife;
 
-    //이거 지금 넣는거 맞나
+    //유지보수 비용
     private Integer maintenanceCost;
 
     // 조명 장비 상세

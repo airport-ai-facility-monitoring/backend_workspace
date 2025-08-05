@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://obscure-guacamole-6xqq95gq9g5f4g65-8088.app.github.dev/",
+  baseURL: "https://vigilant-space-goggles-v66jvvr4xwpvcwv4v-8088.app.github.dev/",
   headers: {
     "Content-Type": "application/json",
   },

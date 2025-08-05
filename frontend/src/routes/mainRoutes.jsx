@@ -17,6 +17,7 @@ import EquipmentsRegister from "../component/equipmentsregister/EquipmentsRegist
 import EquipmentsList from "../component/equipmentslist/EquipmentsList";
 import Equipmentreport from "../component/equipmentreport/Equipmentreport";
 import EquipmentreportDetail from "../component/equipmentreport/EquipmentreportDetail";
+import EquipmentreportRegist from "../component/equipmentreport/EquipmentreportRegist";
 
 
 const mainRoutes = [
@@ -38,9 +39,9 @@ const mainRoutes = [
       { path: "facility", element: <Facility /> },
       { path: "equipmentsregister",element: <EquipmentsRegister />},
       { path: "equipmentslist",element: <EquipmentsList />},
-
       { path: "equipmentreport", element: <Equipmentreport /> },
       { path: "equipmentreport/:id", element: <EquipmentreportDetail /> },
+      { path: "equipmentreport/regist", element: <EquipmentreportRegist /> },
     ],
   },
 ];
