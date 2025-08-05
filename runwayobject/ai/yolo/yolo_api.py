@@ -6,8 +6,12 @@ import cv2
 import base64
 import numpy as np
 import os
+import time
 
 app = FastAPI()
+
+# 각 (object_type, camera_id) 조합별 마지막 전송 시간 저장
+last_sent_times = {} # {(object_type, camera_id): timestamp}
 
 origins = [
     "http://localhost:5173",
@@ -94,18 +98,26 @@ def detect_objects(req: FrameRequest):
 
         # 규칙 1: 이상 물체 (라벨 5,6,7,8,9,11)
         if label_id in [5, 6, 7, 8, 9, 11]:
-            event = {
-                "eventType": "ForeignObjectDetected",
-                "cameraId": req.cameraId,
-                "objectType": label_name,
-                "objectCount": count
-            }
-            print(f"KAFKA SEND: {event}")
-            producer.send('airport', event)
+            event_key = (label_name, req.cameraId)
+            current_time = time.time()
+
+            if event_key not in last_sent_times or (current_time - last_sent_times[event_key]) >= 30:
+                event = {
+                    "eventType": "ForeignObjectDetected",
+                    "cameraId": req.cameraId,
+                    "objectType": label_name,
+                    "objectCount": count
+                }
+                print(f"KAFKA SEND: {event}")
+                producer.send('airport', event)
+                last_sent_times[event_key] = current_time
 
         # 규칙 2: 작업자 수 초과 (라벨 10)
         elif label_id == 10:
-            if count > WORKER_LIMIT:
+            event_key = (label_name, req.cameraId)
+            current_time = time.time()
+
+            if count > WORKER_LIMIT and (event_key not in last_sent_times or (current_time - last_sent_times[event_key]) >= 30):
                 event = {
                     "eventType": "WorkerCountExceeded",
                     "cameraId": req.cameraId,
@@ -114,10 +126,14 @@ def detect_objects(req: FrameRequest):
                 }
                 print(f"KAFKA SEND: {event}")
                 producer.send('airport', event)
+                last_sent_times[event_key] = current_time
 
         # 규칙 3: 허용되지 않은 작업 시간 (라벨 13-22)
         elif 13 <= label_id <= 22:
-            if not is_working_hour():
+            event_key = (label_name, req.cameraId)
+            current_time = time.time()
+
+            if not is_working_hour() and (event_key not in last_sent_times or (current_time - last_sent_times[event_key]) >= 30):
                 event = {
                     "eventType": "WorkNotInProgress",
                     "cameraId": req.cameraId,
@@ -126,6 +142,7 @@ def detect_objects(req: FrameRequest):
                 }
                 print(f"KAFKA SEND: {event}")
                 producer.send('airport', event)
+                last_sent_times[event_key] = current_time
 
     # 4. 이미지 결과 base64로 변환
     _, buffer = cv2.imencode('.jpg', frame)
