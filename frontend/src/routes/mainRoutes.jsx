@@ -13,6 +13,8 @@ import Anomaly from "../component/anomaly/Anomaly";
 import Anomalyreport from "../component/anomalyreport/Anomalyreport";
 import AnomalyReportEdit from "../component/anomalyreport/AnomalyreportEdit";
 import Facility from "../component/facility/Facility";
+import EquipmentsRegister from "../component/equipmentsregister/EquipmentsRegister";
+import EquipmentsList from "../component/equipmentslist/EquipmentsList";
 import Equipmentreport from "../component/equipmentreport/Equipmentreport";
 import EquipmentreportDetail from "../component/equipmentreport/EquipmentreportDetail";
 
@@ -34,6 +36,9 @@ const mainRoutes = [
       { path: "anomalyreport", element: <Anomalyreport /> },
       { path: "anomalyreport/edit", element: <AnomalyReportEdit /> },
       { path: "facility", element: <Facility /> },
+      { path: "equipmentsregister",element: <EquipmentsRegister />},
+      { path: "equipmentslist",element: <EquipmentsList />},
+
       { path: "equipmentreport", element: <Equipmentreport /> },
       { path: "equipmentreport/:id", element: <EquipmentreportDetail /> },
     ],
