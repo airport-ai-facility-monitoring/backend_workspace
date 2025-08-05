@@ -26,7 +26,7 @@ public class RunwayCrackReportController {
     @Autowired
     AnalysisService analysisService;
 
-    @PostMapping("/analyze")
+    @PostMapping("/analyze/{id}")
     public ResponseEntity<Void> analyze(@RequestBody String body) throws JsonProcessingException {
         analysisService.analyzeAndSave(body);
         return ResponseEntity.ok().build();

@@ -29,6 +29,13 @@ public class RunwayCrack {
 
     private Integer size;
 
+    @Column(length = 4000)
+    private String damageDetails;
+
+    private Boolean reportState;
+
+    private LocalDate detectedDate;
+
     @PostPersist
     public void onPostPersist() {
         DamageDetected damageDetected = new DamageDetected(this);
