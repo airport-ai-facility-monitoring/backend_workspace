@@ -33,7 +33,7 @@ const DashBoardMg = () => {
     // Fetch initial alerts (latest 10)
     const fetchInitialAlerts = async () => {
       try {
-        const response = await api.get("/alerts");
+        const response = await api.get("/alerts?sort=alertDate,desc");
         // Take only the latest 10 alerts for dashboard
         setAlerts(response.data._embedded.alerts.slice(0, 10));
       } catch (error) {

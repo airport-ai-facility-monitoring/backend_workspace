@@ -40,7 +40,7 @@ const Alert = () => {
     // Fetch initial alerts (latest 10)
     const fetchInitialAlerts = async () => {
       try {
-        const response = await api.get('/alerts');
+        const response = await api.get('/alerts?sort=alertDate,desc');
         // Take only the latest 30 alerts
         setAlerts(response.data._embedded.alerts.slice(0, 30));
       } catch (error) {
