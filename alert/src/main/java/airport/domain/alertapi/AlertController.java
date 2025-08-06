@@ -26,25 +26,7 @@ public class AlertController {
     // SSE Emitter를 관리하는 리스트
     private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
-    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter streamAlerts() {
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE); // 타임아웃 무한대 설정
-        this.emitters.add(emitter);
-
-        // 연결이 끊어졌을 때 emitter 제거
-        emitter.onCompletion(() -> this.emitters.remove(emitter));
-        emitter.onTimeout(() -> this.emitters.remove(emitter));
-        emitter.onError((e) -> this.emitters.remove(emitter));
-
-        // 초기 데이터 전송 (선택 사항)
-        // try {
-        //     emitter.send(SseEmitter.event().name("initial").data(alertRepository.findAll()));
-        // } catch (IOException e) {
-        //     e.printStackTrace();
-        // }
-
-        return emitter;
-    }
+    
 
     // 새로운 알림이 발생했을 때 호출될 메소드
     public void sendNewAlert(Alert alert) {

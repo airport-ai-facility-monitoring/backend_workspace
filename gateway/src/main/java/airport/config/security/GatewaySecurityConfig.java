@@ -27,7 +27,7 @@ public class GatewaySecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                 .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // 임시 /**
-                .pathMatchers("/", "/app/", "/app/**", "/users/signup", "/users/login/jwt", "/path2.svg").permitAll()
+                .pathMatchers("/", "/app/", "/app/**", "/users/signup", "/users/login/jwt", "/path2.svg", "/alerts/**", "/cctvs/**").permitAll()
                 .anyExchange().authenticated()
                 )
                 .formLogin(form -> form
