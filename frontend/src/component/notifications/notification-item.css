@@ -1,0 +1,63 @@
+.noti-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.noti-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.noti-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.noti-badge {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: bold;
+  color: white;
+  background-color: #2f80ed;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-right: 10px;
+}
+
+.noti-order {
+  font-size: 14px;
+  font-weight: bold;
+  color: #2f80ed;
+  margin-right: 10px;
+}
+
+.noti-time {
+  font-size: 14px;
+  color: #7d7d7d;
+}
+
+.noti-middle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.noti-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
+}
+
+.noti-bottom {
+  font-size: 13px;
+  color: #7d7d7d;
+}

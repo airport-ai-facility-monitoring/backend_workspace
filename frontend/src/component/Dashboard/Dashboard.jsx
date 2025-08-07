@@ -15,7 +15,17 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  Button,
 } from "@mui/material";
+
+const runwayLabels = [
+  { id: 1, name: "제1,2 활주로", top: "24.1%", left: "29.2%" },
+  { id: 2, name: "자유무역지역(화물터미널)", top: "11.3%", left: "38.5%" },
+  { id: 3, name: "제1 여객터미널", top: "11%", left: "56.7%" },
+  { id: 4, name: "제2 여객터미널", top: "43%", left: "55.2%" },
+  { id: 5, name: "탑승동", top: "26.7%", left: "62.8%" },
+  { id: 6, name: "제3·4 활주로", top: "32.5%", left: "80.5%" },
+];
 
 const DashBoardMg = () => {
   const [alerts, setAlerts] = useState([]);
@@ -58,17 +68,20 @@ const DashBoardMg = () => {
         {/* 메인 콘텐츠 */}
         <Box sx={{ px: 2 }}>
           {/* 상단 */}
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box sx={{ display: "flex", gap: 2 ,mb :4}}>
             <Paper
               sx={{
+                position : "relative",
                 height: 500,
                 flex: 1,
                 p: 2,
+                overflow : "hidden",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 bgcolor: "#e0e7ff",
               }}
+              elevation={1}
             >
               <Box
                 component="img"
@@ -78,8 +91,37 @@ const DashBoardMg = () => {
                   maxHeight: "100%",
                   maxWidth: "100%",
                   objectFit: "cover",
+                  display :"block",
                 }}
               />
+              {runwayLabels.map(({ id, name, top, left }) => (
+                <Button
+                  key={id}
+                  variant="text"
+                  color="primary"
+                  size="small"
+                  onClick={() => navigate(`/dashdetail/${id}`)}
+                  sx={{
+                    position: "absolute",
+                    top,
+                    left,
+                    transform: "translate(-50%, -50%)",
+                    backgroundColor: "#fff",    // 흰 배경
+                    border: "2px solid #FFD700",// 노랑 테두리
+                    color: "#000",              // 검정 글씨
+                    p: "2px 6px",
+                    paddingY: "7px",
+                    paddingX: "16px", 
+                    textTransform: "none",
+                    padding :"4px 8px",
+                    fontSize: "0.75rem",
+                    lineHeight: 1,
+                    zIndex:2,
+                  }}
+                >
+                  {name}
+                </Button>
+              ))}
             </Paper>
 
             <Paper
