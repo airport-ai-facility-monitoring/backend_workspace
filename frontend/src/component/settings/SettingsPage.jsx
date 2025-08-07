@@ -1,7 +1,5 @@
 // src/component/settings/SettingsPage.jsx
 import React, { useState, useEffect } from 'react'
-// import api from '../../api';
-import axios from 'axios';
 import api from '../../config/api';
 
 const SettingsPage = () => {

@@ -3,7 +3,9 @@ package airport.domain.runway;
 import airport.domain.*;
 import airport.domain.report.ai.AnalysisService;
 
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-// @RequestMapping(value="/runwayCracks")
+@RequestMapping(value="/runwaycracks")
 @Transactional
 public class RunwayCrackController {
 
@@ -27,18 +29,38 @@ public class RunwayCrackController {
     @Autowired
     AnalysisService analysisService;
 
-    // 1. 탐지된 모델에서 값 받아올 api
-    // @PostMapping("/runwaycrack")
-    // public ResponseEntity<Map<String, Object>> runwayCrackDetect(@RequestBody Map<String, Object> req) {
-       
-    //     try {
-            
-    //     } catch (Exception e) {
-    //         Map<String, Object> error = new HashMap<>();
-    //         error.put("error", "요청 처리 중 오류 발생");
-    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error); // 400 Bad Request
-    //     }
-    // }
+    @GetMapping
+    public List<RunwayCrack> getAllCracks() {
+        return runwayCrackRepository.findAll();
+    }
+    //1. 탐지된 모델에서 값 받아올 api
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> runwayCrackDetect(@RequestBody Map<String, Object> req) {
+
+        try {
+            RunwayCrack crack = new RunwayCrack();
+
+            crack.setImageUrl((String) req.get("imageUrl"));
+            crack.setCctvId(Long.valueOf(req.get("cctvId").toString()));
+            crack.setSize(Integer.valueOf(req.get("size").toString()));
+            crack.setDamageDetails((String) req.get("damageDetails"));
+            crack.setReportState(false); // reportState 기본값 false
+            crack.setDetectedDate(LocalDate.now()); // 현재 날짜
+
+            runwayCrackRepository.save(crack);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Runway crack detected successfully");
+            response.put("rcId", crack.getRcId());
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "요청 처리 중 오류 발생: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
 
     @PostMapping("/report")
     public ResponseEntity<Map<String, Object>> report(@RequestBody Map<String, Object> req) {
