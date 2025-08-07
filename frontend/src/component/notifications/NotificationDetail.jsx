@@ -6,32 +6,8 @@ import './notifications-detail.css'
 export default function NotificationDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-
   const [notification, setNotification] = useState(null)
   const [loading, setLoading] = useState(true)
-
-  // 마스킹 함수
-  const maskWriterId = (id) => {
-    if (!id || id.length < 3) return id
-    return id[0] + '*'.repeat(id.length - 2) + id.slice(-1)
-  }
-
-  const formatDateTime = (isoDate) => {
-    if (!isoDate) return ''
-    const date = new Date(isoDate)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    const hours = String(date.getHours()).padStart(2, '0')
-    const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${year}-${month}-${day} ${hours}:${minutes}`
-  }
-
-  const extractFileName = (url) => {
-    if (!url) return ''
-    const parts = url.split('/')
-    return parts[parts.length - 1]
-  }
 
   useEffect(() => {
     api.get(`/notifications/${id}`)
@@ -44,6 +20,11 @@ export default function NotificationDetail() {
       })
       .finally(() => setLoading(false))
   }, [id])
+
+  const maskWriterId = (id) => {
+    if (!id || id.length < 3) return id
+    return id[0] + '*'.repeat(id.length - 2) + id.slice(-1)
+  }
 
   if (loading) return <div className="detail-wrapper">로딩 중...</div>
   if (!notification) return <div className="detail-wrapper">데이터가 없습니다.</div>
@@ -59,23 +40,22 @@ export default function NotificationDetail() {
       </div>
 
       <div className="detail-content">
-        <h2 className="detail-item-title">{notification.title}</h2>
-
-        {/* 작성일 및 마스킹된 작성자 표시 */}
+        <h2 className="detail-item-title">{notification.title || '제목 없음'}</h2>
         <div className="detail-datetime">
-          {formatDateTime(notification.writeDate)} / 작성자: {maskWriterId(notification.writerId?.toString())}
+          {notification.writeDate?.replace('T', ' ') ?? '작성일 정보 없음'} / 작성자: {maskWriterId(notification.writerId?.toString())}
         </div>
-
-        {/* 본문 내용 */}
         <pre className="detail-body">{notification.contents?.trim()}</pre>
 
-        {/* 파일 링크 */}
         {notification.fileUrl && (
           <div className="detail-file">
-            <span role="img" aria-label="file">📎</span>{' '}
-            첨부파일:&nbsp;
-            <a href={notification.fileUrl} download target="_blank" rel="noopener noreferrer">
-              {extractFileName(notification.fileUrl)}
+            <span role="img" aria-label="파일">📎</span> 첨부파일:&nbsp;
+            <a
+              href={notification.fileUrl}
+              download={notification.originalFilename} // 클릭 시 원본 파일명으로 다운로드
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {notification.originalFilename}
             </a>
           </div>
         )}
