@@ -1,4 +1,3 @@
-// src/components/notifications/NotificationsPage.jsx
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import './notifications.css'
@@ -11,9 +10,10 @@ export default function NotificationsPage() {
     <div className="notifications-container">
       {/* 헤더 */}
       <div className="notifications-header">
-        <h1>Notifications</h1>
+        <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>
+          Notifications
+        </h1>
         <div className="header-actions">
-          {/* 검색창 */}
           <input
             type="text"
             className="search-input"
@@ -22,8 +22,6 @@ export default function NotificationsPage() {
               /* TODO: 검색 로직 */
             }}
           />
-
-          {/* 새 공지 버튼 (MUI 아이콘 제거) */}
           <button
             className="btn-new"
             onClick={() => navigate('/notifications/new')}
@@ -33,11 +31,10 @@ export default function NotificationsPage() {
         </div>
       </div>
 
-      {/* 본문: 공지 리스트 */}
-      <div className="notifications-content">
+      {/* 리스트만 가운데로 고정 */}
+      <div className="notification-page-content">
         <NotificationList />
       </div>
     </div>
   )
 }
-

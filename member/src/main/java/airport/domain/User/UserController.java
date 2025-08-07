@@ -123,7 +123,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<Map<String, Object>> registerUser(@RequestBody Map<String, Object> userData, HttpServletRequest request) {
         try {
-            // // 1. reCAPTCHA 토큰 검증
+            // 1. reCAPTCHA 토큰 검증
             // String recaptchaToken = (String) userData.get("recaptchaToken");
             // if (!userService.verifyRecaptcha(recaptchaToken, request)) {
             //     Map<String, Object> errorResponse = new HashMap<>();

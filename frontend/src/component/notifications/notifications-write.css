@@ -1,132 +1,105 @@
-/* src/component/notifications/notifications-write.css */
-
 .write-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: #f0f4fb;
-  padding: 2rem;
-  box-sizing: border-box;
+  max-width: 1000px;
+  margin: 40px auto;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .write-header {
-  font-size: 1.75rem;
-  margin-bottom: 1.5rem;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 30px;
 }
 
-.write-form {
-  background: #fff;
-  border-radius: 12px;
-  padding: 2rem;
+.write-form .form-row {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  flex: 1;
-  box-sizing: border-box;
-}
-
-.form-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.form-row label {
-  width: 80px;
-  font-weight: 500;
-}
-
-.form-row input[type="text"] {
-  flex: 1;
-  padding: 0.5rem 1rem;
-  border: 1px solid #dfe7ed;
-  border-radius: 6px;
-  font-size: 0.95rem;
-}
-
-.body-row {
   align-items: flex-start;
+  margin-bottom: 20px;
 }
 
-.body-row textarea {
-  flex: 1;
-  min-height: 200px;
-  padding: 1rem;
-  border: 1px solid #dfe7ed;
-  border-radius: 12px;
-  font-size: 0.95rem;
+.write-form .form-row label {
+  width: 100px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.write-form input[type="text"],
+.write-form textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.write-form textarea {
+  min-height: 150px;
   resize: vertical;
 }
 
-.important-switch {
+.title-row .title-content {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-left: auto;
+  gap: 20px;
+  width: 100%;
 }
 
-.important-switch input[type="checkbox"] {
-  width: 1.2em;
-  height: 1.2em;
-  accent-color: #4e73df;
-}
-
-.file-row {
-  align-items: center;
-}
-
-.file-buttons {
+.important-checkbox {
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
-.file-btn {
-  background: #fff;
-  border: 1px solid #dfe7ed;
-  border-radius: 999px;
-  padding: 0.75rem;
+.file-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-delete {
+  background-color: #f44336;
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 13px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .form-actions {
-  margin-top: auto;
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
-}
-
-.btn-submit,
-.btn-cancel {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  cursor: pointer;
+  gap: 10px;
+  margin-top: 30px;
 }
 
 .btn-submit {
-  background: #333;
-  color: #fff;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .btn-cancel {
-  background: #e0e0e0;
-  color: #666;
-}
-
-.btn-back {
-  font-size: 1rem;
-  color: #1e40af; /* 파란색 */
-  margin-bottom: 1rem;
-  margin-left: 1rem; /* 왼쪽 살짝 여백 */
+  background-color: #e5e5e5;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
   cursor: pointer;
-  display: inline-block;
-  text-decoration: none;
-  font-weight: 500;
-}
-.btn-back:hover {
-  text-decoration: underline;
 }

@@ -51,7 +51,8 @@ const handleSubmit = async (e) => {
     const formData = new FormData();
     formData.append('writerId', authorId);
     formData.append('title', title);
-    formData.append('contents', (important ? '[중요] ' : '') + body);
+    //formData.append('contents', (important ? '[중요] ' : '') + body);
+    formData.append('contents', body);
     formData.append('important', important ? 'true' : 'false');
 
     if (file) {
@@ -80,40 +81,50 @@ const handleSubmit = async (e) => {
     setFile(e.target.files[0])
   }
 
+  const handleFileRemove = () => {
+  setFile(null);
+  };
+
   return (
     <div className="write-wrapper">
       <div className="back-link" onClick={() => navigate(-1)}>
         <span style={{ marginRight: '6px' }}>←</span> 뒤로가기
       </div>
+
       <h1 className="write-header">Notifications Write</h1>
+
       <form className="write-form" onSubmit={handleSubmit}>
+        
+        {/* 작성자 */}
         <div className="form-row">
           <label>작성자</label>
-          <input
-            type="text"
-            value={maskedAuthor}
-            readOnly
-          />
+          <input type="text" value={maskedAuthor} readOnly />
         </div>
-        <div className="form-row">
+
+        {/* 제목 + 중요체크 */}
+        <div className="form-row title-row">
           <label>제목</label>
-          <input
-            type="text"
-            placeholder="제목을 입력해 주세요."
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            required
-          />
-          <div className="important-switch">
-            <span>중요 공지 사항으로 등록</span>
+          <div className="title-content">
             <input
-              type="checkbox"
-              checked={important}
-              onChange={e => setImportant(e.target.checked)}
+              type="text"
+              placeholder="제목을 입력해 주세요."
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              required
             />
+            <label className="important-checkbox">
+              <input
+                type="checkbox"
+                checked={important}
+                onChange={e => setImportant(e.target.checked)}
+              />
+              <span>중요</span>
+            </label>
           </div>
         </div>
-        <div className="form-row body-row">
+
+        {/* 내용 */}
+        <div className="form-row">
           <label>내용</label>
           <textarea
             placeholder="내용을 입력해 주세요."
@@ -122,21 +133,27 @@ const handleSubmit = async (e) => {
             required
           />
         </div>
-        <div className="form-row file-row">
+
+        {/* 첨부파일 */}
+        <div className="form-row">
           <label>첨부 파일</label>
-          <input
-            type="file"
-            onChange={handleFileChange}
-          />
-          {file && <p>선택된 파일: {file.name}</p>}
+          <div className="file-box">
+            <input type="file" onChange={handleFileChange} />
+            {file && (
+              <div className="file-info">
+                <span>선택된 파일: {file.name}</span>
+                <button type="button" className="btn-delete" onClick={handleFileRemove}>삭제</button>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* 버튼 */}
         <div className="form-actions">
           <button type="submit" className="btn-submit">등록</button>
-          <button type="button" className="btn-cancel" onClick={() => navigate(-1)}>
-            취소
-          </button>
+          <button type="button" className="btn-cancel" onClick={() => navigate(-1)}>취소</button>
         </div>
       </form>
     </div>
-  )
+  );
 }
