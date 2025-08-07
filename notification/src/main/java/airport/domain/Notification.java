@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import lombok.Data;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 // 시간
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -36,7 +38,7 @@ public class Notification {
     private String originalFilename;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-    private LocalDateTime writeDate;
+    private ZonedDateTime writeDate;
 
     @Column(nullable = false)
     private boolean important;
@@ -64,7 +66,9 @@ public class Notification {
         notification.setFileUrl(fileUrl);
         notification.setOriginalFilename(originalFilename);
         notification.setImportant(command.isImportant());
-        notification.setWriteDate(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime koreanTime = now.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        notification.setWriteDate(koreanTime);
 
         return repository().save(notification); // 저장 후 @PostPersist에서 이벤트 자동 발생
     }
