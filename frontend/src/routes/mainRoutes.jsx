@@ -18,6 +18,7 @@ import EquipmentsList from "../component/equipmentslist/EquipmentsList";
 import Equipmentreport from "../component/equipmentreport/Equipmentreport";
 import EquipmentreportDetail from "../component/equipmentreport/EquipmentreportDetail";
 import EquipmentreportRegist from "../component/equipmentreport/EquipmentreportRegist";
+import NotificationEdit from '../component/notifications/NotificationEdit'
 
 
 const mainRoutes = [
@@ -42,6 +43,7 @@ const mainRoutes = [
       { path: "equipmentreport", element: <Equipmentreport /> },
       { path: "equipmentreport/:id", element: <EquipmentreportDetail /> },
       { path: "equipmentreport/regist", element: <EquipmentreportRegist /> },
+      { path: "notifications/edit/:id", element: <NotificationEdit />},
     ],
   },
 ];

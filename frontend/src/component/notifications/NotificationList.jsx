@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import NotificationItem from './NotificationItem'
 import api from '../../config/api'
+import './notification-list.css'
 
 export default function NotificationList() {
   const [importantItems, setImportantItems] = useState([])
