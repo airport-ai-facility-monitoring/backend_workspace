@@ -117,7 +117,7 @@ const EquipmentsList = () => {
       <Box display="flex" justifyContent="flex-end" mt={3}>
         <Button
           variant="contained"
-          onClick={() => navigate("/equipmentsregister")} // ✅ 클릭 시 페이지 이동
+          onClick={() => navigate("/equipment/regist")} // ✅ 클릭 시 페이지 이동
         >
           신규장비등록
         </Button>
