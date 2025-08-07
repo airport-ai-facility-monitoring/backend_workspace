@@ -9,10 +9,6 @@ import Alert from "../component/alert/Alert";
 import Dashboard from "../component/Dashboard/Dashboard";
 import DashDetail from "../component/Dashboard/DashDetail";
 import SettingsPage from "../component/settings/SettingsPage";
-import Anomaly from "../component/anomaly/Anomaly";
-import Anomalyreport from "../component/anomalyreport/Anomalyreport";
-import AnomalyReportEdit from "../component/anomalyreport/AnomalyreportEdit";
-import Facility from "../component/facility/Facility";
 import EquipmentsRegister from "../component/equipmentsregister/EquipmentsRegister";
 import EquipmentsList from "../component/equipmentslist/EquipmentsList";
 import Equipmentreport from "../component/equipmentreport/Equipmentreport";
@@ -35,17 +31,13 @@ const mainRoutes = [
       { path: "alert", element: <Alert /> },
       { path: "dash", element: <Dashboard /> },
       { path: "settings", element: <SettingsPage /> },
-      { path: "anomaly", element: <Anomaly /> },
       { path: "dashdetail/:id", element: <DashDetail /> },
-      { path: "anomalyreport", element: <Anomalyreport /> },
-      { path: "anomalyreport/edit", element: <AnomalyReportEdit /> },
-      { path: "facility", element: <Facility /> },
       { path: "equipmentsregister",element: <EquipmentsRegister />},
-      { path: "equipmentslist",element: <EquipmentsList />},
+      { path: "equipment",element: <EquipmentsList />},
       { path: "/report/:rcId", element: <Crackreport /> },
-      { path: "equipmentreport", element: <Equipmentreport /> },
-      { path: "equipmentreport/:id", element: <EquipmentreportDetail /> },
-      { path: "equipmentreport/regist", element: <EquipmentreportRegist /> },
+      { path: "equipment/report", element: <Equipmentreport /> },
+      { path: "equipment/report/:id", element: <EquipmentreportDetail /> },
+      { path: "equipment/report/regist", element: <EquipmentreportRegist /> },
     ],
   },
 ];

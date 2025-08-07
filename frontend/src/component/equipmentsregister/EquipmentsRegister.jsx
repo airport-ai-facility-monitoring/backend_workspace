@@ -1,5 +1,3 @@
-// EquipmentsRegister.jsx
-
 import React, { useState } from "react";
 import { Box, TextField, Button, Typography, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +23,7 @@ const EquipmentsRegister = () => {
   // TODO: 백엔드 연동 필요
   const handleSubmit = () => {
     console.log("장비 등록 요청:", form);
-    navigate("/equipmentslist"); // 등록 완료 후 장비 리스트로 이동
+    navigate("/equipment"); // 등록 완료 후 장비 리스트로 이동
   };
 
   return (
@@ -45,8 +43,8 @@ const EquipmentsRegister = () => {
         sx={{ mt: 2 }}
       >
         <MenuItem value="조명">조명</MenuItem>
-        <MenuItem value="전기">전기</MenuItem>
-        <MenuItem value="기계">기계</MenuItem>
+        <MenuItem value="전기">기상관측</MenuItem>
+        <MenuItem value="기계">표지-표시</MenuItem>
       </TextField>
 
       {/* 장비명 */}
@@ -61,13 +59,19 @@ const EquipmentsRegister = () => {
 
       {/* 제조사 */}
       <TextField
+        select
         name="manufacturer"
         label="제조사"
         fullWidth
         value={form.manufacturer}
         onChange={handleChange}
         sx={{ mt: 2 }}
-      />
+      >
+        <MenuItem value="Samsung">Samsung</MenuItem>
+        <MenuItem value="Honeywell">Honeywell</MenuItem>
+        <MenuItem value="GE">GE</MenuItem>
+        <MenuItem value="LSElectric">LSElectric</MenuItem>
+      </TextField>
 
       {/* 구매 금액 */}
       <TextField
@@ -93,13 +97,18 @@ const EquipmentsRegister = () => {
 
       {/* 보호등급 */}
       <TextField
+        select
         name="ipRating"
         label="보호등급(IP)"
         fullWidth
         value={form.ipRating}
         onChange={handleChange}
         sx={{ mt: 2 }}
-      />
+      >
+        <MenuItem value="IP65">IP65</MenuItem>
+        <MenuItem value="IP66">IP66</MenuItem>
+        <MenuItem value="IP67">IP67</MenuItem>
+      </TextField>
 
       {/* 내용연수 */}
       <TextField
