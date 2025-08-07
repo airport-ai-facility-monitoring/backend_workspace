@@ -20,6 +20,7 @@ import EquipmentreportDetail from "../component/equipmentreport/EquipmentreportD
 import RunwayCrack from '../component/crack/RunwayCrack';
 import Crackreport from '../component/crack/report/CrackReport';
 import EquipmentreportRegist from "../component/equipmentreport/EquipmentreportRegist";
+import CrackReportEdit from '../component/crack/report/CrackReportEdit';
 
 
 const mainRoutes = [
@@ -42,7 +43,8 @@ const mainRoutes = [
       { path: "facility", element: <Facility /> },
       { path: "equipmentsregister",element: <EquipmentsRegister />},
       { path: "equipmentslist",element: <EquipmentsList />},
-      { path: "/report/:rcId", element: <Crackreport /> },
+      { path: "report/:rcId", element: <Crackreport /> },
+      { path: "report/edit/:rcId", element: <CrackReportEdit/> },
       { path: "equipmentreport", element: <Equipmentreport /> },
       { path: "equipmentreport/:id", element: <EquipmentreportDetail /> },
       { path: "equipmentreport/regist", element: <EquipmentreportRegist /> },
