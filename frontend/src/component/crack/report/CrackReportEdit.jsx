@@ -1,115 +1,157 @@
-// src/components/anomalyreport/AnomalyReportEdit.jsx
-import React, { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../../../config/api";
 
 export default function CrackReportEdit() {
-  const navigate = useNavigate()
-  const { id } = useParams()
+  const navigate = useNavigate();
+  const { rcId } = useParams();
 
-  // --- 더미 초기값 (실제론 API로 가져오세요) ---
-  const [title, setTitle]       = useState('콘크리트 덩어리 파손 보고서')
-  const [site, setSite]         = useState('SITE B')
-  const [channel, setChannel]   = useState('CCTV‑CH09')
-  const [datetime, setDatetime] = useState('2025-07-18T14:12')
-  const [imageUrl, setImageUrl] = useState('https://via.placeholder.com/200x120')
-  const [section1, setSection1] = useState(
-    '콘크리트 덩어리 파손 및 구조물 기울어짐 감지\n콘크리트 기반 구조물이 내부에서부터 파열된 형태로 기울어져 있음\n지지대에 연결된 철근이 다수 노출됨'
-  )
-  const [section2, setSection2] = useState(
-    '🔧 예상 수리 비용 약 14,200,000원 (±5%)\n⏱️ 예상 수리 기간: 5일~7일 소요\n📋 대체 자재 추천:\n‑ 프리캐스트 콘크리트 구조블록\n‑ 내식성 철근 봉강 (SD400급)\n‑ 케이블 피복 보호 튜브'
-  )
-  const [section3, setSection3] = useState(
-    '활주로 진동 및 저강도 충격 누적에 따른 내부 균열 진행 가능성\n배수 불량으로 인한 지반 침하 가능성\n중장비 충격 유입 가능성 분석 필요'
-  )
+  // 초기 상태
+  const [title, setTitle] = useState("");
+  const [cctvId, setCctvId] = useState("");
+  const [detectedDate, setDetectedDate] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [length, setLength] = useState("");
+  const [area, setArea] = useState("");
+  const [repairPeriod, setRepairPeriod] = useState("");
+  const [repairCost, setRepairCost] = useState("");
+  const [cause, setCause] = useState("");
+  const [reportContents, setReportContents] = useState("");
 
-  const handleSave = (e) => {
-    e.preventDefault()
-    // TODO: API 호출로 저장하고
-    navigate(-1)  // 뒤로
-  }
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    
+    const fetchReport = async () => {
+      try {
+        const res = await api.get(`/runwaycrackreports/${rcId}`);
+        const data = res.data;
+        console.log(rcId);
+        setTitle(data.title || "");
+        setCctvId(data.cctvId || "");
+        setDetectedDate(data.detectedDate ? data.detectedDate.slice(0, 16) : "");
+        setImageUrl(data.imageUrl || "");
+        setLength(data.length || "");
+        setArea(data.area || "");
+        setRepairPeriod(data.repairPeriod || "");
+        setRepairCost(data.repairCost || "");
+        setCause(data.cause || "");
+        setReportContents(data.reportContents || "");
+      } catch (err) {
+        console.error("보고서 불러오기 실패", err);
+        alert("보고서 데이터를 불러오는데 실패했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (rcId) fetchReport();
+  }, [rcId]);
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+
+    try {
+      // PATCH 요청: 수정 가능한 필드만 보냄
+      await api.patch(`/runwaycrackreports/${rcId}`, {
+        title,
+        repairPeriod: Number(repairPeriod),
+        repairCost: Number(repairCost),
+        cause,
+        reportContents,
+      });
+
+      alert("보고서가 성공적으로 저장되었습니다.");
+      navigate(-1);
+    } catch (err) {
+      console.error("저장 실패", err);
+      alert("보고서 저장 중 오류가 발생했습니다.");
+    }
+  };
+
+  if (loading) return <div>로딩 중...</div>;
 
   const styles = {
     container: {
       flex: 1,
-      padding: '2rem',
-      background: '#f0f4fb',
-      boxSizing: 'border-box',
-      fontFamily: 'sans-serif',
-      color: '#1f263d'
+      padding: "2rem",
+      background: "#f0f4fb",
+      boxSizing: "border-box",
+      fontFamily: "sans-serif",
+      color: "#1f263d",
     },
     back: {
-      fontSize: '1.5rem',
-      cursor: 'pointer',
-      marginBottom: '1rem'
+      fontSize: "1.5rem",
+      cursor: "pointer",
+      marginBottom: "1rem",
     },
     form: {
-      background: 'white',
-      borderRadius: '12px',
-      maxWidth: '700px',
-      margin: '0 auto',
-      padding: '2rem',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+      background: "white",
+      borderRadius: "12px",
+      maxWidth: "700px",
+      margin: "0 auto",
+      padding: "2rem",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
     },
     fieldRow: {
-      display: 'flex',
-      alignItems: 'center',
-      marginBottom: '1rem'
+      display: "flex",
+      alignItems: "center",
+      marginBottom: "1rem",
     },
     label: {
-      width: '80px',
-      fontWeight: '500',
-      fontSize: '0.95rem'
+      width: "100px",
+      fontWeight: "500",
+      fontSize: "0.95rem",
     },
     input: {
       flex: 1,
-      padding: '0.5rem 1rem',
-      border: '1px solid #dde4f8',
-      borderRadius: '6px',
-      fontSize: '0.95rem'
+      padding: "0.5rem 1rem",
+      border: "1px solid #dde4f8",
+      borderRadius: "6px",
+      fontSize: "0.95rem",
     },
     imagePreview: {
-      width: '200px',
-      height: '120px',
-      objectFit: 'cover',
-      borderRadius: '6px',
-      marginLeft: '1rem',
-      border: '1px solid #dde4f8'
+      width: "200px",
+      height: "120px",
+      objectFit: "cover",
+      borderRadius: "6px",
+      marginLeft: "1rem",
+      border: "1px solid #dde4f8",
     },
     textarea: {
       flex: 1,
-      height: '100px',
-      padding: '0.75rem',
-      border: '1px solid #dde4f8',
-      borderRadius: '6px',
-      fontSize: '0.95rem',
-      resize: 'vertical'
+      height: "100px",
+      padding: "0.75rem",
+      border: "1px solid #dde4f8",
+      borderRadius: "6px",
+      fontSize: "0.95rem",
+      resize: "vertical",
     },
     btnRow: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-      gap: '0.75rem',
-      marginTop: '1.5rem'
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: "0.75rem",
+      marginTop: "1.5rem",
     },
     btn: {
-      padding: '0.75rem 1.5rem',
-      border: 'none',
-      borderRadius: '6px',
-      fontSize: '0.95rem',
-      cursor: 'pointer'
+      padding: "0.75rem 1.5rem",
+      border: "none",
+      borderRadius: "6px",
+      fontSize: "0.95rem",
+      cursor: "pointer",
     },
     btnPrimary: {
-      background: '#333',
-      color: '#fff'
+      background: "#333",
+      color: "#fff",
     },
     btnSecondary: {
-      background: '#e0e0e0',
-      color: '#666'
-    }
-  }
+      background: "#e0e0e0",
+      color: "#666",
+    },
+  };
 
   return (
     <div style={styles.container}>
-      {/* ← 뒤로가기 */}
       <div style={styles.back} onClick={() => navigate(-1)}>
         ←
       </div>
@@ -121,82 +163,108 @@ export default function CrackReportEdit() {
           <input
             style={styles.input}
             value={title}
-            onChange={e => setTitle(e.target.value)}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </div>
 
-        {/* 현장 / 채널 */}
+        {/* CCTV ID (수정불가) */}
         <div style={styles.fieldRow}>
-          <label style={styles.label}>현장</label>
+          <label style={styles.label}>CCTV ID</label>
           <input
             style={styles.input}
-            value={site}
-            onChange={e => setSite(e.target.value)}
-          />
-        </div>
-        <div style={styles.fieldRow}>
-          <label style={styles.label}>채널</label>
-          <input
-            style={styles.input}
-            value={channel}
-            onChange={e => setChannel(e.target.value)}
+            type="number"
+            value={cctvId}
+            disabled
           />
         </div>
 
-        {/* 날짜 */}
+        {/* 발견 날짜 (수정불가) */}
         <div style={styles.fieldRow}>
-          <label style={styles.label}>날짜</label>
+          <label style={styles.label}>발견 날짜</label>
           <input
             type="datetime-local"
             style={styles.input}
-            value={datetime}
-            onChange={e => setDatetime(e.target.value)}
+            value={detectedDate}
+            disabled
           />
         </div>
 
-        {/* 이미지 업로드/미리보기 */}
+        {/* 이미지 URL (수정불가) */}
         <div style={styles.fieldRow}>
           <label style={styles.label}>사진</label>
           <input
             type="text"
-            placeholder="이미지 url"
+            placeholder="이미지 URL"
             style={styles.input}
             value={imageUrl}
-            onChange={e => setImageUrl(e.target.value)}
+            disabled
           />
-          <img src={imageUrl} alt="preview" style={styles.imagePreview} />
+          {imageUrl && (
+            <img src={imageUrl} alt="preview" style={styles.imagePreview} />
+          )}
         </div>
 
-        {/* 구분선 */}
-        <hr style={{ border: 'none', borderBottom: '1px solid #dde4f8', margin: '1.5rem 0' }} />
-
-        {/* 섹션 1 */}
+        {/* 파손 길이 (수정불가) */}
         <div style={styles.fieldRow}>
-          <label style={styles.label}>이상 탐지</label>
-          <textarea
-            style={styles.textarea}
-            value={section1}
-            onChange={e => setSection1(e.target.value)}
-          />
-        </div>
-
-        {/* 섹션 2 */}
-        <div style={styles.fieldRow}>
-          <label style={styles.label}>예측 정보</label>
-          <textarea
-            style={styles.textarea}
-            value={section2}
-            onChange={e => setSection2(e.target.value)}
+          <label style={styles.label}>파손 길이 (cm)</label>
+          <input
+            type="number"
+            style={styles.input}
+            value={length}
+            disabled
           />
         </div>
 
-        {/* 섹션 3 */}
+        {/* 파손 면적 (수정불가) */}
         <div style={styles.fieldRow}>
-          <label style={styles.label}>원인 추정</label>
+          <label style={styles.label}>파손 면적 (㎠)</label>
+          <input
+            type="number"
+            style={styles.input}
+            value={area}
+            disabled
+          />
+        </div>
+
+        {/* 예상 수리 기간 */}
+        <div style={styles.fieldRow}>
+          <label style={styles.label}>예상 수리 기간 (일)</label>
+          <input
+            type="number"
+            style={styles.input}
+            value={repairPeriod}
+            onChange={(e) => setRepairPeriod(e.target.value)}
+          />
+        </div>
+
+        {/* 예상 수리 비용 */}
+        <div style={styles.fieldRow}>
+          <label style={styles.label}>예상 수리 비용 (원)</label>
+          <input
+            type="number"
+            style={styles.input}
+            value={repairCost}
+            onChange={(e) => setRepairCost(e.target.value)}
+          />
+        </div>
+
+        {/* 원인 */}
+        <div style={styles.fieldRow}>
+          <label style={styles.label}>원인</label>
           <textarea
             style={styles.textarea}
-            value={section3}
-            onChange={e => setSection3(e.target.value)}
+            value={cause}
+            onChange={(e) => setCause(e.target.value)}
+          />
+        </div>
+
+        {/* 보고서 내용 */}
+        <div style={styles.fieldRow}>
+          <label style={styles.label}>보고서 내용</label>
+          <textarea
+            style={styles.textarea}
+            value={reportContents}
+            onChange={(e) => setReportContents(e.target.value)}
           />
         </div>
 
@@ -215,5 +283,5 @@ export default function CrackReportEdit() {
         </div>
       </form>
     </div>
-  )
+  );
 }

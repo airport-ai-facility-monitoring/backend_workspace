@@ -17,6 +17,7 @@ import RunwayCrack from '../component/crack/RunwayCrack';
 import Crackreport from '../component/crack/report/CrackReport';
 import EquipmentreportRegist from "../component/equipmentreport/EquipmentreportRegist";
 import NotificationEdit from '../component/notifications/NotificationEdit'
+import CrackReportEdit from '../component/crack/report/CrackReportEdit';
 
 
 const mainRoutes = [
@@ -33,15 +34,14 @@ const mainRoutes = [
       { path: "dash", element: <Dashboard /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "dashdetail/:id", element: <DashDetail /> },
-      { path: "equipmentsregister",element: <EquipmentsRegister />},
+      { path: "equipment/regist",element: <EquipmentsRegister />},
       { path: "equipment",element: <EquipmentsList />},
       { path: "/report/:rcId", element: <Crackreport /> },
       { path: "equipment/report", element: <Equipmentreport /> },
       { path: "equipment/report/:id", element: <EquipmentreportDetail /> },
       { path: "equipment/report/regist", element: <EquipmentreportRegist /> },
-      { path: "equipmentreport", element: <Equipmentreport /> },
-      { path: "equipmentreport/:id", element: <EquipmentreportDetail /> },
-      { path: "equipmentreport/regist", element: <EquipmentreportRegist /> },
+      { path: "report/:rcId", element: <Crackreport /> },
+      { path: "report/edit/:rcId", element: <CrackReportEdit/> },
       { path: "notifications/edit/:id", element: <NotificationEdit />},
     ],
   },

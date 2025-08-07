@@ -36,22 +36,24 @@ public class RunwayCrackController {
     //1. 탐지된 모델에서 값 받아올 api
     @PostMapping
     public ResponseEntity<Map<String, Object>> runwayCrackDetect(@RequestBody Map<String, Object> req) {
-
         try {
             RunwayCrack crack = new RunwayCrack();
 
             crack.setImageUrl((String) req.get("imageUrl"));
             crack.setCctvId(Long.valueOf(req.get("cctvId").toString()));
-            crack.setSize(Integer.valueOf(req.get("size").toString()));
+            crack.setLength(Integer.valueOf(req.get("length").toString()));  // 수정: length
+            crack.setArea(Integer.valueOf(req.get("area").toString()));      // 수정: area
             crack.setDamageDetails((String) req.get("damageDetails"));
-            crack.setReportState(false); // reportState 기본값 false
+
+            crack.setReportState(false); // 기본값
             crack.setDetectedDate(LocalDate.now()); // 현재 날짜
 
             runwayCrackRepository.save(crack);
 
             Map<String, Object> response = new HashMap<>();
-            response.put("message", "Runway crack detected successfully");
+            response.put("message", "활주로 손상 정보가 성공적으로 저장되었습니다.");
             response.put("rcId", crack.getRcId());
+
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {

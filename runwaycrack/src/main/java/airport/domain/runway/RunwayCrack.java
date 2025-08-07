@@ -3,6 +3,7 @@ package airport.domain.runway;
 import airport.RunwaycrackApplication;
 import airport.domain.DamageDetected;
 import airport.domain.ReportRequested;
+import airport.domain.report.RunwayCrackReport;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
@@ -27,14 +28,20 @@ public class RunwayCrack {
 
     private Long cctvId;
 
-    private Integer size;
+    private Integer length; // 파손 길이 (cm)
 
+    private Integer area; // 파손 면적 (cm²)
+
+    
     @Column(length = 4000)
     private String damageDetails;
 
     private Boolean reportState;
 
     private LocalDate detectedDate;
+
+    @OneToOne(mappedBy = "runwayCrack", cascade = CascadeType.ALL)
+    private RunwayCrackReport report;
 
     @PostPersist
     public void onPostPersist() {

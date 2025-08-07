@@ -62,10 +62,16 @@ const RunwayCrack = () => {
       await api.post("/runwaycracks", {
         imageUrl: "https://via.placeholder.com/150",
         cctvId: 201,
-        size: 30,
+        length: 30,
+        area: 150,
         damageDetails: "테스트용 활주로 균열 발생"
       });
       alert("더미 데이터 저장 완료");
+
+      // 새로고침 대신 데이터만 다시 가져오기
+      const res = await api.get("/runwaycracks");
+      setData(res.data);
+
     } catch (err) {
       console.error("저장 실패", err);
       alert("저장 중 오류 발생");
@@ -128,10 +134,11 @@ const RunwayCrack = () => {
                 <TableRow>
                   <TableCell align="center">#</TableCell>
                   <TableCell align="center">상태</TableCell>
-                  <TableCell align="center">현장</TableCell>
-                  <TableCell align="center">채널</TableCell>
-                  <TableCell align="center">이상</TableCell>
-                  <TableCell align="center">시간</TableCell>
+                  <TableCell align="center">현장 (CCTV ID)</TableCell>
+                  <TableCell align="center">파손 길이 (cm)</TableCell>
+                  <TableCell align="center">파손 면적 (cm²)</TableCell>
+                  <TableCell align="center">이상 상세</TableCell>
+                  <TableCell align="center">발견 날짜</TableCell>
                   <TableCell align="center">사진</TableCell>
                   <TableCell align="center">보고서</TableCell>
                 </TableRow>
@@ -140,28 +147,24 @@ const RunwayCrack = () => {
                 {data.map((row, index) => (
                   <TableRow key={row.rcId}>
                     <TableCell align="center">{index + 1}</TableCell>
-                    <TableCell align="center">
-                      {row.reportState ? "보고서 완료" : "미보고"}
-                    </TableCell>
+                    <TableCell align="center">{row.reportState ? "보고서 완료" : "미보고"}</TableCell>
                     <TableCell align="center">{row.cctvId}</TableCell>
-                    <TableCell align="center">{row.size}</TableCell>
-                    <TableCell align="center">{row.damageDetails}</TableCell>
+                    <TableCell align="center">{row.length ?? "-"}</TableCell>
+                    <TableCell align="center">{row.area ?? "-"}</TableCell>
+                    <TableCell align="left" sx={{ maxWidth: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {row.damageDetails}
+                    </TableCell>
                     <TableCell align="center">{row.detectedDate}</TableCell>
                     <TableCell align="center">
-                      <img
-                        src={row.imageUrl}
-                        alt="이상 이미지"
-                        width={60}
-                        height={40}
-                      />
+                      {row.imageUrl ? (
+                        <img src={row.imageUrl} alt="이상 이미지" width={60} height={40} style={{ objectFit: "cover" }} />
+                      ) : (
+                        "-"
+                      )}
                     </TableCell>
                     <TableCell align="center">
                       {row.reportState ? (
-                        <Button
-                          variant="contained"
-                          size="small"
-                          onClick={() => navigate(`/report/${row.rcId}`)}
-                        >
+                        <Button variant="contained" size="small" onClick={() => navigate(`/report/${row.rcId}`)}>
                           보고서 보기
                         </Button>
                       ) : (
