@@ -3,13 +3,13 @@ import NotificationItem from './NotificationItem'
 import api from '../../api'
 
 export default function NotificationList() {
-  const [items, setItems] = useState([])
+  const [importantItems, setImportantItems] = useState([])
+  const [generalItems, setGeneralItems] = useState([])
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const response = await api.get('/notifications')
-        console.log('response.data:', response.data)
         const data = response.data
 
         const transformed = data.map((n) => ({
@@ -17,10 +17,15 @@ export default function NotificationList() {
           time: formatDateTime(n.writeDate),
           tag: n.writerId?.toString(),
           text: n.title,
-          isImportant: n.important ?? false // ✅ 중요 여부 수신
+          isImportant: n.important ?? false,
         }))
 
-        setItems(transformed)
+        // 중요 / 일반 분리
+        const important = transformed.filter(n => n.isImportant)
+        const general = transformed.filter(n => !n.isImportant)
+
+        setImportantItems(important)
+        setGeneralItems(general)
       } catch (error) {
         console.error('공지 불러오기 실패:', error)
       }
@@ -41,10 +46,20 @@ export default function NotificationList() {
 
   return (
     <div className="notification-list">
-      {items.map((item, index) => (
+      {/* 중요 공지사항은 순번 없이 표시 */}
+      {importantItems.map(item => (
         <NotificationItem
           key={item.id}
-          order={index + 1} // ✅ 순번 전달
+          order={null}  // 중요 공지는 순번 X
+          {...item}
+        />
+      ))}
+
+      {/* 일반 공지는 1번부터 순번 매김 */}
+      {generalItems.map((item, index) => (
+        <NotificationItem
+          key={item.id}
+          order={index + 1}  // 일반 공지만 번호 매김
           {...item}
         />
       ))}
