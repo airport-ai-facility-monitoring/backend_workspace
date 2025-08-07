@@ -3,7 +3,9 @@ package airport.domain.User;
 public class UserDto {
 
     private String employeeId;   // 마스킹된 사번
+    private Long realEmployeeId;
     private String name;         // 마스킹된 이름
+    private String realName;
     private String department;
     private String position;
     private String hireDate;     // "yyyy-MM" 형태
@@ -13,7 +15,9 @@ public class UserDto {
     // 정적 팩토리 메서드: User 엔티티에서 변환
     public UserDto (User user) {
         this.employeeId = maskEmployeeId(user.getEmployeeId() != null ? user.getEmployeeId().toString() : null);
+        this.realEmployeeId = user.getEmployeeId();
         this.name = maskName(user.getName());
+        this.realName = user.getName();
         this.department = user.getDepartment();
         this.position = user.getPosition();
         this.hireDate = formatHireDate(user.getHireDate());
@@ -104,4 +108,6 @@ public class UserDto {
     public String getHireDate() { return hireDate; }
     public String getPhoneNumber() { return phoneNumber; }
     public String getEmail() { return email; }
+    public Long getrealEmployeeId() {return realEmployeeId;}
+    public String getrealName() {return realName;} 
 }

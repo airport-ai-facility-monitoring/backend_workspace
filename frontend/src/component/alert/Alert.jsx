@@ -37,11 +37,9 @@ const Alert = () => {
   const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
-    // Fetch initial alerts (latest 10)
     const fetchInitialAlerts = async () => {
       try {
-        const response = await api.get('/alerts');
-        // Take only the latest 30 alerts
+        const response = await api.get('/alerts?sort=alertDate,desc');
         setAlerts(response.data._embedded.alerts.slice(0, 30));
       } catch (error) {
         console.error('Error fetching initial alerts:', error);
@@ -49,37 +47,9 @@ const Alert = () => {
     };
 
     fetchInitialAlerts();
+    const interval = setInterval(fetchInitialAlerts, 1000);
 
-    // Establish Server-Sent Events (SSE) connection
-    const eventSource = new EventSource('http://localhost:8088/alerts/stream'); // Adjust port if your gateway is different
-
-    eventSource.onmessage = (event) => {
-      // Handle generic messages (e.g., initial data if sent as generic message)
-      console.log('SSE Message:', event.data);
-    };
-
-    eventSource.addEventListener('newAlert', (event) => {
-      const newAlert = JSON.parse(event.data);
-      setAlerts((prevAlerts) => {
-        const updatedAlerts = [newAlert, ...prevAlerts];
-        return updatedAlerts.slice(0, 30); // Keep only the latest 30 alerts
-      });
-    });
-
-    eventSource.onerror = (error) => {
-      console.error('SSE Error:', error);
-      eventSource.close();
-    };
-
-    eventSource.onopen = () => {
-      console.log('SSE connection opened.');
-    };
-
-    // Clean up on component unmount
-    return () => {
-      eventSource.close();
-      console.log('SSE connection closed.');
-    };
+    return () => clearInterval(interval);
   }, []);
 
   return (

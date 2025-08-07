@@ -8,12 +8,12 @@ export default function NotificationItem({ id, time, text, isImportant, order })
       className="notification-item"
       style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
     >
-      {/* 조건 분기: 중요일 때만 박스로 감싸기 */}
+      {/* ✅ 중요: 파란 박스 / 일반: 숫자 표시 */}
       {isImportant ? (
         <span className="item-tag important">중요</span>
-      ) : (
+      ) : order != null ? (
         <span className="item-order">{order}</span>
-      )}
+      ) : null}
 
       <div className="item-body">
         <span className="item-time">{time}</span>

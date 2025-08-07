@@ -1,10 +1,24 @@
-import axios from 'axios'
+import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://glowing-space-fiesta-g4w47xwqjgj525qp-8083.app.github.dev', // 백엔드 포트에 맞게 수정
+  baseURL: 'http://localhost:8088',
   headers: {
     'Content-Type': 'application/json',
   },
-})
+});
 
-export default api
+// Add a request interceptor to include the token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export default api;

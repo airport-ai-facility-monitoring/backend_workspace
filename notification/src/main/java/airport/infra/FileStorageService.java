@@ -6,31 +6,34 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.UUID;
 
 @Service
 public class FileStorageService {
 
-    private final String uploadDir = "uploads"; // 프로젝트 루트 기준 상대경로
+     private final String uploadDir = System.getProperty("user.dir") + "/uploads";
 
     public String save(MultipartFile file) {
         try {
-            // 폴더 없으면 생성
-            if (!Files.exists(Paths.get(uploadDir))) {
-                Files.createDirectories(Paths.get(uploadDir));
+            File dir = new File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs(); // 폴더 없으면 생성
             }
 
-            // 저장할 파일명 생성
-            String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir, filename);
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null || originalFilename.isEmpty()) {
+                throw new RuntimeException("파일 이름이 비어 있습니다.");
+            }
 
-            // 실제 저장
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            String newFilename = UUID.randomUUID() + "_" + originalFilename;
+            String filePath = uploadDir + newFilename;
 
-            // 프론트에서 접근 가능한 URL 형태로 반환
-            return "/uploads/" + filename;
+            file.transferTo(new File(filePath));
+            return "/uploads/" + newFilename;
 
-        } catch (IOException e) {
-            throw new RuntimeException("파일 저장 실패: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("파일 저장 중 오류 발생: " + e.getMessage());
         }
     }
 }
