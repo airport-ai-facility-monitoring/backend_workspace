@@ -64,3 +64,13 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.grecaptcha-badge {
+  opacity: 0.3;           /* 투명도 30% */
+  transition: opacity 0.3s ease;
+  pointer-events: auto;   /* 마우스 이벤트 유지 */
+}
+
+.grecaptcha-badge:hover {
+  opacity: 1;             /* 마우스 올리면 원래대로 보임 */
+}

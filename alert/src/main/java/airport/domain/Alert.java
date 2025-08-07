@@ -52,6 +52,10 @@ public class Alert {
 
                 System.out.println("##### alert log : " + alert.getAlertLog());
 
+                // 새로운 알림이 생성될 때 SSE로 전송
+                airport.domain.alertapi.AlertController alertController = airport.AlertApplication.applicationContext.getBean(airport.domain.alertapi.AlertController.class);
+                alertController.sendNewAlert(alert);
+
                 AlertSent alertSent = new AlertSent(alert);
                 alertSent.publishAfterCommit();
             });
@@ -77,6 +81,10 @@ public class Alert {
                 repository().save(alert);
 
                 System.out.println("##### alert log : " + alert.getAlertLog());
+
+                // 새로운 알림이 생성될 때 SSE로 전송
+                airport.domain.alertapi.AlertController alertController = airport.AlertApplication.applicationContext.getBean(airport.domain.alertapi.AlertController.class);
+                alertController.sendNewAlert(alert);
 
                 AlertSent alertSent = new AlertSent(alert);
                 alertSent.publishAfterCommit();
@@ -104,37 +112,81 @@ public class Alert {
 
                 System.out.println("##### alert log : " + alert.getAlertLog());
 
+                // 새로운 알림이 생성될 때 SSE로 전송
+                airport.domain.alertapi.AlertController alertController = airport.AlertApplication.applicationContext.getBean(airport.domain.alertapi.AlertController.class);
+                alertController.sendNewAlert(alert);
+
                 AlertSent alertSent = new AlertSent(alert);
                 alertSent.publishAfterCommit();
             });
     }
 
     //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
-    public static void sendAlert(DamageDetected damageDetected) {
+    
+
+    public static void sendAlert(ForeignObjectDetected foreignObjectDetected) {
         CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
             CctvRepository.class
         );
+        Long cctvId = foreignObjectDetected.getCameraId();
+        if (cctvId == null) {
+            System.err.println("ForeignObjectDetected: cameraId is null. Cannot find CCTV.");
+            return;
+        }
         cctvRepository
-            .findById(damageDetected.getCctvId())
+            .findById(cctvId)
             .ifPresent(cctv -> {
                 Alert alert = new Alert();
                 alert.setAlertLog(
                     "[" +
                     cctv.getCctvArea() +
                     "] " +
-                    "활주로 손상 감지"
+                    "이물질 감지: " + foreignObjectDetected.getObjectType() + " " + foreignObjectDetected.getObjectCount() + "개"
                 );
                 alert.setAlertDate(new Date());
                 repository().save(alert);
 
                 System.out.println("##### alert log : " + alert.getAlertLog());
 
+                // 새로운 알림이 생성될 때 SSE로 전송
+                airport.domain.alertapi.AlertController alertController = airport.AlertApplication.applicationContext.getBean(airport.domain.alertapi.AlertController.class);
+                alertController.sendNewAlert(alert);
+
                 AlertSent alertSent = new AlertSent(alert);
                 alertSent.publishAfterCommit();
             });
     }
+
+    public static void sendAlert(WorkNotInProgress workNotInProgress) {
+        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
+            CctvRepository.class
+        );
+        cctvRepository
+            .findById(workNotInProgress.getCameraId())
+            .ifPresent(cctv -> {
+                Alert alert = new Alert();
+                alert.setAlertLog(
+                    "[" +
+                    cctv.getCctvArea() +
+                    "] " +
+                    "비작업 시간 활동 감지: " + workNotInProgress.getObjectType()
+                );
+                alert.setAlertDate(new Date());
+                repository().save(alert);
+
+                System.out.println("##### alert log : " + alert.getAlertLog());
+
+                // 새로운 알림이 생성될 때 SSE로 전송
+                airport.domain.alertapi.AlertController alertController = airport.AlertApplication.applicationContext.getBean(airport.domain.alertapi.AlertController.class);
+                alertController.sendNewAlert(alert);
+
+                AlertSent alertSent = new AlertSent(alert);
+                alertSent.publishAfterCommit();
+            });
+    }
+
     //>>> Clean Arch / Port Method
+    
 
 }
 //>>> DDD / Aggregate Root

@@ -10,8 +10,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
-import api from "../../api";
+import api from "../../config/api";
+import { Link } from "react-router-dom";
+// reCAPTCHA 사이트 키를 config 파일에서 가져옵니다.
+import RECAPTCHA_SITE_KEY from '../../config/recaptchaConfig';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,22 +26,31 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       setError("");
-      // 로그인 API 호출
-      const response = await api.post(
-        "/users/login/jwt",
-        {
-          employeeId,
-          password,
-        },
+      if (!window.grecaptcha) {
+        throw new Error('reCAPTCHA 스크립트가 로드되지 않았습니다.');
+      }
 
-      );
-      console.log("로그인 응답:", response.data); // 이 부분 추가
-      localStorage.setItem("employeeId", response.data.employeeId);
+      const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' });
+
+      const response = await api.post("/users/login/jwt", {
+        employeeId,
+        password,
+        recaptchaToken,
+      });
+
       localStorage.setItem("accessToken", response.data.accessToken);
-      navigate("/home"); 
+      navigate("/home");
     } catch (err) {
       console.error("로그인 실패:", err);
-      setError("로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.");
+
+      // 서버에서 반환된 error 키 메시지를 우선 표시
+      const errorMessage =
+        err.response?.data?.error ||  // 서버에서 보낸 에러 메시지(예: "{\"error\": \"아이디가 잠겼습니다.\"}")
+        err.response?.data?.message || // 혹시 message로 올 경우
+        err.message ||                 // 네트워크 오류 등 일반 에러 메시지
+        "로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.";
+
+      setError(errorMessage);
     }
   };
 
@@ -72,6 +83,9 @@ const Login = () => {
         {/* ...로고 생략... */}
 
         <Stack spacing={2} sx={{ width: 302 }}>
+
+
+
           <Typography
             variant="subtitle1"
             align="center"
@@ -201,6 +215,29 @@ const Login = () => {
           >
             SIGN UP
           </Button>
+                              <Typography
+            variant="body2"
+            align="right"
+            sx={{
+              color: "white",
+              cursor: "pointer",
+              textDecoration: "underline",
+              fontFamily: "Montserrat-Light, Helvetica",
+              fontWeight: 300,
+              fontSize: "0.875rem",
+              mt: 1,
+              "&:hover": {
+                color: "#a8c1ff",
+              },
+            }}
+          >
+            <Link
+              to="/reset-password"
+              style={{ color: "inherit", textDecoration: "none" }}
+            >
+              비밀번호 재설정
+            </Link>
+          </Typography>
         </Stack>
       </Container>
     </Box>

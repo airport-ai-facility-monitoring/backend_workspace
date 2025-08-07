@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import CommuteIcon from "@mui/icons-material/Commute";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -8,6 +9,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WarningIcon from "@mui/icons-material/Warning";
+import api from "../../config/api"; // api import 추가
 import {
   AppBar,
   Avatar,
@@ -30,22 +32,56 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import React from "react";
-
-// Mock data for the activity log
-const activityData = [
-  { date: "2018/10/02 15:57:46", detail: "2번 활주로 FOD 감지" },
-  { date: "2018/10/10 10:57:46", detail: "1번 활주로 FOD 감지" },
-  { date: "2018/10/10 10:57:46", detail: "3번 활주로 작업자 이상행동" },
-  { date: "2018/10/13 10:57:46", detail: "3번 활주로 감쇠 감지" },
-  { date: "2018/10/13 10:57:46", detail: "----------------------------" },
-  { date: "2018/10/13 10:57:46", detail: "----------------------------" },
-  { date: "2018/10/23 10:57:46", detail: "----------------------------" },
-  { date: "2018/10/23 10:57:46", detail: "----------------------------" },
-  { date: "2018/10/30 10:57:46", detail: "----------------------------" },
-];
 
 const Alert = () => {
+  const [alerts, setAlerts] = useState([]);
+
+  useEffect(() => {
+    // Fetch initial alerts (latest 10)
+    const fetchInitialAlerts = async () => {
+      try {
+        const response = await api.get('/alerts?sort=alertDate,desc');
+        // Take only the latest 30 alerts
+        setAlerts(response.data._embedded.alerts.slice(0, 30));
+      } catch (error) {
+        console.error('Error fetching initial alerts:', error);
+      }
+    };
+
+    fetchInitialAlerts();
+
+    // Establish Server-Sent Events (SSE) connection
+    const eventSource = new EventSource('http://localhost:8088/alerts/stream'); // Adjust port if your gateway is different
+
+    eventSource.onmessage = (event) => {
+      // Handle generic messages (e.g., initial data if sent as generic message)
+      console.log('SSE Message:', event.data);
+    };
+
+    eventSource.addEventListener('newAlert', (event) => {
+      const newAlert = JSON.parse(event.data);
+      setAlerts((prevAlerts) => {
+        const updatedAlerts = [newAlert, ...prevAlerts];
+        return updatedAlerts.slice(0, 30); // Keep only the latest 30 alerts
+      });
+    });
+
+    eventSource.onerror = (error) => {
+      console.error('SSE Error:', error);
+      eventSource.close();
+    };
+
+    eventSource.onopen = () => {
+      console.log('SSE connection opened.');
+    };
+
+    // Clean up on component unmount
+    return () => {
+      eventSource.close();
+      console.log('SSE connection closed.');
+    };
+  }, []);
+
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f3f6fe" }}>
       {/* Sidebar */}
@@ -64,12 +100,12 @@ const Alert = () => {
           >
             Welcome
           </Typography>
-          <Box
+          {/* <Box
             component="img"
             src="/path-2.svg"
             alt="Path"
             sx={{ width: 8, height: 8, mx: 1 }}
-          />
+          /> */}
           <Typography
             variant="body2"
             sx={{ fontSize: 11, fontWeight: 700, color: "#1348fc" }}
@@ -102,16 +138,16 @@ const Alert = () => {
                       </Typography>
                     </TableCell>
                   </TableRow>
-                  {activityData.map((row, index) => (
+                  {alerts.map((row, index) => (
                     <TableRow
-                      key={index}
+                      key={row.alertId || index} // alertId가 있으면 사용, 없으면 index 사용
                       hover
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell component="th" scope="row">
-                        {row.date}
+                        {new Date(row.alertDate).toLocaleString()} {/* 날짜 형식 변환 */}
                       </TableCell>
-                      <TableCell>{row.detail}</TableCell>
+                      <TableCell>{row.alertLog}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

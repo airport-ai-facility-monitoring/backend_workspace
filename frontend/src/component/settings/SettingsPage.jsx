@@ -1,11 +1,10 @@
 // src/component/settings/SettingsPage.jsx
 import React, { useState, useEffect } from 'react'
+// import api from '../../api';
 import axios from 'axios';
-import api from '../../api';
-
+import api from '../../config/api';
 
 const SettingsPage = () => {
-  const [showReset, setShowReset] = useState(false)
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -33,7 +32,6 @@ const SettingsPage = () => {
       fontFamily: 'sans-serif',
       color: '#1f263d'
     },
-
     header: {
       fontSize: '1.75rem',
       fontWeight: 'bold',
@@ -64,69 +62,6 @@ const SettingsPage = () => {
       padding: '0.75rem 1rem',
       fontSize: '0.95rem',
       color: '#1f263d'
-    },
-    buttonRow: {
-      marginTop: '2rem',
-      display: 'flex',
-      gap: '1rem',
-      justifyContent: 'flex-end',
-    },
-    btn: {
-      padding: '0.75rem 1.5rem',
-      border: 'none',
-      borderRadius: '6px',
-      fontSize: '0.95rem',
-      cursor: 'pointer'
-    },
-    btnPrimary: {
-      background: '#333',
-      color: 'white'
-    },
-    btnSecondary: {
-      background: '#e0e0e0',
-      color: '#666'
-    },
-    popupOverlay: {
-      position: 'fixed',
-      bottom: '20px',
-      right: '20px',
-      width:
-       '320px',
-      background: 'white',
-      borderRadius: '12px',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-      padding: '1rem',
-      zIndex: 1000
-    },
-    popupHeader: {
-      fontSize: '1.1rem',
-      fontWeight: 'bold',
-      marginBottom: '0.5rem'
-    },
-    popupText: {
-      fontSize: '0.85rem',
-      color: '#555',
-      marginBottom: '1rem'
-    },
-    popupField: {
-      width: '100%',
-      marginBottom: '0.75rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    },
-    popupInput: {
-      flex: 1,
-      marginLeft: '0.5rem',
-      border: 'none',
-      borderBottom: '1px solid #ccc',
-      fontSize: '0.95rem',
-      padding: '0.25rem'
-    },
-    popupBtnRow: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-      gap: '0.5rem'
     }
   }
 
@@ -138,72 +73,22 @@ const SettingsPage = () => {
     <div style={styles.container}>
       <div style={styles.header}>Settings</div>
       <div style={styles.content}>
-        {/* Fields */}
         <div style={styles.fields}>
           <div style={styles.label}>이름</div>
-          <input style={styles.input} defaultValue={user.name} />
+          <input style={styles.input} defaultValue={user.name} readOnly />
 
           <div style={styles.label}>사번</div>
-          <input style={styles.input} defaultValue={user.employeeId} />
+          <input style={styles.input} defaultValue={user.employeeId} readOnly />
 
           <div style={styles.label}>휴대폰번호</div>
-          <input style={styles.input} defaultValue={user.phoneNumber} />
+          <input style={styles.input} defaultValue={user.phoneNumber} readOnly />
 
           <div style={styles.label}>이메일</div>
-          <input style={styles.input} defaultValue={user.email} />
+          <input style={styles.input} defaultValue={user.email} readOnly />
         </div>
       </div>
-
-      {/* Action Buttons */}
-      <div style={styles.buttonRow}>
-        <button
-          style={{ ...styles.btn, ...styles.btnPrimary }}
-          onClick={() => setShowReset(true)}
-        >
-          비밀번호 재설정
-        </button>
-        <button style={{ ...styles.btn, ...styles.btnSecondary }}>
-          정보 변경 요청
-        </button>
-      </div>
-
-      {/* Password Reset Popup */}
-      {showReset && (
-        <div style={styles.popupOverlay}>
-          <div style={styles.popupHeader}>비밀번호 변경</div>
-          <div style={styles.popupText}>
-            새로운 비밀번호를 입력하세요. 비밀번호는 대/소문자를 구분하고,
-            영문, 숫자, 특수문자 중 2가지 이상이 포함되어야 합니다.
-          </div>
-          <div style={styles.popupField}>
-            <label>현재비밀번호</label>
-            <input type="password" style={styles.popupInput} />
-          </div>
-          <div style={styles.popupField}>
-            <label>신규비밀번호</label>
-            <input type="password" style={styles.popupInput} />
-          </div>
-          <div style={styles.popupField}>
-            <label>신규비밀번호확인</label>
-            <input type="password" style={styles.popupInput} />
-          </div>
-          <div style={styles.popupBtnRow}>
-            <button
-              style={{ ...styles.btn, ...styles.btnPrimary }}
-              onClick={() => { /* TODO: change logic */ setShowReset(false) }}
-            >
-              변경
-            </button>
-            <button
-              style={{ ...styles.btn, ...styles.btnSecondary }}
-              onClick={() => setShowReset(false)}
-            >
-              취소
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
+
 export default SettingsPage

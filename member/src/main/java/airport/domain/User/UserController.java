@@ -8,6 +8,10 @@ import lombok.ToString;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,6 +23,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -116,8 +121,43 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody Map<String, Object> userData, HttpServletRequest request) {
         try {
+            // 1. reCAPTCHA 토큰 검증
+            String recaptchaToken = (String) userData.get("recaptchaToken");
+            if (!userService.verifyRecaptcha(recaptchaToken, request)) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "로봇으로 의심되는 접근입니다. 다시 시도해 주세요.");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }else{
+                System.out.println("인증성공");
+            }
+            
+            // 2. User 객체에 데이터 바인딩
+            User user = new User();
+            // employeeId는 String으로 들어오므로 Long으로 변환
+            user.setEmployeeId(Long.valueOf((String) userData.get("employeeId")));
+            user.setPassword((String) userData.get("password"));
+            user.setName((String) userData.get("name"));
+            user.setDepartment((String) userData.get("department"));
+            user.setPosition((String) userData.get("position"));
+            user.setPhoneNumber((String) userData.get("phoneNumber"));
+            user.setEmail((String) userData.get("email"));
+            user.setPasswordChangedAt(Instant.now());
+            user.setFailedLoginAttempts(0);
+            // hireDate는 String으로 들어오므로 Date로 변환
+            try {
+                if (userData.containsKey("hireDate") && userData.get("hireDate") != null) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    java.util.Date hireDate = sdf.parse((String) userData.get("hireDate"));
+                    user.setHireDate(hireDate);
+                }
+            } catch (ParseException e) {
+                // 날짜 형식 오류 처리
+                throw new IllegalArgumentException("입사일자 형식이 올바르지 않습니다. (yyyy-MM-dd)");
+            }
+
             userService.join(user);
 
             Map<String, Object> response = new HashMap<>();
@@ -129,36 +169,59 @@ public class UserController {
             throw new IllegalArgumentException("회원가입 실패: " + e.getMessage(), e);
         }
     }
+
     @PostMapping("/login/jwt")
     @ResponseBody
     public void loginJWT(@RequestBody Map<String, Object> data,
-                        HttpServletResponse response) {
+                        HttpServletResponse response,
+                        HttpServletRequest request) {
+        final Duration PASSWORD_EXPIRY = Duration.ofDays(183); // 약 6개월
+
+
         try {
-            // 1. employeeId 가져오기
-            Long employeeId = Long.valueOf(String.valueOf(data.get("employeeId")));
-
-            // 2. 사용자 조회
-            User user = userRepository.findByEmployeeId(employeeId)
-                    .orElseThrow(() -> new RuntimeException("존재하지 않는 아이디입니다."));
-
-            // 3. 승인 여부 확인
-            if (user.getStatus() == null || !user.getStatus().equals("APPROVE")) {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
-                response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write("{\"error\": \"승인되지 않은 아이디입니다.\"}");
+            // 1. reCAPTCHA 검증
+            String recaptchaToken = (String) data.get("recaptchaToken");
+            if (!userService.verifyRecaptcha(recaptchaToken, request)) {
+                respond(response, HttpServletResponse.SC_FORBIDDEN,
+                        "{\"error\": \"로봇으로 의심되는 접근입니다.\"}");
                 return;
             }
 
-            // 4. 비밀번호 인증 (Spring Security 인증 로직 그대로)
+            // 2. employeeId 가져오기 및 조회
+            Long employeeId = Long.valueOf(String.valueOf(data.get("employeeId")));
+            User user = userRepository.findByEmployeeId(employeeId)
+                    .orElseThrow(() -> new RuntimeException("존재하지 않는 아이디입니다."));
+
+            // 3. 승인 여부 확인 (PENDING은 잠긴 상태)
+            if (user.getStatus() == null || !user.getStatus().equals("APPROVE")) {
+                respond(response, HttpServletResponse.SC_FORBIDDEN,
+                        "{\"error\": \"아이디가 잠겼습니다. 비밀번호 재설정이 필요합니다.\"}");
+                return;
+            }
+
+            Instant now = Instant.now();
+
+            // 4. 비밀번호 만료 검사
+            if (user.getPasswordChangedAt() == null ||
+                user.getPasswordChangedAt().plus(PASSWORD_EXPIRY).isBefore(now)) {
+                respond(response, HttpServletResponse.SC_FORBIDDEN,
+                        "{\"error\": \"비밀번호가 만료되었습니다. 재설정이 필요합니다.\", \"needsPasswordReset\": true}");
+                return;
+            }
+
+            // 5. 비밀번호 인증
             var authToken = new UsernamePasswordAuthenticationToken(
                     data.get("employeeId"),
                     data.get("password")
             );
-
             var auth = authenticationManagerBuilder.getObject().authenticate(authToken);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            // 5. Access Token + Refresh Token 생성
+            // 인증 성공: 실패 카운트 초기화
+            user.setFailedLoginAttempts(0);
+            userRepository.save(user);
+
+            // 6. 토큰 생성
             String accessToken = jwtUtil.createAccessToken(auth);
             String refreshToken = jwtUtil.createRefreshToken(auth);
 
@@ -169,29 +232,69 @@ public class UserController {
             refreshTokenCookie.setMaxAge(60 * 60 * 24 * 7);
             response.addCookie(refreshTokenCookie);
 
-            // 6. 응답으로 Access Token 전송
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write("{\"accessToken\": \"" + accessToken + "\"}");
+            // 7. 응답
+            respond(response, HttpServletResponse.SC_OK,
+                    "{\"accessToken\": \"" + accessToken + "\"}");
 
-        } catch (RuntimeException e) {
-            // 아이디 없음 또는 승인되지 않음
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        } catch ( org.springframework.security.core.AuthenticationException e) {
             try {
-                response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+            handleFailedLoginSimple(data, response, e);
+            } catch (IOException ioEx) {
+                throw new RuntimeException(ioEx);  // 또는 로그 후 예외 재던짐
+            }
+        } catch (RuntimeException e) {
+            try {
+                respond(response, HttpServletResponse.SC_FORBIDDEN,
+                        "{\"error\": \"" + escapeJson(e.getMessage()) + "\"}");
+            } catch (IOException ioEx) {
+                throw new RuntimeException(ioEx);
             }
         } catch (Exception e) {
-            // 비밀번호 불일치 등 인증 실패
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             try {
-                response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write("{\"error\": \"아이디 또는 비밀번호가 올바르지 않습니다.\"}");
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                respond(response, HttpServletResponse.SC_UNAUTHORIZED,
+                        "{\"error\": \"아이디 또는 비밀번호가 올바르지 않습니다.\"}");
+            } catch (IOException ioEx) {
+                throw new RuntimeException(ioEx);
             }
         }
+    }
+
+    private void handleFailedLoginSimple(Map<String, Object> data, HttpServletResponse response, Exception e) throws IOException {
+        final int MAX_FAILED = 5;
+
+        Long employeeId = null;
+        try {
+            employeeId = Long.valueOf(String.valueOf(data.get("employeeId")));
+        } catch (Exception ignored) {}
+
+        User user = null;
+        if (employeeId != null) {
+            user = userRepository.findByEmployeeId(employeeId).orElse(null);
+        }
+
+        if (user != null) {
+            int failures = (user.getFailedLoginAttempts() == null ? 0 : user.getFailedLoginAttempts()) + 1;
+            user.setFailedLoginAttempts(failures);
+
+            if (failures >= MAX_FAILED) {
+                user.setStatus("PENDING"); // 잠금 처리
+            }
+            userRepository.save(user);
+        }
+
+        respond(response, HttpServletResponse.SC_UNAUTHORIZED,
+                "{\"error\": \"아이디 또는 비밀번호가 올바르지 않습니다.\"}");
+    }
+
+    private void respond(HttpServletResponse response, int status, String body) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(body);
+    }
+
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\"", "\\\"");
     }
 
     @PostMapping("/logout")
