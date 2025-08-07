@@ -20,14 +20,15 @@ const RunwayCrack = () => {
   const navigate = useNavigate();
 
   const [data, setData] = useState([]);
-  const [loadingId, setLoadingId] = useState(null);
   const [generatedIds, setGeneratedIds] = useState([]);
+  const [loadingId, setLoadingId] = useState(null);
 
   // 🚀 1. 페이지 진입 시 이상 리스트 요청
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await api.get("/runwaycracks");
+        console.log(res.data)
         setData(res.data);
       } catch (err) {
         console.error("데이터 로딩 실패", err);
@@ -41,14 +42,33 @@ const RunwayCrack = () => {
   const handleReportGenerate = async (id) => {
     try {
       setLoadingId(id);
-      await api.post("/runwaycracks/report", { id });
-
-      setGeneratedIds((prev) => [...prev, id]);
+      await api.post(`/runwaycrackreports/analyze/${id}`);
+      setData((prev) =>
+        prev.map((item) =>
+          item.rcId === id ? { ...item, reportState: true } : item
+        )
+      );
     } catch (err) {
       console.error("보고서 생성 실패", err);
       alert("보고서 생성 중 오류 발생");
     } finally {
       setLoadingId(null);
+    }
+  };
+
+  // 3. 임의 더미데이터 추가
+    const handleInsertDummy = async () => {
+    try {
+      await api.post("/runwaycracks", {
+        imageUrl: "https://via.placeholder.com/150",
+        cctvId: 201,
+        size: 30,
+        damageDetails: "테스트용 활주로 균열 발생"
+      });
+      alert("더미 데이터 저장 완료");
+    } catch (err) {
+      console.error("저장 실패", err);
+      alert("저장 중 오류 발생");
     }
   };
 
@@ -95,7 +115,13 @@ const RunwayCrack = () => {
           <Typography variant="h6" sx={{ mb: 1 }}>
             노선 손상 결과 진행도
           </Typography>
-
+                            <Button
+          variant="outlined"
+          onClick={handleInsertDummy}
+          sx={{ mb: 2, ml: 3 }}
+        >
+          더미 데이터 추가
+        </Button>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -112,17 +138,15 @@ const RunwayCrack = () => {
               </TableHead>
               <TableBody>
                 {data.map((row, index) => (
-                  <TableRow key={row.id}>
+                  <TableRow key={row.rcId}>
                     <TableCell align="center">{index + 1}</TableCell>
-                    <TableCell align="center">{row.status}</TableCell>
-                    <TableCell align="center">{row.site}</TableCell>
-                    <TableCell align="center">{row.channel}</TableCell>
-                    <TableCell align="center">{row.anomaly}</TableCell>
                     <TableCell align="center">
-                      {row.date}
-                      <br />
-                      {row.time}
+                      {row.reportState ? "보고서 완료" : "미보고"}
                     </TableCell>
+                    <TableCell align="center">{row.cctvId}</TableCell>
+                    <TableCell align="center">{row.size}</TableCell>
+                    <TableCell align="center">{row.damageDetails}</TableCell>
+                    <TableCell align="center">{row.detectedDate}</TableCell>
                     <TableCell align="center">
                       <img
                         src={row.imageUrl}
@@ -132,11 +156,11 @@ const RunwayCrack = () => {
                       />
                     </TableCell>
                     <TableCell align="center">
-                      {generatedIds.includes(row.id) ? (
+                      {row.reportState ? (
                         <Button
                           variant="contained"
                           size="small"
-                          onClick={() => navigate(`/report/${row.id}`)}
+                          onClick={() => navigate(`/report/${row.rcId}`)}
                         >
                           보고서 보기
                         </Button>
@@ -144,10 +168,10 @@ const RunwayCrack = () => {
                         <Button
                           variant="contained"
                           size="small"
-                          disabled={loadingId === row.id}
-                          onClick={() => handleReportGenerate(row.id)}
+                          disabled={loadingId === row.rcId}
+                          onClick={() => handleReportGenerate(row.rcId)}
                         >
-                          {loadingId === row.id ? "생성 중..." : "보고서 생성"}
+                          {loadingId === row.rcId ? "생성 중..." : "보고서 생성"}
                         </Button>
                       )}
                     </TableCell>

@@ -10,15 +10,16 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Table(name = "RunwayCrackReport_table")
 @Data
+@ToString
 //<<< DDD / Aggregate Root
 public class RunwayCrackReport {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long rcReportid;
 
     private String title;

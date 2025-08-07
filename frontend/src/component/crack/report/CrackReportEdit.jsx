@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-export default function AnomalyReportEdit() {
+export default function CrackReportEdit() {
   const navigate = useNavigate()
   const { id } = useParams()
 

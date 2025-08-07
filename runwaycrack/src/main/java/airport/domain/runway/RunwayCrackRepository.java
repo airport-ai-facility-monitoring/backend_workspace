@@ -2,13 +2,10 @@ package airport.domain.runway;
 
 import airport.domain.*;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 //<<< PoEAA / Repository
-@RepositoryRestResource(
-    collectionResourceRel = "runwayCracks",
-    path = "runwayCracks"
-)
-public interface RunwayCrackRepository
-    extends PagingAndSortingRepository<RunwayCrack, Long> {}
+public interface RunwayCrackRepository extends JpaRepository<RunwayCrack, Long> {
+}
