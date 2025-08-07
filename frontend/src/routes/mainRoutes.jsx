@@ -17,6 +17,8 @@ import EquipmentsRegister from "../component/equipmentsregister/EquipmentsRegist
 import EquipmentsList from "../component/equipmentslist/EquipmentsList";
 import Equipmentreport from "../component/equipmentreport/Equipmentreport";
 import EquipmentreportDetail from "../component/equipmentreport/EquipmentreportDetail";
+import RunwayCrack from '../component/crack/RunwayCrack';
+import Crackreport from '../component/crack/report/CrackReport';
 import EquipmentreportRegist from "../component/equipmentreport/EquipmentreportRegist";
 
 
@@ -29,6 +31,7 @@ const mainRoutes = [
       { path: "notifications", element: <NotificationsPage /> },
       { path: "notifications/:id", element: <NotificationDetail /> },
       { path: "notifications/new", element: <NotificationWrite /> },
+      { path: "crack", element: <RunwayCrack/>},
       { path: "alert", element: <Alert /> },
       { path: "dash", element: <Dashboard /> },
       { path: "settings", element: <SettingsPage /> },
@@ -39,6 +42,7 @@ const mainRoutes = [
       { path: "facility", element: <Facility /> },
       { path: "equipmentsregister",element: <EquipmentsRegister />},
       { path: "equipmentslist",element: <EquipmentsList />},
+      { path: "/report/:rcId", element: <Crackreport /> },
       { path: "equipmentreport", element: <Equipmentreport /> },
       { path: "equipmentreport/:id", element: <EquipmentreportDetail /> },
       { path: "equipmentreport/regist", element: <EquipmentreportRegist /> },

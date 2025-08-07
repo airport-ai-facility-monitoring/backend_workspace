@@ -37,7 +37,7 @@ spring:
         - id: runwaycrack
           uri: http://localhost:8086
           predicates:
-            - Path=/runwayCracks/**, /runwayCrackReports/**
+            - Path=/runwaycracks/**, /runwaycrackreports/**
         - id: equipment-analysis
           uri: http://localhost:8087
           predicates:
@@ -91,7 +91,7 @@ spring:
         - id: runwaycrack
           uri: http://runwaycrack:8080
           predicates:
-            - Path=/runwayCracks/**, /runwayCrackReports/**
+            - Path=/runwaycracks/**, /runwaycrackreports/**
         - id: equipment-analysis
           uri: http://equipmentAnalysis:8080
           predicates:
