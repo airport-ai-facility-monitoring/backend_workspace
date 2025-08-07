@@ -30,11 +30,9 @@ const DashBoardMg = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch initial alerts (latest 10)
     const fetchInitialAlerts = async () => {
       try {
         const response = await api.get("/alerts?sort=alertDate,desc");
-        // Take only the latest 10 alerts for dashboard
         setAlerts(response.data._embedded.alerts.slice(0, 10));
       } catch (error) {
         console.error("Error fetching initial alerts:", error);
@@ -42,37 +40,9 @@ const DashBoardMg = () => {
     };
 
     fetchInitialAlerts();
+    const interval = setInterval(fetchInitialAlerts, 1000);
 
-    // Establish Server-Sent Events (SSE) connection
-    const eventSource = new EventSource("http://localhost:8088/alerts/stream");
-
-    eventSource.onmessage = (event) => {
-      // Handle generic messages (e.g., initial data if sent as generic message)
-      console.log("SSE Message:", event.data);
-    };
-
-    eventSource.addEventListener("newAlert", (event) => {
-      const newAlert = JSON.parse(event.data);
-      setAlerts((prevAlerts) => {
-        const updatedAlerts = [newAlert, ...prevAlerts];
-        return updatedAlerts.slice(0, 10); // Keep only the latest 10 alerts
-      });
-    });
-
-    eventSource.onerror = (error) => {
-      console.error("SSE Error:", error);
-      eventSource.close();
-    };
-
-    eventSource.onopen = () => {
-      console.log("SSE connection opened.");
-    };
-
-    // Clean up on component unmount
-    return () => {
-      eventSource.close();
-      console.log("SSE connection closed.");
-    };
+    return () => clearInterval(interval);
   }, []);
 
   return (
