@@ -1,24 +1,28 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import './notification-item.css'
 
-export default function NotificationItem({ id, time, text, isImportant, order }) {
+export default function NotificationItem({ id, time, tag, text, isImportant, order }) {
+  const navigate = useNavigate()
+
   return (
-    <Link
-      to={`/notifications/${id}`}
+    <div
       className="notification-item"
-      style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+      onClick={() => navigate(`/notifications/${id}`)}
     >
-      {/* ✅ 중요: 파란 박스 / 일반: 숫자 표시 */}
-      {isImportant ? (
-        <span className="item-tag important">중요</span>
-      ) : order != null ? (
-        <span className="item-order">{order}</span>
-      ) : null}
-
-      <div className="item-body">
-        <span className="item-time">{time}</span>
-        <div className="item-text">{text}</div>
+      <div className="notification-left">
+        {isImportant ? (
+          <span className="notification-important">중요</span>
+        ) : (
+          <span className="notification-order">{order}</span>
+        )}
+        <span className="notification-time">{time}</span>
       </div>
-    </Link>
+
+      <div className="notification-content">
+        <div className="notification-title">{text || '제목 없음'}</div>
+        <div className="notification-writer">작성자: {tag}</div>
+      </div>
+    </div>
   )
 }

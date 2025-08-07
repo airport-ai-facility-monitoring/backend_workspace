@@ -1,0 +1,48 @@
+.notification-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.notification-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 200px;
+}
+
+.notification-order {
+  font-weight: bold;
+  color: #3478f6;
+}
+
+.notification-important {
+  background-color: #3478f6;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.notification-time {
+  color: #999;
+  font-size: 14px;
+}
+
+.notification-content {
+  flex-grow: 1;
+}
+
+.notification-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.notification-writer {
+  font-size: 13px;
+  color: #666;
+}

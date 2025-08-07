@@ -33,6 +33,8 @@ public class Notification {
 
     private String fileUrl;
 
+    private String originalFilename;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime writeDate;
 
@@ -54,12 +56,13 @@ public class Notification {
         return notificationRepository;
     }
 
-    public static Notification register(NotificationsRegistered command, String fileUrl) {
+    public static Notification register(NotificationsRegistered command, String fileUrl, String originalFilename) {
         Notification notification = new Notification();
         notification.setTitle(command.getTitle());
         notification.setWriterId(command.getWriterId());
         notification.setContents(command.getContents());
         notification.setFileUrl(fileUrl);
+        notification.setOriginalFilename(originalFilename);
         notification.setImportant(command.isImportant());
         notification.setWriteDate(LocalDateTime.now());
 

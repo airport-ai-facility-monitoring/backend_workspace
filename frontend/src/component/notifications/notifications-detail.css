@@ -63,3 +63,14 @@
 .btn-back:hover {
   text-decoration: underline;
 }
+
+.detail-attachment {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.attachment-link {
+  color: #007bff;
+  text-decoration: underline;
+}
