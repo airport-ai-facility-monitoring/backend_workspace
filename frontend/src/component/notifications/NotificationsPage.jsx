@@ -14,14 +14,6 @@ export default function NotificationsPage() {
           Notifications
         </h1>
         <div className="header-actions">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="검색..."
-            onChange={(e) => {
-              /* TODO: 검색 로직 */
-            }}
-          />
           <button
             className="btn-new"
             onClick={() => navigate('/notifications/new')}
