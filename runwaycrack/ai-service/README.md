@@ -1,3 +1,10 @@
+# AI-Service 균열 탐지 서비스
+
+이 서비스는 YOLO 기반 균열 탐지 및 길이/면적 계산을 수행합니다.
+
+## 환경 설정
+
+```bash
 1. 폴더 구조
 runwaycrack/ai-service
 ├─ app.py                # FastAPI 엔드포인트 (/video_tick)
@@ -21,13 +28,6 @@ python -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
-# AI-Service 균열 탐지 서비스
-
-이 서비스는 YOLO 기반 균열 탐지 및 길이/면적 계산을 수행합니다.
-
-## 환경 설정
-
-```bash
 # ai-service 디렉토리에서 가상환경 생성
 python -m venv venv
 source venv/bin/activate   # (Windows: venv\Scripts\activate)
