@@ -26,13 +26,18 @@ export default function NotificationDetail() {
   // ✅ 공지사항 데이터 불러오기
   useEffect(() => {
     api.get(`/notifications/${id}`)
-      .then((res) => setNotification(res.data))
+      .then((res) => {
+        console.log('공지 조회 성공:', res.data);
+        setNotification(res.data)})
       .catch((err) => {
         console.error('공지 조회 실패:', err)
         alert('공지 조회 중 오류가 발생했습니다.')
       })
       .finally(() => setLoading(false))
   }, [id])
+
+  const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
+  const fileHref = notification?.fileUrl ? `${API_BASE}${encodeURI(notification.fileUrl)}` : null;
 
   const maskWriterId = (id) => {
     if (!id || id.length < 3) return id
@@ -84,11 +89,11 @@ export default function NotificationDetail() {
           {notification.contents?.trim()}
         </pre>
 
-        {notification.fileUrl && notification.originalFilename && (
+        {notification.fileUrl && notification.originalFilename && fileHref && (
           <div className="detail-file">
             <span role="img" aria-label="파일">📎</span> 첨부파일:&nbsp;
             <a
-              href={notification.fileUrl}
+              href={fileHref}
               download={notification.originalFilename}
               target="_blank"
               rel="noopener noreferrer"
