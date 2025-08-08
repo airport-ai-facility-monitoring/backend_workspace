@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import api from "../../../config/api";
 
-export default function Crackreport() {
+export default function CrackReport() {
   const navigate = useNavigate();
   const { rcId } = useParams();
 
@@ -29,74 +28,145 @@ export default function Crackreport() {
   if (loading) return <div>로딩 중...</div>;
   if (!reportData) return <div>데이터가 없습니다.</div>;
 
-  // 엔티티 필드명에 맞게 구조분해 할당
+  // 새 DB 필드명에 맞게 구조분해 할당
   const {
     title,
     cause,
     reportContents,
-    repairCost,
     repairPeriod,
+    repairCost,
+    imageUrl,
+    length,
+    area,
+    cctvId,
+    detectedDate,
   } = reportData;
 
   const styles = {
-    container: { flex: 1, padding: "2rem", background: "#f0f4fb", boxSizing: "border-box", fontFamily: "sans-serif", color: "#1f263d" },
-    back: { fontSize: "1.5rem", cursor: "pointer", marginBottom: "1rem" },
-    card: { background: "white", borderRadius: "12px", maxWidth: "700px", margin: "0 auto", padding: "2rem", boxSizing: "border-box", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" },
-    titleRow: { display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "1rem" },
-    title: { fontSize: "1.25rem", fontWeight: "bold", textDecoration: "underline" },
-    infoRow: { marginBottom: "1rem", lineHeight: 1.5 },
-    hr: { border: "none", borderBottom: "1px solid #dde4f8", margin: "1rem 0" },
-    section: { marginBottom: "1.5rem" },
-    sectionHeader: { display: "flex", alignItems: "center", fontWeight: "bold", marginBottom: "0.5rem" },
-    sectionIcon: { color: "#4e73df", marginRight: "0.5rem" },
-    sectionText: { fontSize: "0.95rem", lineHeight: 1.5, color: "#333", whiteSpace: "pre-wrap" },
-    btnRow: { marginTop: "2rem", display: "flex", justifyContent: "flex-end" },
-    btn: { padding: "0.75rem 1.5rem", background: "#333", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" }
+    container: {
+      padding: "2rem",
+      background: "#fff",
+      fontFamily: "serif",
+      color: "#222",
+      maxWidth: "800px",
+      margin: "0 auto",
+    },
+    title: {
+      fontSize: "1.8rem",
+      fontWeight: "bold",
+      textAlign: "center",
+      marginBottom: "2rem",
+      borderBottom: "2px solid #000",
+      paddingBottom: "0.5rem",
+    },
+    section: {
+      marginBottom: "1.5rem",
+    },
+    label: {
+      fontWeight: "bold",
+      display: "inline-block",
+      width: "160px",
+    },
+    image: {
+      width: "100%",
+      maxWidth: "400px",
+      display: "block",
+      margin: "1rem auto",
+      border: "1px solid #ccc",
+    },
+    hr: {
+      borderTop: "1px dashed #aaa",
+      margin: "1.5rem 0",
+    },
+    buttonRow: {
+      display: "flex",
+      justifyContent: "flex-end",
+      marginTop: "2rem",
+    },
+    button: {
+      padding: "0.6rem 1.2rem",
+      background: "#333",
+      color: "#fff",
+      border: "none",
+      borderRadius: "4px",
+      cursor: "pointer",
+    },
   };
 
   return (
     <div style={styles.container}>
-      <div style={styles.back} onClick={() => navigate(-1)}>←</div>
+      <div style={styles.title}>{title || "활주로 파손 조사 보고서"}</div>
 
-      <div style={styles.card}>
-        <div style={styles.titleRow}>
-          <div style={styles.title}>{title || "활주로 크랙 보고서"}</div>
+      {/* 1. 조사 개요 */}
+      <div style={styles.section}>
+        <div>
+          <span style={styles.label}>보고서 작성일자:</span>{" "}
+          {detectedDate ? new Date(detectedDate).toLocaleDateString() : "미지정"}
         </div>
-
-        <div style={styles.infoRow}>
-          {repairCost != null && <div>예상 수리 비용: {repairCost.toLocaleString()} 원</div>}
-          {repairPeriod != null && <div>예상 수리 기간: {repairPeriod} 일</div>}
+        <div>
+          <span style={styles.label}>CCTV ID:</span> {cctvId || "미지정"}
         </div>
-
-        <div style={styles.hr} />
-
-        {/* 보고서 내용 */}
-        {reportContents && (
-          <div style={styles.section}>
-            <div style={styles.sectionHeader}>
-              <CheckBoxIcon style={styles.sectionIcon} />
-              보고서 내용
-            </div>
-            <div style={styles.sectionText}>{reportContents}</div>
-          </div>
-        )}
-
-        <div style={styles.hr} />
-
-        {/* 원인 */}
-        {cause && (
-          <div style={styles.section}>
-            <div style={styles.sectionHeader}>
-              <CheckBoxIcon style={styles.sectionIcon} />
-              원인
-            </div>
-            <div style={styles.sectionText}>{cause}</div>
-          </div>
-        )}
-
-        <div style={styles.btnRow} onClick={() => navigate(`/anomalyreport/edit/${rcId}`)}>
-          <button style={styles.btn}>편집하기</button>
+        <div>
+          <span style={styles.label}>조사 방식:</span> 자동 분석 시스템 기반
         </div>
+      </div>
+
+      <div style={styles.hr} />
+
+      {/* 2. 파손 이미지 */}
+      <div style={styles.section}>
+        <div>
+          <span style={styles.label}>파손 이미지:</span>
+        </div>
+        {imageUrl && <img src={imageUrl} alt="Crack" style={styles.image} />}
+      </div>
+
+      <div style={styles.hr} />
+
+      {/* 3. 파손 상세 내역 */}
+      <div style={styles.section}>
+        <div>
+          <span style={styles.label}>파손 길이:</span> {length} cm
+        </div>
+        <div>
+          <span style={styles.label}>파손 면적:</span> {area} ㎠
+        </div>
+        <div>
+          <span style={styles.label}>파손 원인:</span> {cause || "분석 중"}
+        </div>
+      </div>
+
+      <div style={styles.hr} />
+
+      {/* 4. 예측 수리 정보 */}
+      <div style={styles.section}>
+        <div>
+          <span style={styles.label}>예상 수리 기간:</span> {repairPeriod} 일
+        </div>
+        <div>
+          <span style={styles.label}>예상 수리 비용:</span> ₩{repairCost?.toLocaleString()} 원
+        </div>
+      </div>
+
+      <div style={styles.hr} />
+
+      {/* 5. 종합 의견 */}
+      <div style={styles.section}>
+        <div>
+          <span style={styles.label}>종합 의견:</span>
+        </div>
+        <div style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
+          {reportContents || "해당 사항 없음"}
+        </div>
+      </div>
+
+      <div style={styles.buttonRow}>
+        <button
+          style={styles.button}
+          onClick={() => navigate(`/report/edit/${rcId}`)}
+        >
+          편집하기
+        </button>
       </div>
     </div>
   );

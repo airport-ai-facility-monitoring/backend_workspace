@@ -25,6 +25,8 @@ public class Alert {
 
     private Date alertDate;
 
+    private Long cctvId;
+
     public static AlertRepository repository() {
         AlertRepository alertRepository = AlertApplication.applicationContext.getBean(
             AlertRepository.class
@@ -41,6 +43,7 @@ public class Alert {
             .findById(dangerDetected.getCctvId())
             .ifPresent(cctv -> {
                 Alert alert = new Alert();
+                alert.setCctvId(dangerDetected.getCctvId());
                 alert.setAlertLog(
                     "[" +
                     cctv.getCctvArea() +
@@ -71,6 +74,7 @@ public class Alert {
             .findById(workerCountExceeded.getCctvId())
             .ifPresent(cctv -> {
                 Alert alert = new Alert();
+                alert.setCctvId(workerCountExceeded.getCctvId());
                 alert.setAlertLog(
                     "[" +
                     cctv.getCctvArea() +
@@ -101,6 +105,7 @@ public class Alert {
             .findById(workTimeNotMatched.getCctvId())
             .ifPresent(cctv -> {
                 Alert alert = new Alert();
+                alert.setCctvId(workTimeNotMatched.getCctvId());
                 alert.setAlertLog(
                     "[" +
                     cctv.getCctvArea() +
@@ -137,6 +142,7 @@ public class Alert {
             .findById(cctvId)
             .ifPresent(cctv -> {
                 Alert alert = new Alert();
+                alert.setCctvId(foreignObjectDetected.getCameraId());
                 alert.setAlertLog(
                     "[" +
                     cctv.getCctvArea() +
@@ -165,6 +171,7 @@ public class Alert {
             .findById(workNotInProgress.getCameraId())
             .ifPresent(cctv -> {
                 Alert alert = new Alert();
+                alert.setCctvId(workNotInProgress.getCameraId());
                 alert.setAlertLog(
                     "[" +
                     cctv.getCctvArea() +

@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+// 1. react-router-dom에서 useNavigate 훅을 가져옵니다.
+import { useNavigate } from 'react-router-dom';
 
 // 표에 들어갈 목업 데이터
 const reports = [
@@ -33,7 +35,29 @@ const reports = [
 ];
 
 // 전체 UI를 구성하는 메인 컴포넌트
-function Dashboard() {
+function EquipmentReportDashboard() {
+  // 2. useNavigate 훅을 초기화합니다.
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredReports, setFilteredReports] = useState(reports);
+
+  // 3. navigate 함수를 사용하여 페이지를 이동하도록 수정합니다.
+  const handleNavigate = (id) => {
+    // '/equipment/report/{id}' 경로로 이동합니다.
+    navigate(`/equipment/report/${id}`);
+  };
+
+  const handleSearch = () => {
+    if (!searchTerm) {
+      setFilteredReports(reports);
+      return;
+    }
+    const searchResult = reports.filter((report) =>
+      report.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredReports(searchResult);
+  };
+
   return (
     <div style={styles.container}>
       {/* 상단 헤더 */}
@@ -48,45 +72,46 @@ function Dashboard() {
           <div style={styles.searchBox}>
             <input
               type="text"
-              placeholder="장비를 입력하시오"
+              placeholder="장비명"
               style={styles.input}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              // 엔터 키를 눌러도 검색이 되도록 추가
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <button style={styles.searchButton}>조회</button>
+            <button style={styles.searchButton} onClick={handleSearch}>조회</button>
           </div>
         </section>
 
         {/* 장비 분석 요청 목록 섹션 */}
         <section style={styles.card}>
-          {/* <h2 style={styles.cardTitle}>장비 분석 요청</h2> */}
           <table style={styles.table}>
             <thead>
               <tr>
-                <th style={styles.cardTitle}>번호</th>
-                <th style={styles.cardTitle}>장비 종류</th>
-                <th style={styles.cardTitle}>장비명</th>
-                <th style={styles.cardTitle}>장비 등록 시간</th>
-                <th style={styles.cardTitle}>예측 유지보수 비용</th>
-                <th style={styles.cardTitle}>보고서</th>
+                <th style={styles.th}>번호</th>
+                <th style={styles.th}>장비 종류</th>
+                <th style={styles.th}>장비명</th>
+                <th style={styles.th}>장비 등록 시간</th>
+                <th style={styles.th}>예측 유지보수 비용</th>
+                <th style={styles.th}>보고서</th>
               </tr>
             </thead>
             <tbody>
-              {reports.map((report) => (
+              {filteredReports.map((report) => (
                 <tr key={report.id} style={styles.tr}>
                   <td style={styles.td}>{report.id}</td>
-                  <td style={styles.td}>
-                    {report.isHighlighted ? (
-                      <a href="#" style={styles.highlightLink}>
-                        {report.type}
-                      </a>
-                    ) : (
-                      report.type
-                    )}
-                  </td>
+                  <td style={styles.td}>{report.type}</td>
                   <td style={styles.td}>{report.name}</td>
                   <td style={styles.td}>{report.timestamp}</td>
                   <td style={styles.td}>{report.cost}</td>
                   <td style={styles.td}>
-                    <button style={styles.detailsButton}>상세보기</button>
+                    <button
+                      style={styles.detailsButton}
+                      // 수정된 handleNavigate 함수를 호출합니다.
+                      onClick={() => handleNavigate(report.id)}
+                    >
+                      상세보기
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -130,7 +155,7 @@ const styles = {
     fontSize: '1rem',
     fontWeight: '600',
     color: '#1a202c',
-    margin: '0 0 1rem 0',
+    marginBottom: '1rem',
   },
   searchBox: {
     display: 'flex',
@@ -150,7 +175,8 @@ const styles = {
     borderRadius: '4px',
     cursor: 'pointer',
     color: '#333',
-    fontWeight: '500',
+    // ✅ '조회' 버튼 글씨를 굵게 변경
+    fontWeight: '600',
   },
   table: {
     width: '100%',
@@ -161,8 +187,8 @@ const styles = {
   th: {
     padding: '12px 8px',
     backgroundColor: '#fafafa',
-    fontWeight: '500',
-    color: '#555',
+    fontWeight: '600',
+    color: '#333',
     borderBottom: '1px solid #e2e8f0',
   },
   tr: {
@@ -175,20 +201,16 @@ const styles = {
     color: '#4a5568',
     borderBottom: '1px solid #f3f3f3',
   },
-  highlightLink: {
-    color: '#2563eb',
-    textDecoration: 'underline',
-    fontWeight: '500',
-  },
   detailsButton: {
     padding: '6px 14px',
     fontSize: '0.8rem',
-    color: '#4a5568',
+    color: '#368ce8ff',
     backgroundColor: 'white',
-    border: '1px solid #cbd5e0',
+    border: '1px solid #368ce8ff',
     borderRadius: '4px',
     cursor: 'pointer',
+    fontWeight: '600',
   },
 };
 
-export default Dashboard;
+export default EquipmentReportDashboard;

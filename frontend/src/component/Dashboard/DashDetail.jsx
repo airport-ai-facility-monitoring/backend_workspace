@@ -6,33 +6,30 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
-
-const dummyData = {
-  '1': {
-    title: '제1활주로',
-    logs: [
-      { date: '2018/10/02 10:57:46', detail: '1번 활주로 FOD 감지' },
-      { date: '2018/10/13 10:57:46', detail: '작업자 위험 동작 탐지' },
-    ],
-  },
-  '2': {
-    title: '제2활주로',
-    logs: [
-      { date: '2018/10/10 10:57:46', detail: '2번 활주로 비인가 차량' },
-      { date: '2018/10/30 10:57:46', detail: '--------------------------' },
-    ],
-  },
-};
+import api from '../../api/axios'; // api import 추가
 
 const DashDetail = () => {
   const { id } = useParams();
-  const data = dummyData[id];
-
+  const [alerts, setAlerts] = useState([]);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [detectedImage, setDetectedImage] = useState(null);
 
-  if (!data) return <Typography>존재하지 않는 페이지입니다.</Typography>;
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        const response = await api.get(`/alerts/search/findByCctvId?cctvId=${id}&sort=alertDate,desc`);
+        setAlerts(response.data._embedded.alerts || []);
+      } catch (error) {
+        console.error('Error fetching alerts:', error);
+      }
+    };
+
+    fetchAlerts();
+    const interval = setInterval(fetchAlerts, 1000);
+
+    return () => clearInterval(interval);
+  }, [id]);
 
   const videoPath = `/videos/${id}.mp4`;
 
@@ -70,7 +67,7 @@ const DashDetail = () => {
       </Box>
 
       <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
-        {data.title}
+        CCTV ID: {id}
       </Typography>
 
       {/* 원본 CCTV 영상 */}
@@ -139,10 +136,10 @@ const DashDetail = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.logs.map((log, index) => (
+            {alerts.map((alert, index) => (
               <TableRow key={index}>
-                <TableCell>{log.date}</TableCell>
-                <TableCell>{log.detail}</TableCell>
+                <TableCell>{new Date(alert.alertDate).toLocaleString()}</TableCell>
+                <TableCell>{alert.alertLog}</TableCell>
               </TableRow>
             ))}
           </TableBody>

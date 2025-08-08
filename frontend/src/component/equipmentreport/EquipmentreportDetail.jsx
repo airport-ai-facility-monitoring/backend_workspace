@@ -1,15 +1,25 @@
 import React from 'react';
+// ✅ react-router-dom에서 useNavigate 훅을 가져옵니다.
+import { useNavigate } from 'react-router-dom';
 
-// 아이콘
+// 아이콘 컴포넌트
 const CheckIcon = () => <span style={{ marginRight: '8px', color: '#34D399' }}>✔️</span>;
 const ChartIcon = () => <span style={{ marginRight: '8px', color: '#60A5FA' }}>📊</span>;
 
 function ReportDetail() {
+  // ✅ useNavigate 훅을 초기화합니다.
+  const navigate = useNavigate();
+
   const alternatives = [
     { name: 'TTR-550S', price: '3,100,000원', description: '동일 계열 최신 모델, 부품 호환 가능' },
     { name: 'TTR-ECO300', price: '2,450,000원', description: '전기식, 저소음, 유지비 절감 가능' },
     { name: 'GT TughMaster-2024', price: '3,400,000원', description: '기동성 우수, 신형 라인업 탑재' },
   ];
+
+  // ✅ '확인' 버튼 클릭 시 호출될 함수
+  const handleConfirm = () => {
+    navigate('/equipment/report');
+  };
 
   return (
     <div style={styles.background}>
@@ -48,7 +58,6 @@ function ReportDetail() {
           <ul style={styles.list}>
             <li><strong>유지보수 비용:</strong> 490,000원<span style={styles.note}>비고: 브레이크 및 섀시 보강 기준</span></li>
             <li><strong>신규 매입 비용:</strong> 3,100,000원<span style={styles.note}>비고: 동급 장비 기준</span></li>
-            {/* <li><strong>폐기 비용:</strong> 250,000원<span style={styles.note}>비고: 운반 및 인증 처리 포함</span></li> */}
           </ul>
 
           <p style={styles.paragraph}>
@@ -71,8 +80,8 @@ function ReportDetail() {
 
         {/* 하단 버튼 */}
         <footer style={styles.footer}>
-          <button style={{ ...styles.button, ...styles.primaryButton }}>확인</button>
-          <button style={{ ...styles.button, ...styles.secondaryButton }}>취소</button>
+          {/* ✅ 버튼에 onClick 이벤트 핸들러를 연결합니다. */}
+          <button style={{ ...styles.button, ...styles.primaryButton }} onClick={handleConfirm}>확인</button>
         </footer>
       </div>
     </div>
