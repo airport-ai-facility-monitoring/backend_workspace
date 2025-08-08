@@ -91,8 +91,8 @@ function EquipmentReportDashboard() {
                 <th style={styles.th}>번호</th>
                 <th style={styles.th}>장비 종류</th>
                 <th style={styles.th}>장비명</th>
-                <th style={styles.th}>장비 등록 시간</th>
-                <th style={styles.th}>예측 유지보수 비용</th>
+                <th style={styles.th}>보고서 등록 시간</th>
+                <th style={styles.th}>예측 유지보수 비용(원)</th>
                 <th style={styles.th}>보고서</th>
               </tr>
             </thead>
