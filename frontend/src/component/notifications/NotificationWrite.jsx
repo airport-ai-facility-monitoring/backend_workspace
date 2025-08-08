@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AiOutlineFileImage, AiOutlineFolderOpen } from 'react-icons/ai'
 import './notifications-write.css'
@@ -13,6 +13,8 @@ export default function NotificationWrite() {
   const [important, setImportant] = useState(false)
   const [file, setFile] = useState(null)
   const [user, setUser] = useState(null);
+  const fileInputRef = useRef(null);
+
   // ✅ 사용자 ID를 localStorage에서 불러와 자동 입력 + 마스킹
   // useEffect(() => {
   //   const userId = localStorage.getItem('userId') // 실제 상황에 따라 key 확인
@@ -78,11 +80,14 @@ const handleSubmit = async (e) => {
 };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0])
+    setFile(e.target.files[0] ?? null)
   }
 
   const handleFileRemove = () => {
-  setFile(null);
+    setFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';   // 🔑 브라우저 input 라벨 리셋
+    }
   };
 
   return (
@@ -138,7 +143,7 @@ const handleSubmit = async (e) => {
         <div className="form-row">
           <label>첨부 파일</label>
           <div className="file-box">
-            <input type="file" onChange={handleFileChange} />
+            <input ref={fileInputRef} type="file" onChange={handleFileChange} />
             {file && (
               <div className="file-info">
                 <span>선택된 파일: {file.name}</span>

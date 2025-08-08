@@ -29,6 +29,7 @@ public class Notification {
 
     private String title;
 
+    @Column(updatable = false)
     private Long writerId;
 
     private String contents;
@@ -37,6 +38,7 @@ public class Notification {
 
     private String originalFilename;
 
+    @Column(updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private ZonedDateTime writeDate;
 
@@ -71,6 +73,14 @@ public class Notification {
         notification.setWriteDate(koreanTime);
 
         return repository().save(notification); // 저장 후 @PostPersist에서 이벤트 자동 발생
+    }
+
+    public void update(String title, String contents, boolean important, String fileUrl, String originalFilename) {
+        this.title = title;
+        this.contents = contents;
+        this.important = important;
+        this.fileUrl = fileUrl;
+        this.originalFilename = originalFilename;        
     }
 }
 //>>> DDD / Aggregate Root

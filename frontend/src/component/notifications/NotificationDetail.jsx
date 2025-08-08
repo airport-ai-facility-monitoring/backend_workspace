@@ -65,7 +65,7 @@ export default function NotificationDetail() {
 
   return (
     <div className="detail-wrapper">
-      <div className="back-link" onClick={() => navigate(-1)}>
+      <div className="back-link" onClick={() => navigate(`/notifications`)}>
         <span style={{ marginRight: '6px' }}>←</span> 뒤로가기
       </div>
 
@@ -80,7 +80,7 @@ export default function NotificationDetail() {
         </div>
 
         <pre className="detail-body">
-          {notification.important ? '[중요] ' : ''}
+          {/* {notification.important ? '[중요] ' : ''} */}
           {notification.contents?.trim()}
         </pre>
 
@@ -106,7 +106,7 @@ export default function NotificationDetail() {
         </div>
       )}
 
-      <button className="btn-back" onClick={() => navigate(-1)}>
+      <button className="btn-back" onClick={() => navigate(`/notifications`)}>
         목록으로 돌아가기
       </button>
     </div>
