@@ -1,16 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import WeatherBox from "./WeatherBox";
 import NotificationBox from "./NotificationBox";
+import api from "../../api/axios"; // api import 추가
 
 import {
   Box,
   IconButton,
   Paper,
   Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
 } from "@mui/material";
 
 const MainHomeMg = () => {
+  const [alerts, setAlerts] = useState([]);
+
+  useEffect(() => {
+    const fetchInitialAlerts = async () => {
+      try {
+        const response = await api.get("/alerts?sort=alertDate,desc");
+        setAlerts(response.data._embedded.alerts.slice(0, 10));
+      } catch (error) {
+        console.error("Error fetching initial alerts:", error);
+      }
+    };
+
+    fetchInitialAlerts();
+    const interval = setInterval(fetchInitialAlerts, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f3f6fe" }}>
       <Box sx={{ flexGrow: 1, overflow: "auto", width: "100%" }}>
@@ -112,9 +135,19 @@ const MainHomeMg = () => {
                 <MoreVertIcon />
               </IconButton>
             </Box>
-            <Typography variant="body2" color="textSecondary">
-              연결된 알림 로그가 여기에 표시됩니다.
-            </Typography>
+            <List sx={{ overflow: "auto", flexGrow: 1 }}>
+                {alerts.map((alert, index) => (
+                  <React.Fragment key={alert.alertId || index}>
+                    <ListItem alignItems="flex-start">
+                      <ListItemText
+                        primary={alert.alertLog}
+                        secondary={new Date(alert.alertDate).toLocaleString()}
+                      />
+                    </ListItem>
+                    {index < alerts.length - 1 && <Divider />}
+                  </React.Fragment>
+                ))}
+              </List>
           </Paper>
         </Box>
         </Box>
