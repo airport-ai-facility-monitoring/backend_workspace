@@ -3,6 +3,26 @@ import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../config/api';
 import './notifications-edit.css';
 
+// ✅ 업로드 정책 (프론트 사전검증)
+const ALLOWED_EXT = ['jpg', 'jpeg', 'png', 'pdf'];
+const ALLOWED_MIME = ['image/jpeg', 'image/png', 'application/pdf'];
+const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_COUNT = 1;
+
+function validateFiles(files) {
+  if (!files || files.length === 0) throw new Error('첨부 파일이 없습니다.');
+  if (files.length > MAX_COUNT) throw new Error(`파일은 최대 ${MAX_COUNT}개까지 업로드 가능합니다.`);
+  for (const f of files) {
+    if (f.size > MAX_SIZE) throw new Error('파일 크기는 5MB 이하여야 합니다.');
+    const ext = (f.name.split('.').pop() || '').toLowerCase();
+    if (!ALLOWED_EXT.includes(ext)) throw new Error('허용되지 않는 확장자입니다.');
+    if (!ALLOWED_MIME.includes(f.type)) throw new Error('허용되지 않는 파일 형식입니다.');
+  }
+}
+
+// ✅ 백엔드 다운로드 엔드포인트 규칙에 맞는 URL 생성
+const getDownloadUrl = (id, savedName) => `/notifications/${id}/files/${savedName}`;
+
 export default function NotificationEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -25,8 +45,8 @@ export default function NotificationEdit() {
         setImportant(important);
 
         if (originalFilename && fileUrl) {
-          // 초기에도 “선택된 파일”처럼 보이게
-          setFile({ name: originalFilename, url: fileUrl, isNew: false });
+          // fileUrl에는 savedName이 들어온다고 가정
+          setFile({ name: originalFilename, url: getDownloadUrl(id, fileUrl), isNew: false, savedName: fileUrl });
           setRemoveFile(false);
         } else {
           setFile(null);
@@ -41,9 +61,20 @@ export default function NotificationEdit() {
 
   const handleFileChange = (e) => {
     const selected = e.target.files?.[0] || null;
-    if (selected) {
+    if (!selected) {
+      setFile(null);
+      return;
+    }
+
+    try {
+      // ✅ 업로드 즉시 사전검증
+      validateFiles([selected]);
       setFile({ name: selected.name, isNew: true, file: selected });
-      setRemoveFile(false);
+      setRemoveFile(false); // 새 파일을 고르면 삭제 플래그는 해제
+    } catch (err) {
+      alert(err.message);
+      setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -56,8 +87,6 @@ export default function NotificationEdit() {
     } else {
       // 기존 파일 선택 취소 → 저장 시 삭제
       setRemoveFile(true);
-      // UI 상 “선택된 파일” 문구를 숨기고 싶으면 file을 null처럼 보이게 처리
-      // 하지만 백엔드에 removeFile=true를 보내야 하므로 flag만 유지
       setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
@@ -65,18 +94,33 @@ export default function NotificationEdit() {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
+    // ✅ 백엔드 규칙상 "파일 교체"와 "삭제"를 동시에 요청하면 안 됨
+    if (removeFile && file?.isNew) {
+      alert('파일 교체와 삭제를 동시에 할 수 없습니다. 하나만 선택하세요.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('title', title);
     formData.append('contents', contents);
     formData.append('important', important);
-    formData.append('removeFile', removeFile); // 서버에서 삭제/유지/교체 판단
+    formData.append('removeFile', removeFile);
 
     // 새 파일만 업로드(교체)
     if (file && file.isNew && file.file) {
+      // ✅ 서버 가기 전 최종검증
+      try {
+        validateFiles([file.file]);
+      } catch (err) {
+        alert(err.message);
+        return;
+      }
       formData.append('file', file.file);
     }
 
     try {
+      // 백엔드가 DTO로 200/201을 내려주면 성공 처리
       await api.put(`/notifications/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -84,7 +128,8 @@ export default function NotificationEdit() {
       navigate(`/notifications/${id}`);
     } catch (error) {
       console.error(error);
-      alert('수정 중 오류가 발생했습니다.');
+      const msg = error?.response?.data?.message || '수정 중 오류가 발생했습니다.';
+      alert(msg);
     }
   };
 
@@ -131,17 +176,20 @@ export default function NotificationEdit() {
           <label>첨부 파일</label>
 
           <div className="file-row" style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            {/* 파일 선택 버튼 (항상 표시) */}
+            {/* ✅ 파일 선택시 accept으로 1차 필터 */}
             <input
               ref={fileInputRef}
               type="file"
               onChange={handleFileChange}
+              accept=".jpg,.jpeg,.png,.pdf"  // ✅
             />
+            <small style={{ opacity: 0.7 }}>
+              허용 확장자: jpg, jpeg, png, pdf · 최대 크기: 5MB · 최대 1개
+            </small>
 
-            {/* 초기에도 “선택된 파일” 스타일로 */}
+            {/* 선택된 파일 표기 */}
             {file && !removeFile && (
               <div className="selected-file" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {/* 기존 파일이면 링크, 새 파일이면 평문 */}
                 {file.isNew
                   ? <span>선택된 파일: {file.name}</span>
                   : <a href={file.url} target="_blank" rel="noreferrer">선택된 파일: {file.name}</a>}
@@ -149,9 +197,8 @@ export default function NotificationEdit() {
               </div>
             )}
 
-            {/* 사용자가 기존 파일을 ‘선택 취소’한 경우에는 아무것도 표시하지 않음 */}
             {!file && removeFile && (
-              <span style={{ opacity: 0.7 }}>선택된 파일 없음</span>
+              <span style={{ opacity: 0.7 }}>선택된 파일 없음 (저장 시 삭제)</span>
             )}
           </div>
         </div>
