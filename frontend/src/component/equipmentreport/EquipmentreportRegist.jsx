@@ -144,10 +144,9 @@ const RepairRequestForm = () => {
     alert(`'${category}' 카테고리의 수리 요청이 제출되었습니다.\n\n` + JSON.stringify(formData, null, 2));
   };
 
-  // ✨ 취소 버튼 클릭 시 /equipmentreport 경로로 이동하도록 수정된 핸들러
+// 취소 버튼 클릭 시 /equipment/report 경로로 이동하도록 수정된 핸들러
   const handleCancel = () => {
-    // window.location.href를 사용하여 페이지를 이동시킵니다.
-   window.location.href = '/equipmentreport';
+    window.location.href = '/equipment/report';
   };
 
   const renderCommonFields = () => (
@@ -157,7 +156,7 @@ const RepairRequestForm = () => {
         <input style={styles.input} type="text" name="serialNumber" value={formData.serialNumber} onChange={handleInputChange} />
       </div>
       <div style={styles.formRow}>
-        <label style={styles.label}>고장기록</label>
+        <label style={styles.label}>고장기록(회)</label>
         <input style={styles.input} type="text" name="failureRecord" value={formData.failureRecord} onChange={handleInputChange} />
       </div>
       <div style={styles.formRow}>
@@ -165,19 +164,19 @@ const RepairRequestForm = () => {
         <input style={styles.input} type="text" name="avgMonthlyUptime" value={formData.avgMonthlyUptime} onChange={handleInputChange} />
       </div>
       <div style={styles.formRow}>
-        <label style={styles.label}>수리비용</label>
+        <label style={styles.label}>(최근)수리비용</label>
         <input style={styles.input} type="text" name="repairCost" value={formData.repairCost} onChange={handleInputChange} />
       </div>
       <div style={styles.formRow}>
-        <label style={styles.label}>수리 시간</label>
+        <label style={styles.label}>(최근)수리시간</label>
         <input style={styles.input} type="text" name="repairTime" value={formData.repairTime} onChange={handleInputChange} />
       </div>
       <div style={styles.formRow}>
-        <label style={styles.label}>정비시 인건비</label>
+        <label style={styles.label}>수리시간 인건비</label>
         <input style={styles.input} type="text" name="laborCost" value={formData.laborCost} onChange={handleInputChange} />
       </div>
       <div style={styles.formRow}>
-        <label style={styles.label}>장비 평균수명</label>
+        <label style={styles.label}>장비 평균수명(시간)</label>
         <input style={styles.input} type="text" name="avgLifespan" value={formData.avgLifespan} onChange={handleInputChange} />
       </div>
     </>
@@ -210,7 +209,7 @@ const RepairRequestForm = () => {
               </select>
             </div>
             <div style={styles.formRow}>
-              <label style={styles.label}>소비 전력</label>
+              <label style={styles.label}>소비 전력(W)</label>
               <input style={styles.input} type="text" name="powerConsumption" value={formData.powerConsumption || ''} onChange={handleInputChange} />
             </div>
           </>
@@ -228,7 +227,7 @@ const RepairRequestForm = () => {
               </select>
             </div>
             <div style={styles.formRow}>
-              <label style={styles.label}>소비 전력</label>
+              <label style={styles.label}>소비 전력(W)</label>
               <input style={styles.input} type="text" name="powerConsumption" value={formData.powerConsumption || ''} onChange={handleInputChange} />
             </div>
           </>
@@ -237,11 +236,11 @@ const RepairRequestForm = () => {
         {category === '표지-표시' && (
           <>
             <div style={styles.formRow}>
-              <label style={styles.label}>판넬 크기(가로)</label>
+              <label style={styles.label}>판넬 크기(가로cm)</label>
               <input style={styles.input} type="text" name="panelWidth" value={formData.panelWidth || ''} onChange={handleInputChange} />
             </div>
             <div style={styles.formRow}>
-              <label style={styles.label}>판넬 크기(세로)</label>
+              <label style={styles.label}>판넬 크기(세로cm)</label>
               <input style={styles.input} type="text" name="panelHeight" value={formData.panelHeight || ''} onChange={handleInputChange} />
             </div>
             <div style={styles.formRow}>
