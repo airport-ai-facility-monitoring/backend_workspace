@@ -15,7 +15,7 @@ import javax.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "RunwayCrack_table")
+@Table(name = "RunwayCrack_table", schema = "runwaycrack")
 @Data
 //<<< DDD / Aggregate Root
 public class RunwayCrack {

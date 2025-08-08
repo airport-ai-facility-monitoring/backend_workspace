@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.ToString;
 
 @Entity
-@Table(name = "Employee_table")
+@Table(name = "Employee_table", schema = "member")
 @Data
 @ToString
 

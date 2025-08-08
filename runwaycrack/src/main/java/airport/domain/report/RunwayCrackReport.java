@@ -15,7 +15,7 @@ import lombok.Data;
 import lombok.ToString;
 
 @Entity
-@Table(name = "RunwayCrackReport_table")
+@Table(name = "RunwayCrackReport_table", schema = "runwaycrack")
 @Data
 @ToString
 //<<< DDD / Aggregate Root

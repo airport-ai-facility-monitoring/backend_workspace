@@ -14,7 +14,7 @@ import lombok.Data;
 
 
 @Entity
-@Table(name = "Equipment_table")
+@Table(name = "Equipment_table", schema = "equipmentdashboard")
 @Data
 //<<< DDD / Aggregate Root
 public class Equipment {

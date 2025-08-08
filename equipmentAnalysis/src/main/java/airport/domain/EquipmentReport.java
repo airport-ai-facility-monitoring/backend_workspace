@@ -13,7 +13,7 @@ import javax.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "EquipmentReport_table")
+@Table(name = "EquipmentReport_table", schema = "equipmentAnalysis")
 @Data
 //<<< DDD / Aggregate Root
 public class EquipmentReport {

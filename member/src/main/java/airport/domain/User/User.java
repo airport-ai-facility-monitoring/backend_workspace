@@ -19,10 +19,9 @@ import lombok.Data;
 import lombok.ToString;
 
 @Entity
-@Table(name = "User_table")
+@Table(name = "User_table", schema = "member")
 @Data
 @ToString
-
 //<<< DDD / Aggregate Root
 public class User {
 
