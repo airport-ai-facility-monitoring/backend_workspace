@@ -30,15 +30,19 @@ spring:
       bindings:
         event-in:
           group: notification
-#<<< EDA / Topic Name
           destination: airport
-#>>> EDA / Topic Name
           contentType: application/json
         event-out:
-#<<< EDA / Topic Name
           destination: airport
-#>>> EDA / Topic Name
           contentType: application/json
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+app:
+  upload:
+    dir: ${APP_UPLOAD_DIR:/workspaces/backend_workspace/uploads/notifications}
 
 logging:
   level:
@@ -80,5 +84,13 @@ spring:
         event-out:
           destination: airport
           contentType: application/json
+    servlet:
+      multipart:
+        max-file-size: 5MB
+        max-request-size: 5MB
+
+  app:
+    upload:
+      dir: ${APP_UPLOAD_DIR:/data/notifications}
 
 
