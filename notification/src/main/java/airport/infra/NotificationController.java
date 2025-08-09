@@ -72,9 +72,11 @@ public class NotificationController {
             @RequestParam(value = "file", required = false) MultipartFile file
     ) {
         String fileUrl = null;
+        String originalFilename = null;
 
         if (file != null && !file.isEmpty()) {
             fileUrl = fileStorageService.save(file); // 파일 저장 후 URL 생성
+            originalFilename = file.getOriginalFilename();
         }
 
         NotificationsRegistered command = new NotificationsRegistered();
@@ -84,6 +86,6 @@ public class NotificationController {
         command.setImportant(important);
         command.setWriteDate(LocalDateTime.now());
 
-        return Notification.register(command, fileUrl);
+        return Notification.register(command, fileUrl, originalFilename);
     }
 }

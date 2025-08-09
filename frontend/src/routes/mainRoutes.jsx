@@ -20,6 +20,7 @@ import EquipmentreportDetail from "../component/equipmentreport/EquipmentreportD
 import RunwayCrack from '../component/crack/RunwayCrack';
 import Crackreport from '../component/crack/report/CrackReport';
 import EquipmentreportRegist from "../component/equipmentreport/EquipmentreportRegist";
+import NotificationEdit from '../component/notifications/NotificationEdit'
 import CrackReportEdit from '../component/crack/report/CrackReportEdit';
 import PredictRepair from '../component/crack/PredictRepair';
 
@@ -50,6 +51,7 @@ const mainRoutes = [
       { path: "equipmentreport", element: <Equipmentreport /> },
       { path: "equipmentreport/:id", element: <EquipmentreportDetail /> },
       { path: "equipmentreport/regist", element: <EquipmentreportRegist /> },
+      { path: "notifications/edit/:id", element: <NotificationEdit />},
     ],
   },
 ];

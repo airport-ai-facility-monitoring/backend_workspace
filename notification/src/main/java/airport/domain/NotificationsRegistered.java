@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 //<<< DDD / Domain Event
 
 @Data
@@ -16,7 +18,7 @@ public class NotificationsRegistered extends AbstractEvent {
     private String title;
     private Long writerId;
     private String contents;
-    private LocalDateTime writeDate;
+    private ZonedDateTime writeDate;
     private boolean important;
 
     public NotificationsRegistered(Notification aggregate) {
