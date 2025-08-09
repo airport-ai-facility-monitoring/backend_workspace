@@ -33,7 +33,8 @@ steps:
         --source ./frontend/dist \
         --destination '$web' \
         --overwrite
-
+        --exclude "videos/*"  # <-- 이 줄을 추가하여 videos 폴더를 제외합니다.
+        
       az cdn endpoint purge \
         --resource-group airport27-rsrcgrp \
         --profile-name airport \
