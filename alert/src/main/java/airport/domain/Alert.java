@@ -12,7 +12,7 @@ import javax.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "Alert_table")
+@Table(name = "Alert_table",  schema = "alert")
 @Data
 //<<< DDD / Aggregate Root
 public class Alert {
