@@ -2,9 +2,7 @@ trigger:
   branches:
     include:
       - main
-  paths:
-    include:
-      - frontend/*
+
 pool:
   vmImage: 'ubuntu-latest'
 
