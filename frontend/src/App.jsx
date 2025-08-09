@@ -12,9 +12,9 @@ import ResetPassword from "./component/login/ResetPassword";
 
 function App() {
 //db안뜰때 로그인 패스하는거 주석처리하면됨
-  useEffect(() => {
-    localStorage.setItem("accessToken", "123213");
-  }, []);
+  // useEffect(() => {
+  //   localStorage.setItem("accessToken", "123213");
+  // }, []);
 
   return (
       <ToastProvider>
@@ -22,17 +22,17 @@ function App() {
           <Route
             path="/login"
             element={
-              // <RedirectIfAuth>
+              <RedirectIfAuth>
                 <Login />
-              // </RedirectIfAuth>
+              </RedirectIfAuth>
             }
           />
           <Route
             path="/signup"
             element={
-              // <RedirectIfAuth>
+              <RedirectIfAuth>
                 <SignUp />
-              // </RedirectIfAuth>
+              </RedirectIfAuth>
             }
           />
           <Route path="/signup/privacy-consent" element={<PrivacyConsent />} />
@@ -41,16 +41,16 @@ function App() {
             <Route
               key={route.path}
               path={route.path}
-              // element={<ProtectedRoute>{route.element}</ProtectedRoute>}
-              element={route.element}
+              element={<ProtectedRoute>{route.element}</ProtectedRoute>}
+              //element={route.element}
             >
               {route.children &&
                 route.children.map((child) => (
                   <Route
                     key={child.path}
                     path={child.path}
-                    // element={<ProtectedRoute>{child.element}</ProtectedRoute>}
-                    element={child.element}
+                    element={<ProtectedRoute>{child.element}</ProtectedRoute>}
+                    //element={child.element}
                   />
                 ))}
             </Route>

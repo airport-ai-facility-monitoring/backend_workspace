@@ -32,16 +32,9 @@ public class RunwayCrack {
 
     private Integer area; // 파손 면적 (cm²)
 
-    
-    @Column(length = 4000)
-    private String damageDetails;
-
-    private Boolean reportState;
-
     private LocalDate detectedDate;
 
-    @OneToOne(mappedBy = "runwayCrack", cascade = CascadeType.ALL)
-    private RunwayCrackReport report;
+    private Boolean reportState;
 
     @PostPersist
     public void onPostPersist() {

@@ -17,7 +17,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import api from "../../config/api";
 
 const PredictRepair = () => {
-  const { rcId } = useParams();
+  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { crackInfo } = location.state || {};
@@ -79,12 +79,34 @@ const PredictRepair = () => {
 
   // 🚀 2. 보고서 생성 요청
   const handleReportGenerate = async () => {
+
+
+
+    if (!predictionResult) {
+      alert("먼저 예측을 시작하여 예측 결과를 받아야 합니다.");
+      return;
+    }
+
     try {
       setReportLoading(true);
-      await api.post(`/runwaycrackreports/analyze/${rcId}`);
+      
+      // 사용자가 입력한 값과 예측 결과를 모두 payload에 포함
+      const payload = {
+        pavement_type_concrete: inputs.pavement_type_concrete,
+        epoxy_used: inputs.epoxy_used,
+        wiremesh_used: inputs.wiremesh_used,
+        joint_seal_used: inputs.joint_seal_used,
+        rebar_used: inputs.rebar_used,
+        polymer_used: inputs.polymer_used,
+        sealing_used: inputs.sealing_used,
+        predictedCost: predictionResult.predictedCost,
+        predictedDuration: predictionResult.predictedDuration,
+      };
+
+      await api.post(`/runwaycrackreports/analyze/${id}`, payload);
+      
       alert("보고서가 성공적으로 생성되었습니다.");
-      // 보고서 페이지로 자동 이동
-      navigate(`/crack/report/${rcId}`);
+      navigate(`/crack/report/${id}`);
     } catch (err) {
       console.error("보고서 생성 실패", err);
       alert("보고서 생성 중 오류 발생");
@@ -209,7 +231,6 @@ const PredictRepair = () => {
 
               <Box sx={{ flex: 1 }}>
                 <Grid container spacing={3}>
-                  {/* 각 필드를 개별 박스로 감싸서 여유 공간 확보 */}
                   <Grid item xs={12}>
                     <Box sx={{ mb: 1 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontSize: '0.875rem' }}>
@@ -230,7 +251,7 @@ const PredictRepair = () => {
                     </Box>
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12}>
                     <Box sx={{ mb: 1 }}>
                       <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontSize: '0.875rem' }}>
                         에폭시
@@ -364,12 +385,13 @@ const PredictRepair = () => {
                     {loading ? <CircularProgress size={24} /> : "예측 시작"}
                   </Button>
                 </Box>
+              </Box>
 
-                {predictionResult && (
+              {predictionResult && (
+                <Box sx={{ mt: 4 }}>
                   <Paper 
                     elevation={2} 
                     sx={{ 
-                      mt: 3, 
                       p: 2.5, 
                       bgcolor: "#f8f9fa",
                       border: "1px solid #e3f2fd"
@@ -419,7 +441,6 @@ const PredictRepair = () => {
                       </Typography>
                     </Box>
 
-                    {/* 보고서 생성 버튼 */}
                     <Box sx={{ mt: 3, textAlign: "center" }}>
                       <Button
                         variant="outlined"
@@ -444,8 +465,8 @@ const PredictRepair = () => {
                       </Button>
                     </Box>
                   </Paper>
-                )}
-              </Box>
+                </Box>
+              )}
             </Paper>
           </Grid>
         </Grid>

@@ -23,42 +23,45 @@ const RunwayCrack = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🚀 1. 페이지 진입 시 더미 데이터 추가 (임시)
-  useEffect(() => {
-    // 백엔드 API 대신 프론트엔드에서 직접 더미 데이터를 생성
-    const dummyData = [{
-      rcId: 1, // 고유 ID
-      imageUrl: "https://via.placeholder.com/150",
-      cctvId: 201,
-      length: 30,
-      area: 150,
-      detectedDate: "2025-07-18",
-    }];
+// 🚀 1. 페이지 진입 시 더미 데이터 추가 및 리스트 요청
+useEffect(() => {
+  const fetchDataAndInsertDummy = async () => {
+    try {
+      setLoading(true);
 
-    setLoading(true);
+      // 백엔드 API로 보낼 더미 데이터 정의
+      const dummyData = [{
+        imageUrl: "https://via.placeholder.com/150",
+        cctvId: 201,
+        length: 30,
+        area: 150,
+        detectedDate: "2025-07-18",
+        reportState: false,
+      }, {
+        imageUrl: "https://via.placeholder.com/150",
+        cctvId: 202,
+        length: 50,
+        area: 250,
+        detectedDate: "2025-07-17",
+        reportState: true,
+      }];
 
-    // 실제 API 호출 로직은 주석 처리하여 남겨둠
-    /*
-    const fetchData = async () => {
-      try {
-        const res = await api.get("/runwaycracks");
-        setData(res.data);
-      } catch (err) {
-        console.error("데이터 로딩 실패", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-    */
-
-    // 임시 더미 데이터 로직
-    setTimeout(() => {
-      setData(dummyData);
+      // 1. 더미 데이터들을 서버에 POST 요청으로 보냅니다.
+      const postPromises = dummyData.map(data => api.post("/runwaycracks", data));
+      await Promise.all(postPromises);
+      
+      // 2. POST 요청이 완료되면, 전체 데이터를 GET 요청으로 다시 가져옵니다.
+      const res = await api.get("/runwaycracks");
+      setData(res.data);
+    } catch (err) {
+      console.error("데이터 처리 중 오류 발생:", err);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
+  };
 
-  }, []);
+  fetchDataAndInsertDummy();
+}, []);
 
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f3f6fe" }}>
@@ -119,7 +122,7 @@ const RunwayCrack = () => {
                   <TableCell align="center">파손 면적 (cm²)</TableCell>
                   <TableCell align="center">사진</TableCell>
                   <TableCell align="center">발견 날짜</TableCell>
-                  <TableCell align="center">분석</TableCell>
+                  <TableCell align="center">상태</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -133,7 +136,9 @@ const RunwayCrack = () => {
                   data.map((row, index) => (
                     <TableRow key={row.rcId}>
                       <TableCell align="center">{index + 1}</TableCell>
-                      <TableCell align="center">확인 전</TableCell>
+                      <TableCell align="center">
+                        {row.reportState ? "보고서 완료" : "확인 전"}
+                      </TableCell>
                       <TableCell align="center">{row.cctvId}</TableCell>
                       <TableCell align="center">{row.length ?? "-"}</TableCell>
                       <TableCell align="center">{row.area ?? "-"}</TableCell>
@@ -152,15 +157,27 @@ const RunwayCrack = () => {
                       </TableCell>
                       <TableCell align="center">{row.detectedDate}</TableCell>
                       <TableCell align="center">
-                        <Button
-                          variant="contained"
-                          size="small"
-                          onClick={() =>
-                            navigate(`predict/${row.rcId}`, { state: { crackInfo: row } })
-                          }
-                        >
-                          상세 분석
-                        </Button>
+                        {row.reportState ? (
+                          <Button
+                            variant="contained"
+                            color="success" // 보고서 완료 시 초록색
+                            size="small"
+                            onClick={() => navigate(`report/${row.rcId}`)}
+                          >
+                            보고서 보기
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            color="primary" // 기본 상태일 때 파란색
+                            size="small"
+                            onClick={() =>
+                              navigate(`predict/${row.rcId}`, { state: { crackInfo: row } })
+                            }
+                          >
+                            상세 분석
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))

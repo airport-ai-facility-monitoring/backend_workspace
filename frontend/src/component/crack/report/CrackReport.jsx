@@ -13,6 +13,7 @@ export default function CrackReport() {
     const fetchReport = async () => {
       try {
         const res = await api.get(`/runwaycrackreports/${rcId}`);
+        console.log(res)
         setReportData(res.data);
       } catch (err) {
         console.error("보고서 데이터 로딩 실패", err);
@@ -28,18 +29,20 @@ export default function CrackReport() {
   if (loading) return <div>로딩 중...</div>;
   if (!reportData) return <div>데이터가 없습니다.</div>;
 
-  // 새 DB 필드명에 맞게 구조분해 할당
+  // 새 DTO 필드명에 맞게 구조분해 할당
   const {
-    title,
-    cause,
-    reportContents,
-    repairPeriod,
-    repairCost,
     imageUrl,
     length,
     area,
     cctvId,
     detectedDate,
+    title,
+    damageInfo,
+    repairMaterials,
+    estimatedCost,
+    estimatedPeriod,
+    summary,
+    writingDate,
   } = reportData;
 
   const styles = {
@@ -101,6 +104,10 @@ export default function CrackReport() {
       <div style={styles.section}>
         <div>
           <span style={styles.label}>보고서 작성일자:</span>{" "}
+          {writingDate ? new Date(writingDate).toLocaleDateString() : "미지정"}
+        </div>
+        <div>
+          <span style={styles.label}>파손 감지일자:</span>{" "}
           {detectedDate ? new Date(detectedDate).toLocaleDateString() : "미지정"}
         </div>
         <div>
@@ -126,25 +133,28 @@ export default function CrackReport() {
       {/* 3. 파손 상세 내역 */}
       <div style={styles.section}>
         <div>
-          <span style={styles.label}>파손 길이:</span> {length} cm
+          <span style={styles.label}>파손 길이:</span> {length || "미측정"} cm
         </div>
         <div>
-          <span style={styles.label}>파손 면적:</span> {area} ㎠
+          <span style={styles.label}>파손 면적:</span> {area || "미측정"} ㎠
         </div>
         <div>
-          <span style={styles.label}>파손 원인:</span> {cause || "분석 중"}
+          <span style={styles.label}>손상 정보:</span> {damageInfo || "분석 중"}
         </div>
       </div>
 
       <div style={styles.hr} />
 
-      {/* 4. 예측 수리 정보 */}
+      {/* 4. 수리 정보 */}
       <div style={styles.section}>
         <div>
-          <span style={styles.label}>예상 수리 기간:</span> {repairPeriod} 일
+          <span style={styles.label}>수리 자료:</span> {repairMaterials || "미정"}
         </div>
         <div>
-          <span style={styles.label}>예상 수리 비용:</span> ₩{repairCost?.toLocaleString()} 원
+          <span style={styles.label}>예상 수리 기간:</span> {estimatedPeriod || "미정"}
+        </div>
+        <div>
+          <span style={styles.label}>예상 수리 비용:</span> {estimatedCost || "미정"}
         </div>
       </div>
 
@@ -156,7 +166,7 @@ export default function CrackReport() {
           <span style={styles.label}>종합 의견:</span>
         </div>
         <div style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
-          {reportContents || "해당 사항 없음"}
+          {summary || "해당 사항 없음"}
         </div>
       </div>
 
