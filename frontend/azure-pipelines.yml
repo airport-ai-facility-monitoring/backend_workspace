@@ -9,7 +9,7 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '16.x'
+    versionSpec: '18.x'  # <-- 이 부분을 '18.x'로 변경
   displayName: 'Install Node.js'
 
 - script: |
@@ -24,7 +24,7 @@ steps:
 
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'Azure 구독 1 (2c387be4-0570-49f7-877a-d90c727fc3f4)'      # 실제 서비스 연결 이름으로 변경하세요
+    azureSubscription: 'Azure 구독 1 (2c387be4-0570-49f7-877a-d90c727fc3f4)'
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
