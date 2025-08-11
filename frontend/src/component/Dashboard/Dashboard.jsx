@@ -19,12 +19,12 @@ import {
 } from "@mui/material";
 
 const runwayLabels = [
-  { id: 1, name: "제1,2 활주로", top: "24.1%", left: "29.2%" },
-  { id: 2, name: "자유무역지역(화물터미널)", top: "11.3%", left: "38.5%" },
-  { id: 3, name: "제1 여객터미널", top: "11%", left: "56.7%" },
-  { id: 4, name: "제2 여객터미널", top: "43%", left: "55.2%" },
-  { id: 5, name: "탑승동", top: "26.7%", left: "62.8%" },
-  { id: 6, name: "제3·4 활주로", top: "32.5%", left: "80.5%" },
+  { id: 1, name: "제1,2 활주로", top: "33.1%", left: "29.2%" },
+  { id: 2, name: "자유무역지역(화물터미널)", top: "16.3%", left: "45.5%" },
+  { id: 3, name: "제1 여객터미널", top: "23%", left: "70.7%" },
+  { id: 4, name: "제2 여객터미널", top: "59%", left: "40.2%" },
+  { id: 5, name: "탑승동", top: "40%", left: "59.8%" },
+  { id: 6, name: "제3·4 활주로", top: "65.5%", left: "75.5%" },
 ];
 
 const DashBoardMg = () => {

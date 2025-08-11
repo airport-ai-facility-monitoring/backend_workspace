@@ -1,8 +1,8 @@
 package airport.domain;
 
 import airport.EquipmentAnalysisApplication;
-import airport.domain.MaintenanceCompleted;
-import airport.domain.ReportGenerated;
+// import airport.domain.MaintenanceCompleted;
+// import airport.domain.ReportGenerated;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -20,17 +20,21 @@ public class EquipmentReport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long equipReportid;
+    private Long equipReportid; //고유 번호
 
-    private String title;
+    private String equipmentType;
 
-    private int maintenanceCost;
+    private String equipmentName;
 
-    private String reportContents;
+    private LocalDate timestamp;
 
-    private Long equipmentId;
+    private Integer maintenanceCost;
+}
+    // private Long equipmentId;
 
-    private String state;
+    // private String state;
+
+    // private String reportContents;
 
     // @PreUpdate
     // public void onPreUpdate() {
@@ -40,18 +44,18 @@ public class EquipmentReport {
     //     maintenanceCompleted.publishAfterCommit();
     // }
 
-    public static EquipmentReportRepository repository() {
-        EquipmentReportRepository equipmentReportRepository = EquipmentAnalysisApplication.applicationContext.getBean(
-            EquipmentReportRepository.class
-        );
-        return equipmentReportRepository;
-    }
+//     public static EquipmentReportRepository repository() {
+//         EquipmentReportRepository equipmentReportRepository = EquipmentAnalysisApplication.applicationContext.getBean(
+//             EquipmentReportRepository.class
+//         );
+//         return equipmentReportRepository;
+//     }
 
-    public void completeInspection() {
-        this.state = "점검완료";
+//     public void completeInspection() {
+//         this.state = "점검완료";
 
-        MaintenanceCompleted event = new MaintenanceCompleted(this);
-        event.publishAfterCommit();
-    }
-}
+//         MaintenanceCompleted event = new MaintenanceCompleted(this);
+//         event.publishAfterCommit();
+//     }
+// }
 //>>> DDD / Aggregate Root
