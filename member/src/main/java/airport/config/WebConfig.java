@@ -1,13 +1,13 @@
-package airport.config;
+// package airport.config;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+// import org.springframework.context.annotation.Configuration;
+// import org.springframework.web.servlet.config.annotation.CorsRegistry;
+// import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
-public class WebConfig implements WebMvcConfigurer {
+// @Configuration
+// public class WebConfig implements WebMvcConfigurer {
 
+<<<<<<< HEAD
     // @Override
     // public void addCorsMappings(CorsRegistry registry) {
     //     registry.addMapping("/**")
@@ -24,3 +24,14 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:/workspaces/backend_workspace/notification/uploads/"); // 실제 업로드 경로로 변경
     }
 }
+=======
+//     @Override
+//     public void addCorsMappings(CorsRegistry registry) {
+//         registry.addMapping("/**")
+//                 .allowedOrigins("http://localhost:5173")
+//                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+//                 .allowedHeaders("*")
+//                 .allowCredentials(true);
+//     }
+// }
+>>>>>>> 39dcf40eb192ff483ce30c3ecd77b8174ecc455c
