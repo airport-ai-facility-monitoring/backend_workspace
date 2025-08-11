@@ -31,10 +31,12 @@ public class MaintenanceRequest {
 
     // --- 기상관측 장비 전용 필드 ---
     private String mount_type;        // 설치 형태 (예: 지상, 벽면)
+    private Integer power_consumption; // 소비 전력 (W)
 
     // --- 표지판 장비 전용 필드 ---
     private Integer panel_width;      // 패널 너비 (mm)
     private Integer panel_height;     // 패널 높이 (mm)
     private String material;          // 재질 (예: 알루미늄, 플라스틱)
     private String sign_color;        // 색상
+    private String mount_type;        // 설치 형태 (예: 지상, 벽면)
 }

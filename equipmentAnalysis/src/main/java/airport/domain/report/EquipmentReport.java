@@ -40,7 +40,7 @@ public class EquipmentReport {
 
     /**
      * 예상되는 조치 비용에 대한 정보입니다.
-     * (예: "총 50,000원 (부품비 30,000원 + 인건비 20,000원)")
+     * (예: "총 50,000원")
      */
     private String cost;
 
