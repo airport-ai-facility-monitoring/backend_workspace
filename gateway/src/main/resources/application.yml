@@ -54,7 +54,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://shiny-pancake-wqppr57p9vxhg4rp-5173.app.github.dev"
+              - "https://stunning-journey-7j66v596r4q3pw69-5173.app.github.dev"
             allowedMethods:
               - "*"
             allowedHeaders:

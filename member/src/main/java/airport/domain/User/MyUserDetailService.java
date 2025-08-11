@@ -41,7 +41,7 @@ public class MyUserDetailService implements UserDetailsService {
 
         var user = result.get();
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if(empId == 1L){
+        if(empId == 9999L){
             authorities.add(new SimpleGrantedAuthority("ADMIN"));
         }else{
             authorities.add(new SimpleGrantedAuthority("USER"));

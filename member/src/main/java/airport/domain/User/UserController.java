@@ -134,6 +134,16 @@ public class UserController {
             //     System.out.println("인증성공");
             // }
             
+            Long employeeId = Long.valueOf((String) userData.get("employeeId"));
+            
+            if (employeeRepository.findById(employeeId).isEmpty()) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "등록되지 않은 사번입니다.");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+
             // 2. User 객체에 데이터 바인딩
             User user = new User();
             // employeeId는 String으로 들어오므로 Long으로 변환
@@ -232,9 +242,14 @@ public class UserController {
             refreshTokenCookie.setMaxAge(60 * 60 * 24 * 7);
             response.addCookie(refreshTokenCookie);
 
-            // 7. 응답
-            respond(response, HttpServletResponse.SC_OK,
-                    "{\"accessToken\": \"" + accessToken + "\"}");
+            // Authentication 객체에서 권한(ROLE) 꺼내기
+            String role = auth.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority())
+                .findFirst()
+                .orElse("USER");  // 기본값 USER로 설정
+
+            String json = String.format("{\"accessToken\": \"%s\", \"role\": \"%s\"}", accessToken, role);
+            respond(response, HttpServletResponse.SC_OK, json);
 
         } catch ( org.springframework.security.core.AuthenticationException e) {
             try {
