@@ -45,7 +45,7 @@ spring:
         - id: equipmentdashboard
           uri: http://localhost:8089
           predicates:
-            - Path=/equipment/**
+            - Path=/equipments/**
         - id: frontend
           uri: http://localhost:5173
           predicates:
