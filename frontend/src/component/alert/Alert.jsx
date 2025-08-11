@@ -15,6 +15,7 @@ import {
   Avatar,
   Badge,
   Box,
+  Button,
   Divider,
   Drawer,
   IconButton,
@@ -39,10 +40,10 @@ const Alert = () => {
   useEffect(() => {
     const fetchInitialAlerts = async () => {
       try {
-        const response = await api.get('/alerts?sort=alertDate,desc');
+        const response = await api.get("/alerts?sort=alertDate,desc");
         setAlerts(response.data._embedded.alerts.slice(0, 30));
       } catch (error) {
-        console.error('Error fetching initial alerts:', error);
+        console.error("Error fetching initial alerts:", error);
       }
     };
 
@@ -52,15 +53,21 @@ const Alert = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // 처리 요청 버튼 클릭 핸들러
+  const handleRequest = (objectId) => {
+    console.log(`처리 요청 신호 전송 (ID): ${objectId}`);
+    alert(`[처리 요청] 신호를 보냈습니다. 대상 ID: ${objectId}`);
+    // 나중에 실제 API 호출 로직을 여기에 추가할 수 있습니다.
+    // 예: api.post('/handle-request', { objectId });
+  };
+
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f3f6fe" }}>
       {/* Sidebar */}
-      
 
       {/* Main content */}
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         {/* Header */}
-        
 
         {/* Breadcrumb */}
         <Box sx={{ px: 5, py: 2, display: "flex", alignItems: "center" }}>
@@ -95,11 +102,20 @@ const Alert = () => {
                       Date
                     </TableCell>
                     <TableCell sx={{ fontWeight: "normal" }}>Detail</TableCell>
+                    <TableCell
+                      sx={{
+                        width: "15%",
+                        fontWeight: "normal",
+                        textAlign: "center",
+                      }}
+                    >
+                      Action
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   <TableRow>
-                    <TableCell colSpan={2} sx={{ border: "none", py: 1 }}>
+                    <TableCell colSpan={3} sx={{ border: "none", py: 1 }}>
                       <Typography
                         variant="subtitle1"
                         sx={{ fontWeight: "bold" }}
@@ -108,18 +124,44 @@ const Alert = () => {
                       </Typography>
                     </TableCell>
                   </TableRow>
-                  {alerts.map((row, index) => (
-                    <TableRow
-                      key={row.alertId || index} // alertId가 있으면 사용, 없으면 index 사용
-                      hover
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell component="th" scope="row">
-                        {new Date(row.alertDate).toLocaleString()} {/* 날짜 형식 변환 */}
-                      </TableCell>
-                      <TableCell>{row.alertLog}</TableCell>
-                    </TableRow>
-                  ))}
+                  {alerts.map((row, index) => {
+                    console.log("Alert data:", row); // For debugging
+
+                    const isForeignObjectAlert =
+                      row.alertLog.includes("이물질 감지");
+                    let objectId = null;
+
+                    if (isForeignObjectAlert) {
+                      const match = row.alertLog.match(/이물질 감지: (\d+)/);
+                      if (match && match[1]) {
+                        objectId = match[1];
+                      }
+                    }
+
+                    return (
+                      <TableRow
+                        key={row.alertId || index}
+                        hover
+                        sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                      >
+                        <TableCell component="th" scope="row">
+                          {new Date(row.alertDate).toLocaleString()}
+                        </TableCell>
+                        <TableCell>{row.alertLog}</TableCell>
+                        <TableCell sx={{ textAlign: "center" }}>
+                          {isForeignObjectAlert && objectId && (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              onClick={() => handleRequest(objectId)}
+                            >
+                              처리 요청
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </TableContainer>
