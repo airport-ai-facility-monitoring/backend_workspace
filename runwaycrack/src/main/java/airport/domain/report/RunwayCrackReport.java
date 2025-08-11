@@ -22,7 +22,7 @@ public class RunwayCrackReport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long rcReportid;
+    private Long rcReportId;
 
     @Column(unique = true)
     private Long crackId;

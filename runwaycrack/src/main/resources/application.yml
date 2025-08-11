@@ -55,6 +55,9 @@ logging:
 server:
   port: 8086
 
+model:
+  url: http://localhost:8002
+
 ---
 spring:
   profiles: docker
@@ -93,3 +96,5 @@ spring:
         event-out:
           destination: airport
           contentType: application/json
+model:
+  url: http://runwaycrack:8002

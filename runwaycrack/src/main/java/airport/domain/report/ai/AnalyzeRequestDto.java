@@ -5,13 +5,20 @@ import lombok.Data;
 
 @Data
 public class AnalyzeRequestDto {
-    private int pavement_type_concrete;
-    private int epoxy_used;
-    private int wiremesh_used;
-    private int joint_seal_used;
-    private int rebar_used;
-    private int polymer_used;
-    private int sealing_used;
-    private int predictedCost;
-    private int predictedDuration;
+    // 모델 입력값 11개
+    private double lengthCm;
+    private double areaCm2;
+    private double areaM2;
+    private double repairAreaM2;
+    private int pavementTypeConcrete;
+    private int epoxyUsed;
+    private int wiremeshUsed;
+    private int jointSealUsed;
+    private int rebarUsed;
+    private int polymerUsed;
+    private int sealingUsed;
+
+    // 예측 결과값 2개
+    private double predictedCost;
+    private double predictedDuration;
 }
