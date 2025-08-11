@@ -1,16 +1,51 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import WeatherBox from "./WeatherBox";
 import NotificationBox from "./NotificationBox";
+import api from "../../api/axios"; // api import 추가
+import { useNavigate } from "react-router-dom"; 
 
 import {
   Box,
   IconButton,
   Paper,
   Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Button,
 } from "@mui/material";
 
+const runwayLabels = [
+  { id: 1, name: "제1,2 활주로", top: "33.1%", left: "29.2%" },
+  { id: 2, name: "자유무역지역(화물터미널)", top: "16.3%", left: "45.5%" },
+  { id: 3, name: "제1 여객터미널", top: "23%", left: "70.7%" },
+  { id: 4, name: "제2 여객터미널", top: "59%", left: "40.2%" },
+  { id: 5, name: "탑승동", top: "40%", left: "59.8%" },
+  { id: 6, name: "제3·4 활주로", top: "65.5%", left: "75.5%" },
+];
+
 const MainHomeMg = () => {
+  const [alerts, setAlerts] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchInitialAlerts = async () => {
+      try {
+        const response = await api.get("/alerts?sort=alertDate,desc");
+        setAlerts(response.data._embedded.alerts.slice(0, 10));
+      } catch (error) {
+        console.error("Error fetching initial alerts:", error);
+      }
+    };
+
+    fetchInitialAlerts();
+    const interval = setInterval(fetchInitialAlerts, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f3f6fe" }}>
       <Box sx={{ flexGrow: 1, overflow: "auto", width: "100%" }}>
@@ -36,7 +71,9 @@ const MainHomeMg = () => {
                 alignItems: "center",
                 bgcolor: "#e0e7ff",
                 maxWidth: "1100px",
+                position: "relative",
               }}
+              elevation={1}
             >
               <Box
                 component="img"
@@ -48,6 +85,32 @@ const MainHomeMg = () => {
                   objectFit: "cover",
                 }}
               />
+               {/* ✅ 차트 위 버튼들 */}
+            {runwayLabels.map(({ id, name, top, left }) => (
+             <Button
+               key={id}
+               variant="text"
+                onClick={() => navigate(`/dashdetail/${id}`)}
+                sx={{
+                  position: "absolute",
+                  top,
+                  left,
+                  transform: "translate(-50%, -50%)",
+                  backgroundColor: "#fff",
+                  border: "2px solid #FFD700",
+                  color: "#000",
+                  textTransform: "none",
+                  fontSize: "0.75rem",
+                  lineHeight: 1,
+                   px: 2,
+                  py: 1,
+                   zIndex: 2,
+                   "&:hover": { backgroundColor: "#fff" },
+                 }}
+               >
+                {name}
+               </Button>
+             ))}
             </Paper>
 
             {/* 오른쪽 세로 카드 (동영상) */}
@@ -112,9 +175,19 @@ const MainHomeMg = () => {
                 <MoreVertIcon />
               </IconButton>
             </Box>
-            <Typography variant="body2" color="textSecondary">
-              연결된 알림 로그가 여기에 표시됩니다.
-            </Typography>
+            <List sx={{ overflow: "auto", flexGrow: 1 }}>
+                {alerts.map((alert, index) => (
+                  <React.Fragment key={alert.alertId || index}>
+                    <ListItem alignItems="flex-start">
+                      <ListItemText
+                        primary={alert.alertLog}
+                        secondary={new Date(alert.alertDate).toLocaleString()}
+                      />
+                    </ListItem>
+                    {index < alerts.length - 1 && <Divider />}
+                  </React.Fragment>
+                ))}
+              </List>
           </Paper>
         </Box>
         </Box>

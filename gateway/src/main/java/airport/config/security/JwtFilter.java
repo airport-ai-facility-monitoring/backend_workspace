@@ -42,7 +42,7 @@ public class JwtFilter implements WebFilter {
 
         String path = request.getPath().toString();
         // 임시
-        System.out.println(path);
+        // System.out.println(path);
         // if (true) {
         //     return chain.filter(exchange); 
         // }
