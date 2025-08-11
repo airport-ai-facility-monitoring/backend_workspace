@@ -122,27 +122,6 @@ const EquipmentsRegister = () => {
 
       {/* 버튼 */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3, gap: 1 }}>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => console.log("수리 요청")}
-        >
-          수리요청
-        </Button>
-        <Button
-          variant="contained"
-          color="warning"
-          onClick={() => console.log("수정 요청")}
-        >
-          수정
-        </Button>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => console.log("삭제 요청")}
-        >
-          삭제
-        </Button>
         <Button variant="contained" color="primary" onClick={handleSubmit}>
           등록
         </Button>
