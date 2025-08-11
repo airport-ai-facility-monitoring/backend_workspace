@@ -39,15 +39,10 @@ public class JwtFilter implements WebFilter {
 
         // 토큰 가져오기 (쿠키 or Authorization 헤더)
         String token = null;
-        // ✅ OPTIONS 요청은 무조건 통과시킴 (Preflight)
-        if (request.getMethod() == HttpMethod.OPTIONS) {
-            return chain.filter(exchange);
-        }
-
 
         String path = request.getPath().toString();
         // 임시
-        // System.out.println(path);
+        System.out.println(path);
         // if (true) {
         //     return chain.filter(exchange); 
         // }
