@@ -21,17 +21,15 @@ public class RunwayCrackReportDto {
     private LocalDate WritingDate;
 
     private String summary; // 위치는 상관없지만 선언은 위로 올려두는 걸 권장
+        public Long employeeId;
+    public String maskEmployeeId;
 
     public RunwayCrackReportDto(
         String imageUrl, Double length, Double area, Long cctvId, LocalDate detectedDate,
         String title, String damageInfo, String repairMaterials, String estimatedCost, String estimatedPeriod,
         String summary, LocalDate writingDate
     ) {
-    public Long employeeId;
-    public String maskEmployeeId;
-    public RunwayCrackReportDto(String imageUrl, Integer length, Integer area, Long cctvId, LocalDate detectedDate,
-                                String title, String damageInfo, String repairMaterials, String estimatedCost, String estimatedPeriod,
-                                String summary, LocalDate writingDate) {
+
         this.imageUrl = imageUrl;
         this.length = length;
         this.area = area;

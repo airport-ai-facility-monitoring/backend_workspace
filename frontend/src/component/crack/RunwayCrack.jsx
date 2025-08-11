@@ -33,15 +33,15 @@ useEffect(() => {
       const dummyData = [{
         imageUrl: "https://via.placeholder.com/150",
         cctvId: 201,
-        length: 30,
-        area: 150,
+        lengthCm: 30,
+        areaCm2: 150,
         detectedDate: "2025-07-18",
         reportState: false,
       }, {
         imageUrl: "https://via.placeholder.com/150",
         cctvId: 202,
-        length: 50,
-        area: 250,
+        lengthCm: 50,
+        areaCm2: 250,
         detectedDate: "2025-07-17",
         reportState: true,
       }];
@@ -140,8 +140,8 @@ useEffect(() => {
                         {row.reportState ? "보고서 완료" : "확인 전"}
                       </TableCell>
                       <TableCell align="center">{row.cctvId}</TableCell>
-                      <TableCell align="center">{row.length ?? "-"}</TableCell>
-                      <TableCell align="center">{row.area ?? "-"}</TableCell>
+                      <TableCell align="center">{row.lengthCm ?? "-"}</TableCell>
+                      <TableCell align="center">{row.areaCm2 ?? "-"}</TableCell>
                       <TableCell align="center">
                         {row.imageUrl ? (
                           <img

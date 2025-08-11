@@ -39,8 +39,8 @@ export default function CrackReportEdit() {
         setLength(data.length || "");
         setArea(data.area || "");
         setCctvId(data.cctvId || "");
-        setDetectedDate(data.detectedDate ? data.detectedDate.slice(0, 16) : "");
-        setWritingDate(data.writingDate ? data.writingDate.slice(0, 16) : "");
+        setDetectedDate(formatDateTimeLocal(data.detectedDate));
+        setWritingDate(formatDateTimeLocal(data.writingDate));
 
         // RunwayCrackReport 필드들 (수정 가능)
         setTitle(data.title || "");
@@ -62,6 +62,14 @@ export default function CrackReportEdit() {
 
     if (rcId) fetchReport();
   }, [rcId]);
+
+  function formatDateTimeLocal(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60 * 1000);
+    return localDate.toISOString().slice(0, 16);
+  }
 
   const handleSave = async (e) => {
     e.preventDefault();

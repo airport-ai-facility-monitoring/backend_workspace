@@ -98,12 +98,12 @@ const PredictRepair = () => {
         rebarUsed: inputs.rebar_used,
         polymerUsed: inputs.polymer_used,
         sealingUsed: inputs.sealing_used,
-        predictedCost: predictionResult.predictedCost,
-        predictedDuration: predictionResult.predictedDuration,
+        predictedCost: predictionResult.cost,
+        predictedDuration: predictionResult.duration,
       };
 
       const res = await api.post(`/runwaycrackreports/analyze/${id}`, payload);
-      const newReportId = res.data.rcReportid;  // 서버가 응답해주는 rcReportid 값
+      const newReportId = res.data.rcReportId;  // 서버가 응답해주는 rcReportid 값
       alert("보고서가 성공적으로 생성되었습니다.");
       navigate(`/crack/report/${newReportId}`);
     } catch (err) {
@@ -173,7 +173,7 @@ const PredictRepair = () => {
                     파손 길이
                   </Typography>
                   <Typography variant="body1" sx={{ fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 500 }}>
-                    {crackInfo.length ?? '-'} cm
+                    {crackInfo.lengthCm ?? '-'} cm
                   </Typography>
                 </Box>
 
@@ -182,7 +182,7 @@ const PredictRepair = () => {
                     파손 면적
                   </Typography>
                   <Typography variant="body1" sx={{ fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 500 }}>
-                    {crackInfo.area ?? '-'} cm²
+                    {crackInfo.areaCm2 ?? '-'} cm²
                   </Typography>
                 </Box>
 

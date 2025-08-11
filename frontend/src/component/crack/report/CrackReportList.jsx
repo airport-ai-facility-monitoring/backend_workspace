@@ -61,8 +61,6 @@ export default function CrackReportList() {
                 <TableCell align="center">#</TableCell>
                 <TableCell align="center">제목</TableCell>
                 <TableCell align="center">작성일자</TableCell>
-                <TableCell align="center">감지일자</TableCell>
-                <TableCell align="center">CCTV ID</TableCell>
                 <TableCell align="center">작성자 ID</TableCell>
                 <TableCell align="center">상세보기</TableCell>
               </TableRow>
@@ -71,13 +69,13 @@ export default function CrackReportList() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
+                  <TableCell colSpan={5} align="center">
                     <CircularProgress />
                   </TableCell>
                 </TableRow>
               ) : reports.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
+                  <TableCell colSpan={5} align="center">
                     데이터가 없습니다.
                   </TableCell>
                 </TableRow>
@@ -92,17 +90,15 @@ export default function CrackReportList() {
                         : "-"}
                     </TableCell>
                     <TableCell align="center">
-                      {report.detectedDate
-                        ? new Date(report.detectedDate).toLocaleDateString()
-                        : "-"}
+                      {maskEmployeeId(report.employeeId)}
                     </TableCell>
-                    <TableCell align="center">{report.cctvId || "-"}</TableCell>
-                    <TableCell align="center">{maskEmployeeId(report.employeeId)}</TableCell>
                     <TableCell align="center">
                       <Button
                         variant="contained"
                         size="small"
-                        onClick={() => navigate(`/crack/report/${report.rcReportid}`)}
+                        onClick={() =>
+                          navigate(`/crack/report/${report.rcReportid}`)
+                        }
                       >
                         상세보기
                       </Button>

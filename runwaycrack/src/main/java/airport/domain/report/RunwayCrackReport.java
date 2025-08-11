@@ -21,8 +21,9 @@ import lombok.ToString;
 public class RunwayCrackReport {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rcReportId;
+
 
     @Column(unique = true)
     private Long crackId;
@@ -48,7 +49,7 @@ public class RunwayCrackReport {
     private LocalDate WritingDate;
 
     private Long employeeId;
-    
+
     public static RunwayCrackReportRepository repository() {
         RunwayCrackReportRepository runwayCrackReportRepository = RunwaycrackApplication.applicationContext.getBean(
             RunwayCrackReportRepository.class

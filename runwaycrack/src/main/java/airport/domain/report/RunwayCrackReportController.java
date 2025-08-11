@@ -101,6 +101,7 @@ public class RunwayCrackReportController {
     
     @PostMapping("/analyze/{id}")
     public ResponseEntity<RunwayCrackReport> analyze(@PathVariable Long id, @RequestBody AnalyzeRequestDto request, @RequestHeader("X-Employee-Id") String employeeId) throws JsonProcessingException {
+        System.out.println("REQUEST 요청목록" + request);
         RunwayCrackReport updatedCrack = analysisService.analyzeAndSave(id, request, employeeId);
         return ResponseEntity.ok(updatedCrack);
     }
