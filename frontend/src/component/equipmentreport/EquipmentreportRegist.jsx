@@ -9,8 +9,8 @@ const subCategoryMap = {
 };
 const initialFormData = {
   '조명': { failure: 1, repair_cost: 150000, repair_time: 25, labor_rate: 30000, runtime: 150, avg_life: 5000, lamp_type: 'LED', power_consumption: 50 },
-  '기상관측': { failure: 1, repair_cost: 550000, repair_time: 40, labor_rate: 50000, runtime: 650, avg_life: 90000, power_consumption: 5, mount_type: 'Pole' },
-  '표시-표지': { failure: 0, repair_cost: 300000, repair_time: 25, labor_rate: 35000, runtime: 690, avg_life: 100000, panel_width: 15, panel_height: 20, material: 'Polycarbonate', sign_color: 'Yellow', mount_type: 'Surface' },
+  '기상관측': { failure: 1, repair_cost: 550000, repair_time: 40, labor_rate: 50000, runtime: 650, avg_life: 90000, power_consumption: 5, mount_type: 'pole' },
+  '표시-표지': { failure: 0, repair_cost: 300000, repair_time: 25, labor_rate: 35000, runtime: 690, avg_life: 100000, panel_width: 15, panel_height: 20, material: 'Polycarbonate', sign_color: 'Yellow', mount_type: 'surface' },
 };
 const categoryNameMap = {
   lighting: '조명',
@@ -35,12 +35,16 @@ const styles = {
     hr: { border: 0, borderTop: '1px solid #eee', margin: '25px 0' },
 };
 
+const dropdownOptions = {
+  lamp_type: ['LED', 'Halogen', 'Fluorescent'],
+  mount_type: ['pole', 'mast', 'surface', 'tripod'],
+  material: ['Aluminum', 'Stainless Steel', 'Polycarbonate'],
+  sign_color: ['White', 'Yellow', 'Black', 'Red'],
+};
 
 const EquipmentReportRegist = () => {
   const { category } = useParams();
   const navigate = useNavigate();
-
-  // --- ⬇️ 주요 수정 사항 1: 안정적인 상태 관리 ⬇️ ---
 
   const mainCategory = categoryNameMap[category] || '조명';
   
@@ -53,45 +57,33 @@ const EquipmentReportRegist = () => {
   useEffect(() => {
     const subCategoryList = subCategoryMap[mainCategory];
     const initialData = initialFormData[mainCategory];
-
     if (subCategoryList && initialData) {
       setSubCategory(subCategoryList[0]);
       setFormData(initialData);
     }
-    
     setAnalysisResult(null);
     setError(null);
   }, [mainCategory]);
-  
-  // --- ⬆️ 주요 수정 사항 1 ⬆️ ---
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (formData) {
-      setFormData(prevData => ({
-        ...prevData,
-        [name]: value,
-      }));
+      setFormData(prevData => ({ ...prevData, [name]: value }));
     }
   };
 
-  // --- ⬇️ 주요 수정 사항 2: 올바른 서버 주소 설정 ⬇️ ---
+  // --- ⬇️ 주요 수정 사항 ⬇️ ---
   const getApiUrl = () => {
-    const baseUrl = 'https://shiny-space-cod-q775qq4rwxp6cx757-8087.app.github.dev/equipment';
-
+    // 백엔드의 @RequestMapping 경로인 /equipmentReports를 URL에 추가합니다.
+    const baseUrl = 'https://shiny-space-cod-q775qq4rwxp6cx757-8088.app.github.dev/equipmentReports';
     switch (mainCategory) {
-      case '조명':
-        return `${baseUrl}/regist/lighting`;
-      case '기상관측':
-        return `${baseUrl}/regist/weather`;
-      case '표시-표지':
-        return `${baseUrl}/regist/sign`;
-      default:
-        return `${baseUrl}/equipmentReports/analyze`;
+      case '조명': return `${baseUrl}/regist/lighting`;
+      case '기상관측': return `${baseUrl}/regist/weather`;
+      case '표시-표지': return `${baseUrl}/regist/sign`;
+      default: return `${baseUrl}/analyze`; // 기본 fallback URL도 일관성을 위해 수정
     }
   };
-  // --- ⬆️ 주요 수정 사항 2 ⬆️ ---
+  // --- ⬆️ 주요 수정 사항 ⬆️ ---
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -121,7 +113,6 @@ const EquipmentReportRegist = () => {
     );
 
     const apiUrl = getApiUrl();
-
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -142,9 +133,7 @@ const EquipmentReportRegist = () => {
     }
   };
 
-  const handleCancel = () => {
-    navigate('/equipment/report');
-  };
+  const handleCancel = () => { navigate('/equipment/report'); };
   
   if (!formData || !subCategory) {
     return <div>카테고리 정보를 불러오는 중...</div>;
@@ -176,35 +165,62 @@ const EquipmentReportRegist = () => {
         <div style={styles.formRow}>
           <label style={styles.label}>장비 소분류</label>
           <select style={styles.select} value={subCategory} onChange={(e) => setSubCategory(e.target.value)}>
-            {subCategoryMap[mainCategory].map(sc => (
-              <option key={sc} value={sc}>{sc}</option>
-            ))}
+            {subCategoryMap[mainCategory].map(sc => ( <option key={sc} value={sc}>{sc}</option> ))}
           </select>
         </div>
         <hr style={styles.hr} />
         {renderCommonFields()}
         <hr style={styles.hr} />
+        
         {mainCategory === '조명' && (
           <>
-            <div style={styles.formRow}><label style={styles.label}>램프 유형</label><input style={styles.input} type="text" name="lamp_type" value={formData.lamp_type || ''} onChange={handleInputChange} /></div>
+            <div style={styles.formRow}>
+              <label style={styles.label}>램프 유형</label>
+              <select style={styles.select} name="lamp_type" value={formData.lamp_type || ''} onChange={handleInputChange}>
+                {dropdownOptions.lamp_type.map(opt => ( <option key={opt} value={opt}>{opt}</option> ))}
+              </select>
+            </div>
             <div style={styles.formRow}><label style={styles.label}>소비 전력(W)</label><input style={styles.input} type="number" name="power_consumption" value={formData.power_consumption || ''} onChange={handleInputChange} /></div>
           </>
         )}
+
         {mainCategory === '기상관측' && (
           <>
             <div style={styles.formRow}><label style={styles.label}>소비 전력(W)</label><input style={styles.input} type="number" name="power_consumption" value={formData.power_consumption || ''} onChange={handleInputChange} /></div>
-            <div style={styles.formRow}><label style={styles.label}>설치 형태</label><input style={styles.input} type="text" name="mount_type" value={formData.mount_type || ''} onChange={handleInputChange} /></div>
+            <div style={styles.formRow}>
+              <label style={styles.label}>설치 형태</label>
+              <select style={styles.select} name="mount_type" value={formData.mount_type || ''} onChange={handleInputChange}>
+                {dropdownOptions.mount_type.map(opt => ( <option key={opt} value={opt}>{opt}</option>))}
+              </select>
+            </div>
           </>
         )}
+
         {mainCategory === '표시-표지' && (
           <>
             <div style={styles.formRow}><label style={styles.label}>판넬 너비(mm)</label><input style={styles.input} type="number" name="panel_width" value={formData.panel_width || ''} onChange={handleInputChange} /></div>
             <div style={styles.formRow}><label style={styles.label}>판넬 높이(mm)</label><input style={styles.input} type="number" name="panel_height" value={formData.panel_height || ''} onChange={handleInputChange} /></div>
-            <div style={styles.formRow}><label style={styles.label}>재질</label><input style={styles.input} type="text" name="material" value={formData.material || ''} onChange={handleInputChange} /></div>
-            <div style={styles.formRow}><label style={styles.label}>표지판 색상</label><input style={styles.input} type="text" name="sign_color" value={formData.sign_color || ''} onChange={handleInputChange} /></div>
-            <div style={styles.formRow}><label style={styles.label}>설치 형태</label><input style={styles.input} type="text" name="mount_type" value={formData.mount_type || ''} onChange={handleInputChange} /></div>
+            <div style={styles.formRow}>
+              <label style={styles.label}>재질</label>
+              <select style={styles.select} name="material" value={formData.material || ''} onChange={handleInputChange}>
+                {dropdownOptions.material.map(opt => ( <option key={opt} value={opt}>{opt}</option> ))}
+              </select>
+            </div>
+            <div style={styles.formRow}>
+              <label style={styles.label}>표지판 색상</label>
+              <select style={styles.select} name="sign_color" value={formData.sign_color || ''} onChange={handleInputChange}>
+                {dropdownOptions.sign_color.map(opt => ( <option key={opt} value={opt}>{opt}</option> ))}
+              </select>
+            </div>
+            <div style={styles.formRow}>
+              <label style={styles.label}>설치 형태</label>
+              <select style={styles.select} name="mount_type" value={formData.mount_type || ''} onChange={handleInputChange}>
+                {dropdownOptions.mount_type.map(opt => ( <option key={opt} value={opt}>{opt}</option>))}
+              </select>
+            </div>
           </>
         )}
+
         <div style={styles.buttonContainer}>
           <button type="submit" style={{...styles.button, ...styles.submitButton}} disabled={isLoading}>
             {isLoading ? '분석 중...' : '분석 요청'}
@@ -212,10 +228,11 @@ const EquipmentReportRegist = () => {
           <button type="button" style={{...styles.button, ...styles.cancelButton}} onClick={handleCancel}>취소</button>
         </div>
       </form>
+
       {error && (
-        <div style={{...styles.resultContainer, borderColor: 'red'}}>
-            <h3 style={{...styles.resultTitle, color: 'red'}}>에러 발생</h3>
-            <p style={styles.resultText}>{error}</p>
+        <div style={{ ...styles.resultContainer, borderColor: 'red' }}>
+          <h3 style={{ ...styles.resultTitle, color: 'red' }}>에러 발생</h3>
+          <p style={styles.resultText}>{error}</p>
         </div>
       )}
       {analysisResult && (
