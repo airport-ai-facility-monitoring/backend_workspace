@@ -39,7 +39,7 @@ const mainRoutes = [
       { path: "/report/:rcId", element: <Crackreport /> },
       { path: "equipment/report", element: <Equipmentreport /> },
       { path: "equipment/report/:id", element: <EquipmentreportDetail /> },
-      { path: "equipment/report/regist", element: <EquipmentreportRegist /> },
+      { path: "equipment/report/regist/:category", element: <EquipmentreportRegist /> },
       { path: "report/:rcId", element: <Crackreport /> },
       { path: "report/edit/:rcId", element: <CrackReportEdit/> },
       { path: "notifications/edit/:id", element: <NotificationEdit />},
