@@ -45,25 +45,25 @@ spring:
         - id: equipmentdashboard
           uri: http://localhost:8089
           predicates:
-            - Path=/equipment/**
+            - Path=/equipments/**
         - id: frontend
           uri: http://localhost:5173
           predicates:
             - Path=/**
-      # globalcors:
-      #   corsConfigurations:
-      #     '[/**]':
-      #       allowedOrigins:
-      #         - "https://bug-free-waffle-wwpr5jr4jjc55x-5173ㅁ.app.github.dev"
-      #       allowedMethods:
-      #         - "*"
-      #       allowedHeaders:
-      #         - "X-Employee-Id"
-      #         - "X-Authorities"
-      #         - "Authorization"
-      #         - "Content-Type"
-      #         - "*"
-      #       allowCredentials: true
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "https://fictional-space-fishstick-q7g77vvv7ww5c64w9-5173.app.github.dev/"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "X-Employee-Id"
+              - "X-Authorities"
+              - "Authorization"
+              - "Content-Type"
+              - "*"
+            allowCredentials: true
 
 ---
 
