@@ -51,6 +51,7 @@ public class EquipmentController {
     // --- CREATE 장비 Endpoints ---
     @PostMapping("/lighting")
     public UnifiedEquipmentDto createLighting(@RequestBody CreateLightingRequest request) {
+        System.out.println("aa");
         Equipment equipment = convertToEntity(request.getEquipment());
         equipment.setEquipmentType("조명");
 

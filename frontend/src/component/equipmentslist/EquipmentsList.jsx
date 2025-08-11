@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -14,31 +14,42 @@ import {
   Paper,
   Chip,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom"; // ✅ 페이지 이동
-
-// 더미 데이터
-const dummyData = [
-  { id: 1, category: "조명(시각유도)", name: "hellod", registeredAt: "2025-07-18 17:06" },
-  { id: 2, category: "기상관측", name: "ddddfo", registeredAt: "2025-07-17 12:00" },
-  { id: 3, category: "표지·표시", name: "토잉카", registeredAt: "2025-07-17 06:35" },
-  { id: 4, category: "표지·표시", name: "dss car", registeredAt: "2025-07-16 17:06" },
-];
+import { useNavigate } from "react-router-dom";
+import api from "../../config/api";
 
 const EquipmentsList = () => {
-  const [equipmentList] = useState(dummyData);
+  const [equipmentList, setEquipmentList] = useState([]);
   const [filterCategory, setFilterCategory] = useState("전체");
-
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchEquipments = async () => {
+      try {
+        const response = await api.get("/equipments");
+        // DTO 구조에 맞게 equipmentList 상태 업데이트
+        const formattedData = response.data.map(item => ({
+          id: item.equipment.equipmentId,
+          category: item.equipment.equipmentType,
+          name: item.equipment.equipmentName,
+          registeredAt: new Date(item.equipment.purchaseDate).toLocaleString(),
+        }));
+        setEquipmentList(formattedData);
+      } catch (error) {
+        console.error("Failed to fetch equipments:", error);
+      }
+    };
+
+    fetchEquipments();
+  }, []);
 
   const handleFilterChange = (e) => {
     setFilterCategory(e.target.value);
   };
 
-  // 카테고리 필터링
   const filteredList =
     filterCategory === "전체"
       ? equipmentList
-      : equipmentList.filter((item) => item.category.includes(filterCategory));
+      : equipmentList.filter((item) => item.category && item.category.includes(filterCategory));
 
   return (
     <Box sx={{ p: 4 }}>
@@ -52,8 +63,8 @@ const EquipmentsList = () => {
           <Select size="small" value={filterCategory} onChange={handleFilterChange}>
             <MenuItem value="전체">전체</MenuItem>
             <MenuItem value="조명">조명</MenuItem>
-            <MenuItem value="기상관측">기상관측</MenuItem>
-            <MenuItem value="표지·표시">표지·표시</MenuItem>
+            <MenuItem value="기상">기상</MenuItem>
+            <MenuItem value="표지판">표지판</MenuItem>
           </Select>
         </Box>
       </Box>
@@ -80,7 +91,6 @@ const EquipmentsList = () => {
                 <TableCell>{equipment.name}</TableCell>
                 <TableCell>{equipment.registeredAt}</TableCell>
                 <TableCell align="center">
-                  {/* ✅ 상세보기 버튼 클릭 시 해당 id로 이동 */}
                   <Button
                     size="small"
                     variant="outlined"
