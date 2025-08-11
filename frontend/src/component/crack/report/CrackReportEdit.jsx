@@ -22,6 +22,9 @@ export default function CrackReportEdit() {
   const [estimatedPeriod, setEstimatedPeriod] = useState("");
   const [summary, setSummary] = useState("");
 
+  // maskEmployeeId (읽기 전용)
+  const [maskEmployeeId, setMaskEmployeeId] = useState("");
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,7 +33,7 @@ export default function CrackReportEdit() {
         const res = await api.get(`/runwaycrackreports/${rcId}`);
         const data = res.data;
         console.log(rcId);
-        
+
         // RunwayCrack 필드들 (읽기 전용)
         setImageUrl(data.imageUrl || "");
         setLength(data.length || "");
@@ -38,7 +41,7 @@ export default function CrackReportEdit() {
         setCctvId(data.cctvId || "");
         setDetectedDate(data.detectedDate ? data.detectedDate.slice(0, 16) : "");
         setWritingDate(data.writingDate ? data.writingDate.slice(0, 16) : "");
-        
+
         // RunwayCrackReport 필드들 (수정 가능)
         setTitle(data.title || "");
         setDamageInfo(data.damageInfo || "");
@@ -46,6 +49,9 @@ export default function CrackReportEdit() {
         setEstimatedCost(data.estimatedCost || "");
         setEstimatedPeriod(data.estimatedPeriod || "");
         setSummary(data.summary || "");
+
+        // 읽기 전용 마스킹된 작성자 ID
+        setMaskEmployeeId(data.maskEmployeeId || "");
       } catch (err) {
         console.error("보고서 불러오기 실패", err);
         alert("보고서 데이터를 불러오는데 실패했습니다.");
@@ -79,6 +85,18 @@ export default function CrackReportEdit() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm("정말로 이 보고서를 삭제하시겠습니까?")) return;
+
+    try {
+      await api.delete(`/runwaycrackreports/${rcId}`);
+      alert("보고서가 삭제되었습니다.");
+      navigate("/crack/report/list");
+    } catch (err) {
+      console.error("삭제 실패", err);
+      alert("보고서 삭제 중 오류가 발생했습니다.");
+    }
+  };
   if (loading) return <div>로딩 중...</div>;
 
   const styles = {
@@ -176,6 +194,15 @@ export default function CrackReportEdit() {
       background: "#e0e0e0",
       color: "#666",
     },
+    btnDelete: {
+      background: "#d32f2f",
+      color: "#fff",
+      border: "none",
+      borderRadius: "6px",
+      padding: "0.75rem 1.5rem",
+      cursor: "pointer",
+      marginLeft: "auto",
+    },
   };
 
   return (
@@ -187,7 +214,7 @@ export default function CrackReportEdit() {
       <form style={styles.form} onSubmit={handleSave}>
         {/* 파손 정보 섹션 (수정 불가) */}
         <div style={styles.sectionTitle}>파손 정보 (수정 불가)</div>
-        
+
         {/* CCTV ID (수정불가) */}
         <div style={styles.fieldRow}>
           <label style={styles.label}>CCTV ID</label>
@@ -254,6 +281,17 @@ export default function CrackReportEdit() {
             type="datetime-local"
             style={styles.inputDisabled}
             value={writingDate}
+            disabled
+          />
+        </div>
+
+        {/* 작성자 ID (읽기 전용, 마스킹 처리) */}
+        <div style={styles.fieldRow}>
+          <label style={styles.label}>작성자 ID</label>
+          <input
+            type="text"
+            style={styles.inputDisabled}
+            value={maskEmployeeId}
             disabled
           />
         </div>
@@ -325,7 +363,7 @@ export default function CrackReportEdit() {
           />
         </div>
 
-        {/* 저장/취소 */}
+        {/* 저장/취소/삭제 버튼 */}
         <div style={styles.btnRow}>
           <button type="submit" style={{ ...styles.btn, ...styles.btnPrimary }}>
             저장
@@ -336,6 +374,13 @@ export default function CrackReportEdit() {
             onClick={() => navigate(-1)}
           >
             취소
+          </button>
+          <button
+            type="button"
+            style={styles.btnDelete}
+            onClick={handleDelete}
+          >
+            삭제
           </button>
         </div>
       </form>

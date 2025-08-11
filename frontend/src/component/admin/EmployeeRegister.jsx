@@ -15,6 +15,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 import api from "../../config/api"; // API 모듈 위치 맞게 조정
+import { logout } from "../login/logout";
 
 const EmployeeRegister = () => {
   const [employeeId, setEmployeeId] = useState("");
@@ -81,18 +82,6 @@ const EmployeeRegister = () => {
     }
   };
 
-  // 🔹 로그아웃 처리
-  const handleLogout = () => {
-    // localStorage에 저장된 두 개 값 삭제
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("role");
-
-    // 필요하면 추가 데이터도 삭제
-    // localStorage.clear(); // 전부 삭제할 경우
-
-    // 로그아웃 후 페이지 이동 (예: 로그인 페이지로)
-    window.location.href = "/login";
-  };
 
   return (
     <Box
@@ -116,7 +105,7 @@ const EmployeeRegister = () => {
             variant="outlined"
             color="secondary"
             size="small"
-            onClick={handleLogout}
+            onClick={logout}
           >
             로그아웃
           </Button>

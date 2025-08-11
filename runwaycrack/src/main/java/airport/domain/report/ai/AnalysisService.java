@@ -23,7 +23,7 @@ public class AnalysisService {
     private final RunwayCrackReportRepository runwayCrackReportRepository;
     private final RunwayCrackRepository runwayCrackRepository;
 
-    public RunwayCrack analyzeAndSave(Long id, AnalyzeRequestDto request) throws JsonProcessingException {
+    public RunwayCrackReport analyzeAndSave(Long id, AnalyzeRequestDto request, String employeeId) throws JsonProcessingException {
         RunwayCrack crack = runwayCrackRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 ID의 데이터가 없습니다."));
         if(crack.getReportState() == true) return null; 
@@ -85,12 +85,13 @@ public class AnalysisService {
         RunwayCrackReport report = parseAndSave(json);
         report.setCrackId(id);
         report.setWritingDate(LocalDate.now()); // 현재 시간
+        report.setEmployeeId(Long.valueOf(employeeId));
         runwayCrackReportRepository.save(report);
         
         crack.setReportState(true);
         runwayCrackRepository.save(crack);
 
-        return crack;
+        return report;
     }
 
     private RunwayCrackReport parseAndSave(String json) throws JsonProcessingException {

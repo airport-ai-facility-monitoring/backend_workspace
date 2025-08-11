@@ -41,25 +41,39 @@ public class RunwayCrackReportController {
     @Autowired
     AnalysisService analysisService;
 
-    // 6. 컨트롤러의 보고서 반환 API 수정 (간소화)
-    @GetMapping("/{id}")
-    public ResponseEntity<RunwayCrackReportDto> getCrackReportById(@PathVariable Long id) {
-        Optional<RunwayCrackReport> crackReportOpt = runwayCrackReportRepository.findByCrackId(id);
-        if (crackReportOpt.isEmpty()) {
+    @GetMapping()
+    public ResponseEntity<List<RunwayCrackReport>> getAllReports() {
+        List<RunwayCrackReport> reports = runwayCrackReportRepository.findAll();
+        if (reports.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(reports);
+    }
+
+    @GetMapping("/{reportId}")
+    public ResponseEntity<RunwayCrackReportDto> getCrackReportById(@PathVariable Long reportId) {
+        Optional<RunwayCrackReport> reportOpt = runwayCrackReportRepository.findById(reportId);
+        if (reportOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        RunwayCrackReport report = crackReportOpt.get();
-        RunwayCrack runwayCrack = runwayCrackRepository.findById(id).get();
-        System.out.println(report);
-        System.out.println(runwayCrack);
+        RunwayCrackReport report = reportOpt.get();
+
+        // 보고서에 연결된 crackId로 RunwayCrack 조회
+        Optional<RunwayCrack> runwayCrackOpt = runwayCrackRepository.findById(report.getCrackId());
+        if (runwayCrackOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        RunwayCrack runwayCrack = runwayCrackOpt.get();
+
         RunwayCrackReportDto dto = new RunwayCrackReportDto(
             runwayCrack.getImageUrl(),
             runwayCrack.getLength(),
             runwayCrack.getArea(),
             runwayCrack.getCctvId(),
             runwayCrack.getDetectedDate(),
-            report.getTitle() ,
+            report.getTitle(),
             report.getDamageInfo(),
             report.getRepairMaterials(),
             report.getEstimatedCost(),
@@ -67,12 +81,14 @@ public class RunwayCrackReportController {
             report.getSummary(),
             report.getWritingDate()
         );
-        System.out.println(dto);
+        dto.setEmployeeId(report.getEmployeeId());
+
         return ResponseEntity.ok(dto);
     }
+    
     @PostMapping("/analyze/{id}")
-    public ResponseEntity<RunwayCrack> analyze(@PathVariable Long id, @RequestBody AnalyzeRequestDto request) throws JsonProcessingException {
-        RunwayCrack updatedCrack = analysisService.analyzeAndSave(id, request);
+    public ResponseEntity<RunwayCrackReport> analyze(@PathVariable Long id, @RequestBody AnalyzeRequestDto request, @RequestHeader("X-Employee-Id") String employeeId) throws JsonProcessingException {
+        RunwayCrackReport updatedCrack = analysisService.analyzeAndSave(id, request, employeeId);
         return ResponseEntity.ok(updatedCrack);
     }
 
@@ -80,8 +96,9 @@ public class RunwayCrackReportController {
     public ResponseEntity<?> patchReport(
             @PathVariable Long id,
             @Valid @RequestBody RunwayCrackReportUpdateDto updateDto,
-            BindingResult bindingResult) {
-        
+            BindingResult bindingResult,
+            @RequestHeader("X-Employee-Id") String employeeId // 헤더에서 받음
+    ) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> 
@@ -92,6 +109,11 @@ public class RunwayCrackReportController {
         
         return runwayCrackReportRepository.findById(id)
             .map(report -> {
+                // 권한 체크: 요청한 employeeId와 보고서 작성자가 일치하는지 확인
+                if (!report.getEmployeeId().toString().equals(employeeId)) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                }
+
                 updateReportFields(report, updateDto);
                 RunwayCrackReport updatedReport = runwayCrackReportRepository.save(report);
                 return ResponseEntity.ok(updatedReport);
@@ -107,6 +129,22 @@ public class RunwayCrackReportController {
         Optional.ofNullable(updateDto.getEstimatedCost()).ifPresent(report::setEstimatedCost);
         Optional.ofNullable(updateDto.getEstimatedPeriod()).ifPresent(report::setEstimatedPeriod);
         Optional.ofNullable(updateDto.getSummary()).ifPresent(report::setSummary);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteReport(
+        @PathVariable Long id,
+        @RequestHeader("X-Employee-Id") String employeeId
+    ) {
+        return runwayCrackReportRepository.findById(id)
+            .map(report -> {
+                if (!report.getEmployeeId().toString().equals(employeeId)) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                }
+                runwayCrackReportRepository.delete(report);
+                return ResponseEntity.noContent().build();
+            })
+            .orElse(ResponseEntity.notFound().build());
     }
 
 }

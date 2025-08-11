@@ -248,6 +248,7 @@ public class UserController {
                 .findFirst()
                 .orElse("USER");  // 기본값 USER로 설정
 
+                
             String json = String.format("{\"accessToken\": \"%s\", \"role\": \"%s\"}", accessToken, role);
             respond(response, HttpServletResponse.SC_OK, json);
 

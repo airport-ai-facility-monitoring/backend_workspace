@@ -103,10 +103,10 @@ const PredictRepair = () => {
         predictedDuration: predictionResult.predictedDuration,
       };
 
-      await api.post(`/runwaycrackreports/analyze/${id}`, payload);
-      
+      const res = await api.post(`/runwaycrackreports/analyze/${id}`, payload);
+      const newReportId = res.data.rcReportid;  // 서버가 응답해주는 rcReportid 값
       alert("보고서가 성공적으로 생성되었습니다.");
-      navigate(`/crack/report/${id}`);
+      navigate(`/crack/report/${newReportId}`);
     } catch (err) {
       console.error("보고서 생성 실패", err);
       alert("보고서 생성 중 오류 발생");

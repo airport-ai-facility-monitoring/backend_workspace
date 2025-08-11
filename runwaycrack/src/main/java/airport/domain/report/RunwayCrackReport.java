@@ -47,6 +47,8 @@ public class RunwayCrackReport {
 
     private LocalDate WritingDate;
 
+    private Long employeeId;
+    
     public static RunwayCrackReportRepository repository() {
         RunwayCrackReportRepository runwayCrackReportRepository = RunwaycrackApplication.applicationContext.getBean(
             RunwayCrackReportRepository.class

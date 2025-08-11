@@ -22,7 +22,8 @@ public class RunwayCrackReportDto {
     private String estimatedPeriod;
     private String summary;
     private LocalDate WritingDate;
-
+    public Long employeeId;
+    public String maskEmployeeId;
     public RunwayCrackReportDto(String imageUrl, Integer length, Integer area, Long cctvId, LocalDate detectedDate,
                                 String title, String damageInfo, String repairMaterials, String estimatedCost, String estimatedPeriod,
                                 String summary, LocalDate writingDate) {
@@ -39,5 +40,27 @@ public class RunwayCrackReportDto {
         this.summary = summary;
         this.WritingDate = writingDate;
     }
+
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
+        // employeeId가 Long이면, 마스킹은 String형으로 변환하거나 별도 처리 필요
+        // 예를 들어 Long -> String 변환 후 마스킹 처리
+        if (employeeId != null) {
+            this.maskEmployeeId = maskingEmployeeId(employeeId.toString());
+        } else {
+            this.maskEmployeeId = null;
+        }
+    }
+
+    public static String maskingEmployeeId(String employeeId) {
+        if (employeeId == null || employeeId.isEmpty()) return null;
+        int len = employeeId.length();
+        if (len <= 4) {
+            return "*".repeat(len);
+        } else {
+            return "****" + employeeId.substring(4);
+        }
+    }
+
 
 }

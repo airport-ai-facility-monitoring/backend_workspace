@@ -13,7 +13,6 @@ export default function CrackReport() {
     const fetchReport = async () => {
       try {
         const res = await api.get(`/runwaycrackreports/${rcId}`);
-        console.log(res)
         setReportData(res.data);
       } catch (err) {
         console.error("보고서 데이터 로딩 실패", err);
@@ -29,7 +28,6 @@ export default function CrackReport() {
   if (loading) return <div>로딩 중...</div>;
   if (!reportData) return <div>데이터가 없습니다.</div>;
 
-  // 새 DTO 필드명에 맞게 구조분해 할당
   const {
     imageUrl,
     length,
@@ -43,7 +41,18 @@ export default function CrackReport() {
     estimatedPeriod,
     summary,
     writingDate,
+    employeeId,
+    maskEmployeeId,
   } = reportData;
+
+  // localStorage에 저장된 로그인된 작성자 ID 가져오기 (string)
+  const loggedEmployeeId = localStorage.getItem("employeeId");
+
+  // 실제 작성자 ID와 로그인한 사용자 ID가 같으면 편집 버튼 노출
+  const canEdit =
+    loggedEmployeeId &&
+    employeeId &&
+    loggedEmployeeId.toString() === employeeId.toString();
 
   const styles = {
     container: {
@@ -114,6 +123,9 @@ export default function CrackReport() {
           <span style={styles.label}>CCTV ID:</span> {cctvId || "미지정"}
         </div>
         <div>
+          <span style={styles.label}>작성자 ID:</span> {maskEmployeeId || "-"}
+        </div>
+        <div>
           <span style={styles.label}>조사 방식:</span> 자동 분석 시스템 기반
         </div>
       </div>
@@ -170,14 +182,17 @@ export default function CrackReport() {
         </div>
       </div>
 
-      <div style={styles.buttonRow}>
-        <button
-          style={styles.button}
-          onClick={() => navigate(`/report/edit/${rcId}`)}
-        >
-          편집하기
-        </button>
-      </div>
+      {/* 편집 버튼: 로그인한 작성자만 보여줌 */}
+      {canEdit && (
+        <div style={styles.buttonRow}>
+          <button
+            style={styles.button}
+            onClick={() => navigate(`/crack/report/edit/${rcId}`)}
+          >
+            편집하기
+          </button>
+        </div>
+      )}
     </div>
   );
 }
