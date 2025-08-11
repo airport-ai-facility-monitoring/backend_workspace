@@ -7,21 +7,26 @@ import lombok.Data;
 
 @Data
 public class RunwayCrackReportDto {
-        // 기본 손상 정보
     private String imageUrl;
-    private Integer length;
-    private Integer area;
+    private Double length;
+    private Double area;
     private Long cctvId;
     private LocalDate detectedDate;
-    
-    // 간소화된 보고서 정보
+
     private String title;
     private String damageInfo;
     private String repairMaterials;
-    private String estimatedCost;
-    private String estimatedPeriod;
-    private String summary;
+    private String estimatedCost;     // Integer -> String
+    private String estimatedPeriod;   // Integer -> String
     private LocalDate WritingDate;
+
+    private String summary; // 위치는 상관없지만 선언은 위로 올려두는 걸 권장
+
+    public RunwayCrackReportDto(
+        String imageUrl, Double length, Double area, Long cctvId, LocalDate detectedDate,
+        String title, String damageInfo, String repairMaterials, String estimatedCost, String estimatedPeriod,
+        String summary, LocalDate writingDate
+    ) {
     public Long employeeId;
     public String maskEmployeeId;
     public RunwayCrackReportDto(String imageUrl, Integer length, Integer area, Long cctvId, LocalDate detectedDate,
@@ -40,6 +45,8 @@ public class RunwayCrackReportDto {
         this.summary = summary;
         this.WritingDate = writingDate;
     }
+
+    
 
     public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;

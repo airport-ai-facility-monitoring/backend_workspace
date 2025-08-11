@@ -45,7 +45,7 @@ spring:
         - id: equipmentdashboard
           uri: http://localhost:8089
           predicates:
-            - Path=/equipment/**
+            - Path=/equipments/**
         - id: frontend
           uri: http://localhost:5173
           predicates:
@@ -54,7 +54,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://stunning-journey-7j66v596r4q3pw69-5173.app.github.dev"
+              - "https://upgraded-bassoon-g4w47xwqjv7v294gw-5173.app.github.dev"
             allowedMethods:
               - "*"
             allowedHeaders:

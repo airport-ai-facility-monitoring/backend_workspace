@@ -1,4 +1,3 @@
-// 3. AnalysisService 수정
 package airport.domain.report.ai;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +9,8 @@ import airport.domain.report.RunwayCrackReportRepository;
 import airport.domain.runway.RunwayCrack;
 import airport.domain.runway.RunwayCrackRepository;
 import lombok.RequiredArgsConstructor;
+
+import airport.domain.report.ai.AnalyzeRequestDto;
 
 import java.time.LocalDate;
 
@@ -26,14 +27,16 @@ public class AnalysisService {
     public RunwayCrackReport analyzeAndSave(Long id, AnalyzeRequestDto request, String employeeId) throws JsonProcessingException {
         RunwayCrack crack = runwayCrackRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 ID의 데이터가 없습니다."));
-        if(crack.getReportState() == true) return null; 
-        
+        if (Boolean.TRUE.equals(crack.getReportState())) return null;
+
         String input = String.format(
             "【기본 손상 정보】\n" +
             "손상 ID: %d\n" +
             "CCTV ID: %d\n" +
-            "파손 길이: %d cm\n" +
-            "파손 면적: %d cm²\n" +
+            "파손 길이: %.1f cm\n" +
+            "파손 면적: %.1f cm²\n" +
+            "평균 폭: %.1f cm\n" +
+            "보수 면적: %.2f m²\n" +
             "발견 날짜: %s\n" +
             "\n【수리 재료 및 공법】\n" +
             "콘크리트 포장재: %s\n" +
@@ -44,21 +47,23 @@ public class AnalysisService {
             "폴리머 사용: %s\n" +
             "실링 사용: %s\n" +
             "\n【AI 예측 결과】\n" +
-            "예상 수리 비용: %s원\n" +
-            "예상 수리 기간: %d일",
+            "예상 수리 비용: %,.0f원\n" +
+            "예상 수리 기간: %.0f일",
             crack.getRcId(),
             crack.getCctvId(),
-            crack.getLength(),
-            crack.getArea(),
+            crack.getLengthCm(),
+            crack.getAreaCm2(),
+            crack.getAvgWidthCm(),
+            crack.getRepairAreaM2(),
             crack.getDetectedDate().toString(),
-            request.getPavement_type_concrete() == 1 ? "사용" : "미사용",
-            request.getEpoxy_used() == 1 ? "사용" : "미사용",
-            request.getWiremesh_used() == 1 ? "사용" : "미사용",
-            request.getJoint_seal_used() == 1 ? "사용" : "미사용",
-            request.getRebar_used() == 1 ? "사용" : "미사용",
-            request.getPolymer_used() == 1 ? "사용" : "미사용",
-            request.getSealing_used() == 1 ? "사용" : "미사용",
-            String.format("%,d", request.getPredictedCost()),
+            request.getPavementTypeConcrete() == 1 ? "사용" : "미사용",
+            request.getEpoxyUsed() == 1 ? "사용" : "미사용",
+            request.getWiremeshUsed() == 1 ? "사용" : "미사용",
+            request.getJointSealUsed() == 1 ? "사용" : "미사용",
+            request.getRebarUsed() == 1 ? "사용" : "미사용",
+            request.getPolymerUsed() == 1 ? "사용" : "미사용",
+            request.getSealingUsed() == 1 ? "사용" : "미사용",
+            request.getPredictedCost(),
             request.getPredictedDuration()
         );
 
@@ -75,10 +80,10 @@ public class AnalysisService {
             "- 제공된 수치와 선택 사항만 사용\n" +
             "- 추측이나 가정 금지\n" +
             "- 간단명료하게 작성\n" +
-            "- 각 항목은 2-3문장으로 제한\n\n" +
+            "- 각 항목은 2-3문장으로 제한\n" +
             "- JSON 구조는 중첩된 객체 없이 평탄하게 구성\n\n" +
             "입력 데이터:\n" + input;
-            
+
         String json = geminiClient.askGemini(prompt);
         System.out.println("Gemini 응답 : " + json);
 
@@ -87,7 +92,7 @@ public class AnalysisService {
         report.setWritingDate(LocalDate.now()); // 현재 시간
         report.setEmployeeId(Long.valueOf(employeeId));
         runwayCrackReportRepository.save(report);
-        
+
         crack.setReportState(true);
         runwayCrackRepository.save(crack);
 

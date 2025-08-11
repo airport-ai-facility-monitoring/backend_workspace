@@ -41,8 +41,8 @@ public class RunwayCrackController {
 
             crack.setImageUrl((String) req.get("imageUrl"));
             crack.setCctvId(Long.valueOf(req.get("cctvId").toString()));
-            crack.setLength(Integer.valueOf(req.get("length").toString()));  // 수정: length
-            crack.setArea(Integer.valueOf(req.get("area").toString()));      // 수정: area
+            crack.setLengthCm(Double.valueOf(req.get("length").toString()));  // 수정: length
+            crack.setAreaCm2(Double.valueOf(req.get("area").toString()));      // 수정: area
             crack.setReportState(false); // 기본값
             crack.setDetectedDate(LocalDate.now()); // 현재 날짜
 

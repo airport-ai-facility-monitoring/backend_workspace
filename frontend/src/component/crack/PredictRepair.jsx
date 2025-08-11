@@ -45,34 +45,33 @@ const PredictRepair = () => {
   };
 
   const handlePredict = async () => {
-    if (!crackInfo) {
-      alert("손상 정보를 찾을 수 없습니다.");
-      return;
-    }
+    if (!crackInfo) { alert("손상 정보를 찾을 수 없습니다."); return; }
+    const payload = {
+      lengthCm: crackInfo.lengthCm ?? 10.0,
+      areaCm2: crackInfo.areaCm2 ?? 10.0,
+      pavementTypeConcrete: inputs.pavement_type_concrete,
+      epoxyUsed: inputs.epoxy_used,
+      wiremeshUsed: inputs.wiremesh_used,
+      jointSealUsed: inputs.joint_seal_used,
+      rebarUsed: inputs.rebar_used,
+      polymerUsed: inputs.polymer_used,
+      sealingUsed: inputs.sealing_used,
+    };
 
     try {
+      console.log("[PREDICT] url:", `/runwaycrackreports/predict/${id}`);
+      console.log("[PREDICT] payload:", payload);
+
       setLoading(true);
-      const payload = {
-        ...crackInfo,
-        ...inputs,
-      };
+      const res = await api.post(`/runwaycrackreports/predict/${id}`, payload);
 
-      // 🚀 예측 API 호출 (백엔드가 준비되면 이 부분을 활성화)
-      // const res = await api.post(`/runwaycrackreports/predict/${rcId}`, payload);
-      // setPredictionResult(res.data);
-
-      // 임시 더미 예측 결과
-      setTimeout(() => {
-        setPredictionResult({
-          predictedCost: 1500000,
-          predictedDuration: 5,
-        });
-        setLoading(false);
-      }, 1500);
-
+      console.log("[PREDICT] response:", res.data);
+      setPredictionResult(res.data);
     } catch (err) {
-      console.error("예측 실패", err);
+      console.error("[PREDICT] error:", err);
+      console.error("[PREDICT] server data:", err?.response?.data);
       alert("예측 중 오류 발생");
+    } finally {
       setLoading(false);
     }
   };
@@ -92,13 +91,13 @@ const PredictRepair = () => {
       
       // 사용자가 입력한 값과 예측 결과를 모두 payload에 포함
       const payload = {
-        pavement_type_concrete: inputs.pavement_type_concrete,
-        epoxy_used: inputs.epoxy_used,
-        wiremesh_used: inputs.wiremesh_used,
-        joint_seal_used: inputs.joint_seal_used,
-        rebar_used: inputs.rebar_used,
-        polymer_used: inputs.polymer_used,
-        sealing_used: inputs.sealing_used,
+        pavementTypeConcrete: inputs.pavement_type_concrete,
+        epoxyUsed: inputs.epoxy_used,
+        wiremeshUsed: inputs.wiremesh_used,
+        jointSealUsed: inputs.joint_seal_used,
+        rebarUsed: inputs.rebar_used,
+        polymerUsed: inputs.polymer_used,
+        sealingUsed: inputs.sealing_used,
         predictedCost: predictionResult.predictedCost,
         predictedDuration: predictionResult.predictedDuration,
       };
@@ -389,55 +388,61 @@ const PredictRepair = () => {
 
               {predictionResult && (
                 <Box sx={{ mt: 4 }}>
-                  <Paper 
-                    elevation={2} 
-                    sx={{ 
-                      p: 2.5, 
+                  <Paper
+                    elevation={2}
+                    sx={{
+                      p: 2.5,
                       bgcolor: "#f8f9fa",
-                      border: "1px solid #e3f2fd"
+                      border: "1px solid #e3f2fd",
                     }}
                   >
-                    <Typography 
-                      variant="h6" 
-                      sx={{ 
-                        fontSize: { xs: '1.1rem', md: '1.25rem' },
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontSize: { xs: "1.1rem", md: "1.25rem" },
                         color: "primary.main",
-                        mb: 1.5
+                        mb: 1.5,
                       }}
                     >
                       예측 결과
                     </Typography>
                     <Divider sx={{ mb: 2 }} />
-                    
+
+                    {/* 비용 */}
                     <Box sx={{ mb: 1.5 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                      <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: "0.875rem" }}>
                         예상 수리 비용
                       </Typography>
-                      <Typography 
-                        variant="h6" 
-                        sx={{ 
-                          fontSize: { xs: '1.1rem', md: '1.3rem' },
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontSize: { xs: "1.1rem", md: "1.3rem" },
                           fontWeight: 600,
-                          color: "primary.main"
+                          color: "primary.main",
                         }}
                       >
-                        {predictionResult.predictedCost.toLocaleString()} 원
+                        {Number.isFinite(predictionResult?.cost)
+                          ? Number(predictionResult.cost.toFixed(1)).toLocaleString() + " 원"
+                          : "- 원"}
                       </Typography>
                     </Box>
-                    
+
+                    {/* 기간 */}
                     <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                      <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: "0.875rem" }}>
                         예상 수리 기간
                       </Typography>
-                      <Typography 
-                        variant="h6" 
-                        sx={{ 
-                          fontSize: { xs: '1.1rem', md: '1.3rem' },
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontSize: { xs: "1.1rem", md: "1.3rem" },
                           fontWeight: 600,
-                          color: "secondary.main"
+                          color: "secondary.main",
                         }}
                       >
-                        {predictionResult.predictedDuration} 일
+                        {Number.isFinite(predictionResult?.duration)
+                          ? `${Number(predictionResult.duration.toFixed(1))} 일`
+                          : "- 일"}
                       </Typography>
                     </Box>
 
@@ -447,11 +452,11 @@ const PredictRepair = () => {
                         color="success"
                         onClick={handleReportGenerate}
                         disabled={reportLoading}
-                        sx={{ 
+                        sx={{
                           minWidth: "150px",
                           height: "45px",
                           fontSize: "1rem",
-                          fontWeight: 600
+                          fontWeight: 600,
                         }}
                       >
                         {reportLoading ? (
