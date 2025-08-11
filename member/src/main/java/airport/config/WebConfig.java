@@ -8,14 +8,14 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns("*") // allowCredentials(true)와 함께 사용 가능
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);
-    }
+    // @Override
+    // public void addCorsMappings(CorsRegistry registry) {
+    //     registry.addMapping("/**")
+    //             .allowedOriginPatterns("*") // allowCredentials(true)와 함께 사용 가능
+    //             .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+    //             .allowedHeaders("*")
+    //             .allowCredentials(true);
+    // }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

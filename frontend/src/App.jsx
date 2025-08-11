@@ -12,9 +12,9 @@ import ResetPassword from "./component/login/ResetPassword";
 
 function App() {
 //db안뜰때 로그인 패스하는거 주석처리하면됨
-  useEffect(() => {
-    localStorage.setItem("accessToken", "123213");
-  }, []);
+  // useEffect(() => {
+  //   localStorage.setItem("accessToken", "123213");
+  // }, []);
 
   return (
       <ToastProvider>
