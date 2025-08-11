@@ -115,6 +115,7 @@ import airport.domain.report.dto.MaintenanceRequest;
  * EquipmentReport에 대한 API 요청을 처리하는 컨트롤러 클래스입니다.
  */
 @RestController
+@RequestMapping(value="/equipmentReports")
 public class EquipmentReportController {
 
     @Autowired
