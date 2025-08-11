@@ -8,6 +8,7 @@ import RedirectIfAuth from "./component/login/RedirectIfAuth";
 import PrivacyConsent from "./component/Signup/TermsAgreementPage";
 import { ToastProvider } from "./component/Signup/ToastContainer"; 
 import ResetPassword from "./component/login/ResetPassword";
+import adminRoutes from "./routes/adminRoutes";
 
 
 function App() {
@@ -55,7 +56,11 @@ function App() {
                 ))}
             </Route>
           ))}
+          {adminRoutes.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
         </Routes>
+        
       </ToastProvider>
   );
 }

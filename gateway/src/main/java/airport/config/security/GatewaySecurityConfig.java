@@ -31,7 +31,7 @@ public class GatewaySecurityConfig {
                 .anyExchange().authenticated()
                 )
                 .formLogin(form -> form
-                    .loginPage("/app/login")
+                    .loginPage("/login")
                 )
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
