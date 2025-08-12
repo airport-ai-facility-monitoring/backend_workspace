@@ -78,7 +78,7 @@ const MainHomeMg = () => {
             >
               <Box
                 component="img"
-                src="/app/chart.png"
+                src="/chart.png"
                 alt="차트"
                 sx={{
                   maxHeight: "100%",
@@ -128,7 +128,7 @@ const MainHomeMg = () => {
                   }}
                 >
                   <video
-                    src={`/app/videos/${num}.mp4`}
+                    src={`/videos/${num}.mp4`}
                     autoPlay
                     muted
                     loop
