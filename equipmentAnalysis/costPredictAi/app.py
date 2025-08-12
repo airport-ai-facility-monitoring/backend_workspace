@@ -9,8 +9,12 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, field_validator
 
+from typing import Union
+
 app = FastAPI(title="Equipment Maintenance Cost Prediction (API-only)")
 
+
+Code = Union[str, int]
 # --- 0) 카테고리 (문자 Enum) + 숫자 허용 validator ---
 class Category(str, Enum):
     WEATHER = "weather"    # 1
@@ -20,10 +24,10 @@ class Category(str, Enum):
 # --- 1) 공통 필드 ---
 class CommonFields(BaseModel):
     category: Category
-    manufacturer: Optional[str] = None
+    manufacturer: Optional[Code] = None          # str -> Code
     purchase: Optional[float] = Field(None, description="구매가 (KRW)")
     failure: Optional[int] = None
-    protectionRating: Optional[str] = None
+    protectionRating: Optional[Code] = None      # str -> Code
     runtime: Optional[float] = Field(None, description="누적 가동시간(시간)")
     serviceYears: Optional[float] = None
     maintenanceCost: Optional[float] = None
@@ -46,20 +50,19 @@ class CommonFields(BaseModel):
 # --- 2) 카테고리별 추가 필드 ---
 class WeatherExtra(BaseModel):
     powerConsumption: Optional[float] = None
-    mountType: Optional[str] = None
+    mountType: Optional[Code] = None             # str -> Code
 
 class LightingExtra(BaseModel):
-    lampType: Optional[str] = None
+    lampType: Optional[Code] = None              # str -> Code
     powerConsumption: Optional[float] = None
 
 class SignageExtra(BaseModel):
     panelWidth: Optional[float] = None
     panelHeight: Optional[float] = None
-    material: Optional[str] = None
-    signColor: Optional[str] = None
-    # UI에선 mountType로 올 수도 있음 → 모델은 installationType 사용
-    mountType: Optional[str] = None
-    installationType: Optional[str] = None
+    material: Optional[Code] = None              # str -> Code
+    signColor: Optional[Code] = None             # str -> Code
+    mountType: Optional[Code] = None             # str -> Code
+    installationType: Optional[Code] = None      # str -> Code
 
 # --- 3) 분기형 요청 스키마 (Discriminated Union) ---
 class WeatherRequest(CommonFields, WeatherExtra):

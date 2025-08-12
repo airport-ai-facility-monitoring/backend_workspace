@@ -74,7 +74,7 @@ public class EquipmentController {
     @PostMapping("/sign")
     public UnifiedEquipmentDto createSign(@RequestBody CreateSignRequest request) {
         Equipment equipment = convertToEntity(request.getEquipment());
-        equipment.setEquipmentType("표지-표시");
+        equipment.setEquipmentType("표지");
 
         SignEquipmentDetail detail = new SignEquipmentDetail();
         detail.setMaterial(request.getSignDetail().getMaterial());

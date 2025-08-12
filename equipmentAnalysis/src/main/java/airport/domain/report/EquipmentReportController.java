@@ -127,36 +127,14 @@ public class EquipmentReportController {
     @Autowired
     MaintenanceService maintenanceService;
 
-    /**
-     * 조명 장비 정보에 대한 유지보수 분석을 요청하는 API입니다.
-     */
-    @PostMapping("/regist/lighting")
-    public ResponseEntity<EquipmentReport> analyzeLighting(@RequestBody LightingDto request) throws JsonProcessingException {
-        System.out.println((CommonMaintenanceRequest)request);
-        EquipmentReport report = maintenanceService.analyzeAndSave(request);
-        return ResponseEntity.ok(report);
-    }
+    @GetMapping
+    public ResponseEntity<List<EquipmentReport>> getAllReports() {
+        // 1. 데이터베이스에서 모든 EquipmentReport 엔티티 목록을 조회합니다.
+        List<EquipmentReport> entities = equipmentReportRepository.findAll();
 
-    /**
-     * 기상관측 장비 정보에 대한 유지보수 분석을 요청하는 API입니다.
-     */
-    @PostMapping("/regist/weather")
-    public ResponseEntity<EquipmentReport> analyzeWeather(@RequestBody WeatherDto request) throws JsonProcessingException {
-        System.out.println((CommonMaintenanceRequest)request);
-        EquipmentReport report = maintenanceService.analyzeAndSave(request);
-        return ResponseEntity.ok(report);
+        // 3. 변환된 DTO 목록을 성공 상태(200 OK)와 함께 응답합니다.
+        return ResponseEntity.ok(entities);
     }
-
-    /**
-     * 표시-표지 장비 정보에 대한 유지보수 분석을 요청하는 API입니다.
-     */
-    @PostMapping("/regist/sign")
-    public ResponseEntity<EquipmentReport> analyzeSign(@RequestBody SignDto request) throws JsonProcessingException {
-        System.out.println((CommonMaintenanceRequest)request);
-        EquipmentReport report = maintenanceService.analyzeAndSave(request);
-        return ResponseEntity.ok(report);
-    }
-
 
     /**
      * 특정 ID의 장비 보고서를 조회하는 API 입니다.
@@ -180,5 +158,33 @@ public class EquipmentReportController {
         }
         equipmentReportRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // ✅ 저장 안하고 LLM 결과만 생성해서 돌려줌
+    @PostMapping("/preview/lighting")
+    public ResponseEntity<ReportPreviewResponse> previewLighting(@RequestBody LightingDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.preview(request));
+    }
+    @PostMapping("/preview/weather")
+    public ResponseEntity<ReportPreviewResponse> previewWeather(@RequestBody WeatherDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.preview(request));
+    }
+    @PostMapping("/preview/sign")
+    public ResponseEntity<ReportPreviewResponse> previewSign(@RequestBody SignDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.preview(request));
+    }
+
+    // ✅ 저장(기존 regist) — 편집한 본문이 오면 그대로 저장
+    @PostMapping("/regist/lighting")
+    public ResponseEntity<EquipmentReport> analyzeLighting(@RequestBody LightingDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.analyzeAndSave(request));
+    }
+    @PostMapping("/regist/weather")
+    public ResponseEntity<EquipmentReport> analyzeWeather(@RequestBody WeatherDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.analyzeAndSave(request));
+    }
+    @PostMapping("/regist/sign")
+    public ResponseEntity<EquipmentReport> analyzeSign(@RequestBody SignDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.analyzeAndSave(request));
     }
 }

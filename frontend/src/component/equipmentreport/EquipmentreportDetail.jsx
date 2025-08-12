@@ -1,186 +1,172 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
-// 인라인 스타일 객체
+// ⚠️ 네 스프링 백엔드 주소
+const BASE = "https://supreme-carnival-x7wr65q5gp43vgp9-8088.app.github.dev";
+
 const styles = {
   appContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '40px 20px',
-    backgroundColor: '#f9f9f9',
-    fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif",
-    color: '#333',
-    minHeight: '100vh',
-    boxSizing: 'border-box',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    padding: "40px 20px",
+    backgroundColor: "#f9f9f9",
+    fontFamily: "'Malgun Gothic','맑은 고딕',sans-serif",
+    color: "#333",
+    minHeight: "100vh",
+    boxSizing: "border-box",
   },
   reportContainer: {
-    width: '100%',
-    maxWidth: '800px',
-    backgroundColor: '#fff',
-    padding: '40px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-    border: '1px solid #eee',
+    width: "100%",
+    maxWidth: "800px",
+    backgroundColor: "#fff",
+    padding: "40px",
+    borderRadius: "10px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    border: "1px solid #eee",
   },
-  title: {
-    textAlign: 'center',
-    fontSize: '26px',
-    fontWeight: '600',
-    margin: '0 0 10px 0',
-  },
-  date: {
-    textAlign: 'center',
-    fontSize: '16px',
-    color: '#666',
-    marginBottom: '20px',
-  },
-  hr: {
-    border: '0',
-    height: '1px',
-    backgroundColor: '#e0e0e0',
-    margin: '30px 0',
-  },
-  infoGrid: {
-    display: 'grid',
-    gridTemplateColumns: '150px 1fr',
-    gap: '12px 15px',
-    fontSize: '16px',
-  },
-  dt: {
-    fontWeight: 'bold',
-    color: '#555',
-  },
-  dd: {
-    margin: 0,
-    color: '#222',
-  },
-  h3: {
-    fontSize: '18px',
-    fontWeight: '600',
-    margin: '0 0 15px 0',
-  },
+  title: { textAlign: "center", fontSize: "26px", fontWeight: 600, margin: "0 0 10px" },
+  date: { textAlign: "center", fontSize: "16px", color: "#666", marginBottom: "20px" },
+  hr: { border: 0, height: "1px", backgroundColor: "#e0e0e0", margin: "30px 0" },
+  infoGrid: { display: "grid", gridTemplateColumns: "150px 1fr", gap: "12px 15px", fontSize: "16px" },
+  dt: { fontWeight: "bold", color: "#555" },
+  dd: { margin: 0, color: "#222" },
+  h3: { fontSize: "18px", fontWeight: 600, margin: "0 0 15px" },
   opinionTextarea: {
-    width: '100%',
-    minHeight: '250px',
-    padding: '12px',
-    fontSize: '16px',
-    lineHeight: 1.7,
-    border: '1px solid #ccc',
-    borderRadius: '5px',
-    boxSizing: 'border-box',
-    resize: 'vertical',
-    fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif",
+    width: "100%", minHeight: "250px", padding: "12px", fontSize: "16px", lineHeight: 1.7,
+    border: "1px solid #ccc", borderRadius: "5px", boxSizing: "border-box", resize: "vertical",
+    fontFamily: "'Malgun Gothic','맑은 고딕',sans-serif",
   },
-  opinionTextareaReadOnly: {
-    backgroundColor: '#f9f9f9',
-    border: '1px solid #e0e0e0',
-  },
-  buttonContainer: {
-    textAlign: 'right',
-    marginTop: '30px',
-  },
+  opinionTextareaReadOnly: { backgroundColor: "#f9f9f9", border: "1px solid #e0e0e0" },
+  buttonContainer: { display: "flex", gap: 10, justifyContent: "flex-end", marginTop: "30px" },
   button: {
-    color: '#fff',
-    border: 'none',
-    padding: '12px 24px',
-    fontSize: '16px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    borderRadius: '5px',
-    transition: 'background-color 0.2s, box-shadow 0.2s',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    color: "#fff", border: "none", padding: "12px 24px", fontSize: "16px", fontWeight: 500,
+    cursor: "pointer", borderRadius: "5px", transition: "background-color .2s, box-shadow .2s",
+    boxShadow: "0 2px 4px rgba(0,0,0,.1)",
   },
-  editButton: {
-    backgroundColor: '#333',
-  },
-  saveButton: {
-    backgroundColor: '#007bff',
-  },
+  editButton: { backgroundColor: "#333" },
+  saveButton: { backgroundColor: "#007bff" },
+  secondaryButton: { backgroundColor: "#6c757d" },
 };
 
+function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
+function fmtDate(d) {
+  try {
+    if (!d) return "";
+    const dt = new Date(d);
+    if (Number.isNaN(dt.getTime())) return `${d}`;
+    return `${dt.getFullYear()}. ${dt.getMonth()+1}. ${dt.getDate()}.`;
+  } catch { return ""; }
+}
 
-// --- 장비 분석 보고서 UI 컴포넌트 ---
-const EquipmentReport = () => {
-  // 샘플 데이터 (이 부분은 나중에 API 연동으로 대체 가능)
-  const reportData = {
-    equipmentName: 'runway_9',
-    equipmentType: '조명(시각유도)',
-    category: 'REL',
-    predictions: '100,000',
-    purchase: '350,000',
-    initialOpinion: "초기 분석 결과, 터빈 블레이드의 미세 균열이 감지되었습니다. 잔여 수명 예측 모델(LLM)을 기반으로 3년 내 유지보수 비용이 급증할 것으로 예상됩니다.\n\n교체 장비로는 '차세대 GT-2000 모델'을 추천하며, 관련 LLM 프롬프트는 다음과 같습니다:\n'GT-2000 모델의 10년간 TCO(총소유비용)와 기존 모델 대비 에너지 효율 개선율을 비교 분석해줘.'",
-  };
+const EquipmentReportDetail = () => {
+  const { id } = useParams();           // /equipment/report/:id
+  const navigate = useNavigate();
 
-  // 편집 모드와 종합의견 텍스트를 관리하기 위한 state
+  const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+
+  // 편집 모드 & 텍스트(LLM 본문)
   const [isEditing, setIsEditing] = useState(false);
-  const [opinion, setOpinion] = useState(reportData.initialOpinion);
+  const [opinion, setOpinion] = useState("");
 
-  // 편집/저장 버튼 클릭 핸들러
-  const handleButtonClick = () => {
-    setIsEditing(!isEditing);
-    // 실제 애플리케이션에서는 저장 버튼을 누를 때 API 호출로 데이터를 서버에 전송합니다.
-    if (isEditing) {
-      console.log('저장된 내용:', opinion);
-    // 페이지 이동 
-    alert('내용이 저장되었습니다. 보고서 페이지로 이동합니다.'); // 사용자에게 알림
-    window.location.href = '/equipment/report'; // 지정된 경로로 페이지 이동
-    }
-    // '편집하기' 또는 '저장하기' 클릭 시 항상 편집 모드를 토글
-    setIsEditing(!isEditing);
+  useEffect(() => {
+    const fetchReport = async () => {
+      try {
+        const res = await fetch(`${BASE}/equipmentReports/${id}`);
+        if (!res.ok) {
+          const t = await res.text();
+          throw new Error(`보고서 조회 실패: ${res.status} ${t}`);
+        }
+        const data = await res.json();
+        console.log("[Report detail]", data);
+        setReport(data);
+
+        // 서버의 필드명에 맞게 LLM 본문 키 선택
+        const llmText = data.llmReport || data.report || data.content || data.llm_report || "";
+        setOpinion(llmText);
+      } catch (e) {
+        setErr(e.message || String(e));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReport();
+  }, [id]);
+
+  // 저장 클릭시(지금은 안내만; PUT API 생기면 여기서 호출)
+  const handleSave = async () => {
+    // TODO: PUT /equipmentReports/{id} 가 생기면 여기서 opinion(LLM 본문) 업데이트
+    alert("저장 API가 아직 없어요. 백엔드에 PUT 엔드포인트 추가 후 연결해주세요.");
+    setIsEditing(false);
   };
+
+  if (loading) return <div style={{ padding: 24 }}>로딩 중...</div>;
+  if (err) return <div style={{ padding: 24, color: "red" }}>에러: {err}</div>;
+  if (!report) return <div style={{ padding: 24 }}>데이터가 없습니다.</div>;
+
+  // ===== 엔티티 필드 매핑(필드명은 프로젝트에 맞게 조정) =====
+  const equipmentName   = report.equipmentName || report.title || "-";
+  const equipmentType   = report.equipmentType || report.type || "-";
+  const category        = report.category || report.subCategory || "-";
+  const maintenanceCost = report.maintenanceCost ?? report.predictedMaintenanceCost ?? report.cost;
+  const purchase        = report.newPurchaseCost ?? report.purchase ?? null;
+  const createdAt       = report.createdAt || report.created_date || report.created || null;
 
   return (
     <div style={styles.appContainer}>
       <div style={styles.reportContainer}>
-        <h1 style={styles.title}>{reportData.equipmentName} 장비 분석 보고서</h1>
-        <p style={styles.date}>보고서 작성일자: 2025. 8. 8.</p>
+        <h1 style={styles.title}>{equipmentName} 장비 분석 보고서</h1>
+        <p style={styles.date}>보고서 작성일자: {fmtDate(createdAt) || "-"}</p>
         <hr style={styles.hr} />
 
         <dl style={styles.infoGrid}>
           <dt style={styles.dt}>장비명:</dt>
-          <dd style={styles.dd}>{reportData.equipmentName}</dd>
+          <dd style={styles.dd}>{equipmentName}</dd>
           <dt style={styles.dt}>장비 종류:</dt>
-          <dd style={styles.dd}>{reportData.equipmentType}</dd>
+          <dd style={styles.dd}>{equipmentType}</dd>
           <dt style={styles.dt}>카테고리:</dt>
-          <dd style={styles.dd}>{reportData.category}</dd>
+          <dd style={styles.dd}>{category}</dd>
         </dl>
 
         <hr style={styles.hr} />
 
         <dl style={styles.infoGrid}>
           <dt style={styles.dt}>유지보수 비용예측:</dt>
-          <dd style={styles.dd}>{reportData.predictions} 원</dd>
+          <dd style={styles.dd}>
+            {isNum(maintenanceCost) ? `${Math.round(maintenanceCost).toLocaleString()} 원` : "-"}
+          </dd>
           <dt style={styles.dt}>신규 장비 구매비용:</dt>
-          <dd style={styles.dd}>{reportData.purchase} 원</dd>
+          <dd style={styles.dd}>
+            {isNum(purchase) ? `${Math.round(purchase).toLocaleString()} 원` : "-"}
+          </dd>
         </dl>
 
         <hr style={styles.hr} />
 
         <div>
           <h3 style={styles.h3}>종합의견:</h3>
-          {/* <p style={{fontSize: '14px', color: '#888', margin: '0 0 10px 0'}}>
-            추천장비 및 LLM 프롬프트
-          </p> */}
           <textarea
-            style={{
-              ...styles.opinionTextarea,
-              ...(isEditing ? {} : styles.opinionTextareaReadOnly) // 편집 모드가 아닐 때 readonly 스타일 적용
-            }}
+            style={{ ...styles.opinionTextarea, ...(isEditing ? {} : styles.opinionTextareaReadOnly) }}
             value={opinion}
             onChange={(e) => setOpinion(e.target.value)}
-            readOnly={!isEditing} // isEditing이 false이면 수정 불가
+            readOnly={!isEditing}
           />
         </div>
 
         <div style={styles.buttonContainer}>
           <button
-            style={{
-              ...styles.button,
-              ...(isEditing ? styles.saveButton : styles.editButton)
-            }}
-            onClick={handleButtonClick}
+            style={{ ...styles.button, ...styles.secondaryButton }}
+            onClick={() => navigate(-1)}
           >
-            {isEditing ? '저장하기' : '편집하기'}
+            뒤로
+          </button>
+          <button
+            style={{ ...styles.button, ...(isEditing ? styles.saveButton : styles.editButton) }}
+            onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
+          >
+            {isEditing ? "저장하기" : "편집하기"}
           </button>
         </div>
       </div>
@@ -188,4 +174,4 @@ const EquipmentReport = () => {
   );
 };
 
-export default EquipmentReport;
+export default EquipmentReportDetail;

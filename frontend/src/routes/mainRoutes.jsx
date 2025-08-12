@@ -19,6 +19,8 @@ import Crackreport from '../component/crack/report/CrackReport';
 import EquipmentreportRegist from "../component/equipmentreport/EquipmentreportRegist";
 import NotificationEdit from '../component/notifications/NotificationEdit';
 import CrackReportEdit from '../component/crack/report/CrackReportEdit';
+import EquipmentReportGenerate from '../component/equipmentreport/EquipmentReportGenerate';
+import EquipmentReportPreview from "../component/equipmentreport/EquipmentReportPreview";
 
 const mainRoutes = [
   {
@@ -41,9 +43,11 @@ const mainRoutes = [
       { path: "equipment/report", element: <Equipmentreport /> },
       { path: "equipment/report/:id", element: <EquipmentreportDetail /> },
       { path: "equipment/report/regist/:category", element: <EquipmentreportRegist /> },
+      { path: "equupment/report/create", element: <EquipmentReportGenerate />},
       { path: "report/:rcId", element: <Crackreport /> },
       { path: "report/edit/:rcId", element: <CrackReportEdit /> },
       { path: "notifications/edit/:id", element: <NotificationEdit /> },
+      { path: "equipment/report/preview", element: <EquipmentReportPreview /> },
     ],
   },
 ];

@@ -19,4 +19,6 @@ public class CommonMaintenanceRequest {
     private int repair_time;          // 수리 시간 (시간)
     private int labor_rate;           // 시간당 인건비 (원)
     private int avg_life;             // 평균 수명 (년)
+
+    private String llm_report; // 사용자가 편집한 보고서 본문 
 }

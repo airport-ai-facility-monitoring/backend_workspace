@@ -1,42 +1,81 @@
-import React, { useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+// import api from '../api/axios'; // <- 2)에서 만드는 axios 인스턴스
+import api from '../../config/api';
 
-// --- UI 데모를 위한 목업 데이터 ---
-const mockReports = [
-  { id: 1, type: '조명', name: 'REL-001', timestamp: '2023-10-27 10:30:00', cost: 150000 },
-  { id: 2, type: '기상관측', name: 'Anemometer-A5', timestamp: '2023-10-27 09:15:00', cost: 550000 },
-  { id: 3, type: '표지', name: 'RDRS-T2', timestamp: '2023-10-26 17:45:00', cost: 300000 },
-  { id: 4, type: '조명', name: 'RCL-012', timestamp: '2023-10-26 14:20:00', cost: 120000 },
-  { id: 5, type: '기상관측', name: 'Visibilitysensor-V2', timestamp: '2023-10-25 11:05:00', cost: 780000 },
-];
-
-// 전체 UI를 구성하는 메인 컴포넌트
 function EquipmentReportDashboard() {
-  // const navigate = useNavigate();
-  
-  const [reports, setReports] = useState(mockReports);
+  const navigate = useNavigate();
+
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState(null);
 
-  const handleNavigate = (id) => {
-    alert(`상세보기: ${id}번 보고서로 이동합니다.`);
-  };
+  // 백엔드 엔티티 -> 화면용 데이터 매핑
+  // 필드명은 추정치이므로, 실제 엔티티 필드명에 맞게만 아래를 수정하면 됨.
+  const mapEntityToView = (e) => ({
+    id: e.id ?? e.reportId ?? e.equipmentReportId,               // PK
+    type: e.equipmentType ?? e.type ?? '미지정',                  // 장비 종류
+    name: e.equipmentName ?? e.name ?? e.code ?? '이름 없음',      // 장비명
+    timestamp: formatDateTime(e.createdAt ?? e.registeredAt ?? e.updatedAt ?? e.timestamp),
+    cost: e.predictedCost ?? e.cost ?? e.estimatedCost ?? null,   // 예측 유지보수 비용
+  });
 
-  const handleDelete = (id) => {
-    if (window.confirm(`정말로 ${id}번 보고서를 삭제하시겠습니까? (UI에서만 제거됩니다)`)) {
-      setReports(reports.filter(report => report.id !== id));
-      alert("보고서가 성공적으로 삭제되었습니다.");
+  const fetchReports = async () => {
+    try {
+      setLoading(true);
+      const { data } = await api.get('/equipmentReports');
+      const mapped = Array.isArray(data) ? data.map(mapEntityToView) : [];
+      // 최신순 정렬 (timestamp가 파싱 가능하면 그걸로, 아니면 id desc)
+      mapped.sort((a, b) => {
+        const ta = Date.parse(a.timestamp) || 0;
+        const tb = Date.parse(b.timestamp) || 0;
+        if (tb !== ta) return tb - ta;
+        return (b.id ?? 0) - (a.id ?? 0);
+      });
+      setReports(mapped);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError('보고서 목록을 불러오는 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const filteredReports = reports.filter((report) =>
-    report.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const handleNavigate = (id) => {
+    // 상세 페이지 라우팅 규칙에 맞게 경로 조정
+    navigate(`/equipment/report/${id}`);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm(`정말로 ${id}번 보고서를 삭제하시겠습니까?`)) return;
+    try {
+      await api.delete(`/equipmentReports/${id}`);
+      setReports((prev) => prev.filter((r) => r.id !== id));
+      alert('보고서가 성공적으로 삭제되었습니다.');
+    } catch (err) {
+      console.error(err);
+      alert('삭제 중 오류가 발생했습니다.');
+    }
+  };
+
+  const filteredReports = useMemo(() => {
+    const q = (searchTerm || '').toLowerCase();
+    return reports.filter((r) => (r.name || '').toLowerCase().includes(q));
+  }, [reports, searchTerm]);
+
+  if (loading) {
+    return <div style={styles.container}><div style={styles.header}>장비분석 보고서</div><div style={styles.card}>불러오는 중...</div></div>;
+  }
 
   return (
     <div style={styles.container}>
-      <header style={styles.header}>
-        장비분석 보고서
-      </header>
+      <header style={styles.header}>장비분석 보고서</header>
 
       <main style={styles.main}>
         <section style={styles.card}>
@@ -49,8 +88,9 @@ function EquipmentReportDashboard() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button style={styles.searchButton}>조회</button>
+            <button style={styles.searchButton} onClick={fetchReports}>새로고침</button>
           </div>
+          {error && <div style={{ color: '#e53e3e', marginTop: 8 }}>{error}</div>}
         </section>
 
         <section style={styles.card}>
@@ -73,9 +113,9 @@ function EquipmentReportDashboard() {
                     <td style={styles.td}>{report.id}</td>
                     <td style={styles.td}>{report.type}</td>
                     <td style={styles.td}>{report.name}</td>
-                    <td style={styles.td}>{report.timestamp}</td>
+                    <td style={styles.td}>{report.timestamp || '-'}</td>
                     <td style={styles.td}>
-                      {report.cost ? report.cost.toLocaleString() : '비용 정보 없음'}
+                      {report.cost != null ? Number(report.cost).toLocaleString() : '비용 정보 없음'}
                     </td>
                     <td style={styles.td}>
                       <button
@@ -108,7 +148,21 @@ function EquipmentReportDashboard() {
   );
 }
 
-// 스타일 정의 객체
+function pad(n) { return n.toString().padStart(2, '0'); }
+function formatDateTime(val) {
+  if (!val) return '';
+  const d = new Date(val);
+  if (isNaN(d)) return typeof val === 'string' ? val : '';
+  const yyyy = d.getFullYear();
+  const MM = pad(d.getMonth() + 1);
+  const dd = pad(d.getDate());
+  const hh = pad(d.getHours());
+  const mm = pad(d.getMinutes());
+  const ss = pad(d.getSeconds());
+  return `${yyyy}-${MM}-${dd} ${hh}:${mm}:${ss}`;
+}
+
+// 스타일 (기존 유지)
 const styles = {
   container: {
     backgroundColor: '#f0f2f5',
