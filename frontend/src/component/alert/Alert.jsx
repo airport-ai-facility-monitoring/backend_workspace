@@ -54,11 +54,20 @@ const Alert = () => {
   }, []);
 
   // 처리 요청 버튼 클릭 핸들러
-  const handleRequest = (objectId) => {
-    console.log(`처리 요청 신호 전송 (ID): ${objectId}`);
-    alert(`[처리 요청] 신호를 보냈습니다. 대상 ID: ${objectId}`);
+  const handleRequest = (alertLog) => {
+    let message = "";
+    if (alertLog.includes("FOD감지")) {
+      message = "[FOD감지] FOD 전담 처리반을 호출 하였습니다.";
+    } else if (alertLog.includes("조류 출현")) {
+      message = "[조류 출현] 조류 전담 처리반을 호출 하였습니다.";
+    } else if (alertLog.includes("동물 출현")) {
+      message = "[동물 출현] 동물 처리 전담반을 호출하였습니다.";
+    } else {
+      message = "[처리 요청] 신호를 보냈습니다.";
+    }
+    console.log(message);
+    alert(message);
     // 나중에 실제 API 호출 로직을 여기에 추가할 수 있습니다.
-    // 예: api.post('/handle-request', { objectId });
   };
 
   return (
@@ -145,7 +154,7 @@ const Alert = () => {
                             <Button
                               variant="contained"
                               size="small"
-                              onClick={() => handleRequest(row.alertId)}
+                              onClick={() => handleRequest(row.alertLog)}
                             >
                               처리 요청
                             </Button>
