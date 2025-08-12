@@ -125,18 +125,10 @@ const Alert = () => {
                     </TableCell>
                   </TableRow>
                   {alerts.map((row, index) => {
-                    console.log("Alert data:", row); // For debugging
-
-                    const isForeignObjectAlert =
-                      row.alertLog.includes("이물질 감지");
-                    let objectId = null;
-
-                    if (isForeignObjectAlert) {
-                      const match = row.alertLog.match(/이물질 감지: (\d+)/);
-                      if (match && match[1]) {
-                        objectId = match[1];
-                      }
-                    }
+                    const isTargetAlert =
+                      row.alertLog.includes("FOD감지") ||
+                      row.alertLog.includes("조류 출현") ||
+                      row.alertLog.includes("동물 출현");
 
                     return (
                       <TableRow
@@ -149,11 +141,11 @@ const Alert = () => {
                         </TableCell>
                         <TableCell>{row.alertLog}</TableCell>
                         <TableCell sx={{ textAlign: "center" }}>
-                          {isForeignObjectAlert && objectId && (
+                          {isTargetAlert && (
                             <Button
                               variant="contained"
                               size="small"
-                              onClick={() => handleRequest(objectId)}
+                              onClick={() => handleRequest(row.alertId)}
                             >
                               처리 요청
                             </Button>

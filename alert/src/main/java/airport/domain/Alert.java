@@ -143,11 +143,33 @@ public class Alert {
             .ifPresent(cctv -> {
                 Alert alert = new Alert();
                 alert.setCctvId(foreignObjectDetected.getCameraId());
+
+                String objectType = foreignObjectDetected.getObjectType();
+                String alertMessage;
+
+                switch (objectType) {
+                    case "5":
+                    case "6":
+                        alertMessage = "노면 손상 발생";
+                        break;
+                    case "7":
+                        alertMessage = "FOD감지";
+                        break;
+                    case "8":
+                        alertMessage = "조류 출현";
+                        break;
+                    case "9":
+                        alertMessage = "동물 출현";
+                        break;
+                    default:
+                        return; // 작업자 및 작업차량은 처리하지 않음
+                }
+
                 alert.setAlertLog(
                     "[" +
                     cctv.getCctvArea() +
                     "] " +
-                    "이물질 감지: " + foreignObjectDetected.getObjectType() + " " + foreignObjectDetected.getObjectCount() + "개"
+                    alertMessage
                 );
                 alert.setAlertDate(new Date());
                 repository().save(alert);
