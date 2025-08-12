@@ -225,7 +225,17 @@ const EquipmentsDetail = () => {
         <Button
           variant="contained"
           sx={{ backgroundColor: "#000", color: "#fff", "&:hover": { backgroundColor: "#333" } }}
-          onClick={() => navigate(`/equipment/report/regist/${toReportParam(equipment.equipmentType)}`)}
+          onClick={() =>
+              navigate(`/equipment/report/regist/${toReportParam(equipment.equipmentType)}`, {
+                state: {
+                  equipmentName: equipment.name,
+                  manufacturer: equipment.manufacturer,
+                  purchase: equipment.price,
+                  protectionRating: equipment.ipRating,
+                  serviceYears: equipment.lifespan,
+                }
+              })
+            }
         >
           수리요청
         </Button>
@@ -240,7 +250,7 @@ const EquipmentsDetail = () => {
           <Button
             variant="contained"
             sx={{ backgroundColor: "#000", color: "#fff", "&:hover": { backgroundColor: "#333" } }}
-            onClick={handleCancelEdit}
+            onClick={handleCancel}
           >
             취소
           </Button>
