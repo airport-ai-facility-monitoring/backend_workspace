@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import airport.domain.report.EquipmentReport;
 import airport.domain.report.EquipmentReportRepository;
-import airport.domain.report.dto.MaintenanceRequest;
+import airport.domain.report.dto.CommonMaintenanceRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +30,7 @@ public class MaintenanceService {
      * @return 데이터베이스에 저장된 MaintenanceReport 객체
      * @throws JsonProcessingException JSON 파싱 과정에서 발생할 수 있는 예외
      */
-    public EquipmentReport analyzeAndSave(MaintenanceRequest request) throws JsonProcessingException {
+    public EquipmentReport analyzeAndSave(CommonMaintenanceRequest request) throws JsonProcessingException {
         // 1. 프롬프트 생성: LLM에게 보낼 질문을 생성합니다.
         String prompt = MaintenancePromptFactory.buildPrompt(request);
 
