@@ -12,71 +12,56 @@ import {
   TableRow,
   Divider,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import api from "../../config/api"; // api 모듈 import
+import api from "../../config/api"; // API 모듈은 남겨두고
 
 const RunwayCrack = () => {
   const navigate = useNavigate();
 
   const [data, setData] = useState([]);
-  const [generatedIds, setGeneratedIds] = useState([]);
-  const [loadingId, setLoadingId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // 🚀 1. 페이지 진입 시 이상 리스트 요청
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await api.get("/runwaycracks");
-        console.log(res.data)
-        setData(res.data);
-      } catch (err) {
-        console.error("데이터 로딩 실패", err);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // 🚀 2. 보고서 생성 요청
-  const handleReportGenerate = async (id) => {
+// 🚀 1. 페이지 진입 시 더미 데이터 추가 및 리스트 요청
+useEffect(() => {
+  const fetchDataAndInsertDummy = async () => {
     try {
-      setLoadingId(id);
-      await api.post(`/runwaycrackreports/analyze/${id}`);
-      setData((prev) =>
-        prev.map((item) =>
-          item.rcId === id ? { ...item, reportState: true } : item
-        )
-      );
-    } catch (err) {
-      console.error("보고서 생성 실패", err);
-      alert("보고서 생성 중 오류 발생");
-    } finally {
-      setLoadingId(null);
-    }
-  };
+      setLoading(true);
 
-  // 3. 임의 더미데이터 추가
-    const handleInsertDummy = async () => {
-    try {
-      await api.post("/runwaycracks", {
+      // 백엔드 API로 보낼 더미 데이터 정의
+      const dummyData = [{
         imageUrl: "https://via.placeholder.com/150",
         cctvId: 201,
-        length: 30,
-        area: 150,
-        damageDetails: "테스트용 활주로 균열 발생"
-      });
-      alert("더미 데이터 저장 완료");
+        lengthCm: 30,
+        areaCm2: 150,
+        detectedDate: "2025-07-18",
+        reportState: false,
+      }, {
+        imageUrl: "https://via.placeholder.com/150",
+        cctvId: 202,
+        lengthCm: 50,
+        areaCm2: 250,
+        detectedDate: "2025-07-17",
+        reportState: true,
+      }];
 
-      // 새로고침 대신 데이터만 다시 가져오기
+      // 1. 더미 데이터들을 서버에 POST 요청으로 보냅니다.
+      const postPromises = dummyData.map(data => api.post("/runwaycracks", data));
+      await Promise.all(postPromises);
+      
+      // 2. POST 요청이 완료되면, 전체 데이터를 GET 요청으로 다시 가져옵니다.
       const res = await api.get("/runwaycracks");
       setData(res.data);
-
     } catch (err) {
-      console.error("저장 실패", err);
-      alert("저장 중 오류 발생");
+      console.error("데이터 처리 중 오류 발생:", err);
+    } finally {
+      setLoading(false);
     }
   };
+
+  fetchDataAndInsertDummy();
+}, []);
 
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f3f6fe" }}>
@@ -95,7 +80,6 @@ const RunwayCrack = () => {
             Crack
           </Typography>
         </Box>
-
         {/* Summary Card */}
         <Paper sx={{ mx: 3, mb: 3, p: 2 }}>
           <Box
@@ -115,19 +99,18 @@ const RunwayCrack = () => {
             </Box>
           </Box>
         </Paper>
-
         {/* Table */}
         <Box sx={{ mx: 3 }}>
-          <Typography variant="h6" sx={{ mb: 1 }}>
-            노선 손상 결과 진행도
-          </Typography>
-                            <Button
-          variant="outlined"
-          onClick={handleInsertDummy}
-          sx={{ mb: 2, ml: 3 }}
-        >
-          더미 데이터 추가
-        </Button>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 1,
+            }}
+          >
+            <Typography variant="h6">노선 손상 결과 진행도</Typography>
+          </Box>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -137,49 +120,74 @@ const RunwayCrack = () => {
                   <TableCell align="center">현장 (CCTV ID)</TableCell>
                   <TableCell align="center">파손 길이 (cm)</TableCell>
                   <TableCell align="center">파손 면적 (cm²)</TableCell>
-                  <TableCell align="center">이상 상세</TableCell>
-                  <TableCell align="center">발견 날짜</TableCell>
                   <TableCell align="center">사진</TableCell>
-                  <TableCell align="center">보고서</TableCell>
+                  <TableCell align="center">발견 날짜</TableCell>
+                  <TableCell align="center">상태</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.map((row, index) => (
-                  <TableRow key={row.rcId}>
-                    <TableCell align="center">{index + 1}</TableCell>
-                    <TableCell align="center">{row.reportState ? "보고서 완료" : "미보고"}</TableCell>
-                    <TableCell align="center">{row.cctvId}</TableCell>
-                    <TableCell align="center">{row.length ?? "-"}</TableCell>
-                    <TableCell align="center">{row.area ?? "-"}</TableCell>
-                    <TableCell align="left" sx={{ maxWidth: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {row.damageDetails}
-                    </TableCell>
-                    <TableCell align="center">{row.detectedDate}</TableCell>
-                    <TableCell align="center">
-                      {row.imageUrl ? (
-                        <img src={row.imageUrl} alt="이상 이미지" width={60} height={40} style={{ objectFit: "cover" }} />
-                      ) : (
-                        "-"
-                      )}
-                    </TableCell>
-                    <TableCell align="center">
-                      {row.reportState ? (
-                        <Button variant="contained" size="small" onClick={() => navigate(`/report/${row.rcId}`)}>
-                          보고서 보기
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="contained"
-                          size="small"
-                          disabled={loadingId === row.rcId}
-                          onClick={() => handleReportGenerate(row.rcId)}
-                        >
-                          {loadingId === row.rcId ? "생성 중..." : "보고서 생성"}
-                        </Button>
-                      )}
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={8} align="center">
+                      <CircularProgress />
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : data.length > 0 ? (
+                  data.map((row, index) => (
+                    <TableRow key={row.rcId}>
+                      <TableCell align="center">{index + 1}</TableCell>
+                      <TableCell align="center">
+                        {row.reportState ? "보고서 완료" : "확인 전"}
+                      </TableCell>
+                      <TableCell align="center">{row.cctvId}</TableCell>
+                      <TableCell align="center">{row.lengthCm ?? "-"}</TableCell>
+                      <TableCell align="center">{row.areaCm2 ?? "-"}</TableCell>
+                      <TableCell align="center">
+                        {row.imageUrl ? (
+                          <img
+                            src={row.imageUrl}
+                            alt="이상 이미지"
+                            width={60}
+                            height={40}
+                            style={{ objectFit: "cover" }}
+                          />
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                      <TableCell align="center">{row.detectedDate}</TableCell>
+                      <TableCell align="center">
+                        {row.reportState ? (
+                          <Button
+                            variant="contained"
+                            color="success" // 보고서 완료 시 초록색
+                            size="small"
+                            onClick={() => navigate(`report/${row.rcId}`)}
+                          >
+                            보고서 보기
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            color="primary" // 기본 상태일 때 파란색
+                            size="small"
+                            onClick={() =>
+                              navigate(`predict/${row.rcId}`, { state: { crackInfo: row } })
+                            }
+                          >
+                            상세 분석
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={8} align="center">
+                      데이터가 없습니다.
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>

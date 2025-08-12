@@ -14,6 +14,7 @@ import api from "../../config/api";
 import { Link } from "react-router-dom";
 // reCAPTCHA 사이트 키를 config 파일에서 가져옵니다.
 import RECAPTCHA_SITE_KEY from '../../config/recaptchaConfig';
+import * as jwtDecode from 'jwt-decode';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -38,8 +39,16 @@ const Login = () => {
         recaptchaToken,
       });
 
-      localStorage.setItem("accessToken", response.data.accessToken);
-      navigate("/home");
+      const token = response.data.accessToken;
+      localStorage.setItem("accessToken", token);
+      localStorage.setItem("role", response.data.role);
+      localStorage.setItem("employeeId", employeeId);
+
+      if (response.data.role === "ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/home");
+      }
     } catch (err) {
       console.error("로그인 실패:", err);
 

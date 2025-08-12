@@ -5,15 +5,22 @@ spring:
   application:
     name: notification
 ---
-
 spring:
   profiles: default
+  datasource:
+    url: jdbc:sqlserver://airport.database.windows.net:1433;database=airport;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     properties:
       hibernate:
         show_sql: true
         format_sql: true
         implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
   cloud:
     stream:
       kafka:
@@ -49,20 +56,25 @@ logging:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 
-
 server:
   port: 8083
-
 ---
-
 spring:
   profiles: docker
+  datasource:
+    url: jdbc:sqlserver://airport.database.windows.net:1433;database=airport;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     properties:
       hibernate:
         show_sql: true
         format_sql: true
         implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
   cloud:
     stream:
       kafka:
@@ -84,13 +96,5 @@ spring:
         event-out:
           destination: airport
           contentType: application/json
-    servlet:
-      multipart:
-        max-file-size: 5MB
-        max-request-size: 5MB
-
-  app:
-    upload:
-      dir: ${APP_UPLOAD_DIR:/data/notifications}
 
 

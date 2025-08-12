@@ -6,37 +6,52 @@ export default function CrackReportEdit() {
   const navigate = useNavigate();
   const { rcId } = useParams();
 
-  // 초기 상태
-  const [title, setTitle] = useState("");
-  const [cctvId, setCctvId] = useState("");
-  const [detectedDate, setDetectedDate] = useState("");
+  // RunwayCrack 필드들 (수정 불가)
   const [imageUrl, setImageUrl] = useState("");
   const [length, setLength] = useState("");
   const [area, setArea] = useState("");
-  const [repairPeriod, setRepairPeriod] = useState("");
-  const [repairCost, setRepairCost] = useState("");
-  const [cause, setCause] = useState("");
-  const [reportContents, setReportContents] = useState("");
+  const [cctvId, setCctvId] = useState("");
+  const [detectedDate, setDetectedDate] = useState("");
+  const [writingDate, setWritingDate] = useState("");
+
+  // RunwayCrackReport 필드들 (수정 가능)
+  const [title, setTitle] = useState("");
+  const [damageInfo, setDamageInfo] = useState("");
+  const [repairMaterials, setRepairMaterials] = useState("");
+  const [estimatedCost, setEstimatedCost] = useState("");
+  const [estimatedPeriod, setEstimatedPeriod] = useState("");
+  const [summary, setSummary] = useState("");
+
+  // maskEmployeeId (읽기 전용)
+  const [maskEmployeeId, setMaskEmployeeId] = useState("");
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    
     const fetchReport = async () => {
       try {
         const res = await api.get(`/runwaycrackreports/${rcId}`);
         const data = res.data;
         console.log(rcId);
-        setTitle(data.title || "");
-        setCctvId(data.cctvId || "");
-        setDetectedDate(data.detectedDate ? data.detectedDate.slice(0, 16) : "");
+
+        // RunwayCrack 필드들 (읽기 전용)
         setImageUrl(data.imageUrl || "");
         setLength(data.length || "");
         setArea(data.area || "");
-        setRepairPeriod(data.repairPeriod || "");
-        setRepairCost(data.repairCost || "");
-        setCause(data.cause || "");
-        setReportContents(data.reportContents || "");
+        setCctvId(data.cctvId || "");
+        setDetectedDate(formatDateTimeLocal(data.detectedDate));
+        setWritingDate(formatDateTimeLocal(data.writingDate));
+
+        // RunwayCrackReport 필드들 (수정 가능)
+        setTitle(data.title || "");
+        setDamageInfo(data.damageInfo || "");
+        setRepairMaterials(data.repairMaterials || "");
+        setEstimatedCost(data.estimatedCost || "");
+        setEstimatedPeriod(data.estimatedPeriod || "");
+        setSummary(data.summary || "");
+
+        // 읽기 전용 마스킹된 작성자 ID
+        setMaskEmployeeId(data.maskEmployeeId || "");
       } catch (err) {
         console.error("보고서 불러오기 실패", err);
         alert("보고서 데이터를 불러오는데 실패했습니다.");
@@ -48,17 +63,26 @@ export default function CrackReportEdit() {
     if (rcId) fetchReport();
   }, [rcId]);
 
+  function formatDateTimeLocal(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60 * 1000);
+    return localDate.toISOString().slice(0, 16);
+  }
+
   const handleSave = async (e) => {
     e.preventDefault();
 
     try {
-      // PATCH 요청: 수정 가능한 필드만 보냄
+      // PATCH 요청: RunwayCrackReport 필드만 보냄
       await api.patch(`/runwaycrackreports/${rcId}`, {
         title,
-        repairPeriod: Number(repairPeriod),
-        repairCost: Number(repairCost),
-        cause,
-        reportContents,
+        damageInfo,
+        repairMaterials,
+        estimatedCost,
+        estimatedPeriod,
+        summary,
       });
 
       alert("보고서가 성공적으로 저장되었습니다.");
@@ -69,6 +93,18 @@ export default function CrackReportEdit() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm("정말로 이 보고서를 삭제하시겠습니까?")) return;
+
+    try {
+      await api.delete(`/runwaycrackreports/${rcId}`);
+      alert("보고서가 삭제되었습니다.");
+      navigate("/crack/report/list");
+    } catch (err) {
+      console.error("삭제 실패", err);
+      alert("보고서 삭제 중 오류가 발생했습니다.");
+    }
+  };
   if (loading) return <div>로딩 중...</div>;
 
   const styles = {
@@ -93,13 +129,22 @@ export default function CrackReportEdit() {
       padding: "2rem",
       boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
     },
+    sectionTitle: {
+      fontSize: "1.1rem",
+      fontWeight: "600",
+      color: "#333",
+      marginBottom: "1rem",
+      marginTop: "1.5rem",
+      paddingBottom: "0.5rem",
+      borderBottom: "2px solid #e0e0e0",
+    },
     fieldRow: {
       display: "flex",
       alignItems: "center",
       marginBottom: "1rem",
     },
     label: {
-      width: "100px",
+      width: "120px",
       fontWeight: "500",
       fontSize: "0.95rem",
     },
@@ -109,6 +154,15 @@ export default function CrackReportEdit() {
       border: "1px solid #dde4f8",
       borderRadius: "6px",
       fontSize: "0.95rem",
+    },
+    inputDisabled: {
+      flex: 1,
+      padding: "0.5rem 1rem",
+      border: "1px solid #e0e0e0",
+      borderRadius: "6px",
+      fontSize: "0.95rem",
+      backgroundColor: "#f5f5f5",
+      color: "#666",
     },
     imagePreview: {
       width: "200px",
@@ -148,6 +202,15 @@ export default function CrackReportEdit() {
       background: "#e0e0e0",
       color: "#666",
     },
+    btnDelete: {
+      background: "#d32f2f",
+      color: "#fff",
+      border: "none",
+      borderRadius: "6px",
+      padding: "0.75rem 1.5rem",
+      cursor: "pointer",
+      marginLeft: "auto",
+    },
   };
 
   return (
@@ -157,21 +220,14 @@ export default function CrackReportEdit() {
       </div>
 
       <form style={styles.form} onSubmit={handleSave}>
-        {/* 제목 */}
-        <div style={styles.fieldRow}>
-          <label style={styles.label}>제목</label>
-          <input
-            style={styles.input}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
+        {/* 파손 정보 섹션 (수정 불가) */}
+        <div style={styles.sectionTitle}>파손 정보 (수정 불가)</div>
 
         {/* CCTV ID (수정불가) */}
         <div style={styles.fieldRow}>
           <label style={styles.label}>CCTV ID</label>
           <input
-            style={styles.input}
+            style={styles.inputDisabled}
             type="number"
             value={cctvId}
             disabled
@@ -183,7 +239,7 @@ export default function CrackReportEdit() {
           <label style={styles.label}>발견 날짜</label>
           <input
             type="datetime-local"
-            style={styles.input}
+            style={styles.inputDisabled}
             value={detectedDate}
             disabled
           />
@@ -195,7 +251,7 @@ export default function CrackReportEdit() {
           <input
             type="text"
             placeholder="이미지 URL"
-            style={styles.input}
+            style={styles.inputDisabled}
             value={imageUrl}
             disabled
           />
@@ -209,7 +265,7 @@ export default function CrackReportEdit() {
           <label style={styles.label}>파손 길이 (cm)</label>
           <input
             type="number"
-            style={styles.input}
+            style={styles.inputDisabled}
             value={length}
             disabled
           />
@@ -220,55 +276,102 @@ export default function CrackReportEdit() {
           <label style={styles.label}>파손 면적 (㎠)</label>
           <input
             type="number"
-            style={styles.input}
+            style={styles.inputDisabled}
             value={area}
             disabled
           />
         </div>
 
-        {/* 예상 수리 기간 */}
+        {/* 작성일 (수정불가) */}
         <div style={styles.fieldRow}>
-          <label style={styles.label}>예상 수리 기간 (일)</label>
+          <label style={styles.label}>작성일</label>
           <input
-            type="number"
+            type="datetime-local"
+            style={styles.inputDisabled}
+            value={writingDate}
+            disabled
+          />
+        </div>
+
+        {/* 작성자 ID (읽기 전용, 마스킹 처리) */}
+        <div style={styles.fieldRow}>
+          <label style={styles.label}>작성자 ID</label>
+          <input
+            type="text"
+            style={styles.inputDisabled}
+            value={maskEmployeeId}
+            disabled
+          />
+        </div>
+
+        {/* 보고서 정보 섹션 (수정 가능) */}
+        <div style={styles.sectionTitle}>보고서 정보 (수정 가능)</div>
+
+        {/* 제목 */}
+        <div style={styles.fieldRow}>
+          <label style={styles.label}>제목</label>
+          <input
             style={styles.input}
-            value={repairPeriod}
-            onChange={(e) => setRepairPeriod(e.target.value)}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+
+        {/* 손상 정보 */}
+        <div style={styles.fieldRow}>
+          <label style={styles.label}>손상 정보</label>
+          <textarea
+            style={styles.textarea}
+            value={damageInfo}
+            onChange={(e) => setDamageInfo(e.target.value)}
+          />
+        </div>
+
+        {/* 수리 자료 */}
+        <div style={styles.fieldRow}>
+          <label style={styles.label}>수리 자료</label>
+          <textarea
+            style={styles.textarea}
+            value={repairMaterials}
+            onChange={(e) => setRepairMaterials(e.target.value)}
           />
         </div>
 
         {/* 예상 수리 비용 */}
         <div style={styles.fieldRow}>
-          <label style={styles.label}>예상 수리 비용 (원)</label>
+          <label style={styles.label}>예상 수리 비용</label>
           <input
-            type="number"
+            type="text"
             style={styles.input}
-            value={repairCost}
-            onChange={(e) => setRepairCost(e.target.value)}
+            value={estimatedCost}
+            onChange={(e) => setEstimatedCost(e.target.value)}
+            placeholder="예: 100만원"
           />
         </div>
 
-        {/* 원인 */}
+        {/* 예상 수리 기간 */}
         <div style={styles.fieldRow}>
-          <label style={styles.label}>원인</label>
+          <label style={styles.label}>예상 수리 기간</label>
+          <input
+            type="text"
+            style={styles.input}
+            value={estimatedPeriod}
+            onChange={(e) => setEstimatedPeriod(e.target.value)}
+            placeholder="예: 3일"
+          />
+        </div>
+
+        {/* 종합 의견 */}
+        <div style={styles.fieldRow}>
+          <label style={styles.label}>종합 의견</label>
           <textarea
             style={styles.textarea}
-            value={cause}
-            onChange={(e) => setCause(e.target.value)}
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
           />
         </div>
 
-        {/* 보고서 내용 */}
-        <div style={styles.fieldRow}>
-          <label style={styles.label}>보고서 내용</label>
-          <textarea
-            style={styles.textarea}
-            value={reportContents}
-            onChange={(e) => setReportContents(e.target.value)}
-          />
-        </div>
-
-        {/* 저장/취소 */}
+        {/* 저장/취소/삭제 버튼 */}
         <div style={styles.btnRow}>
           <button type="submit" style={{ ...styles.btn, ...styles.btnPrimary }}>
             저장
@@ -279,6 +382,13 @@ export default function CrackReportEdit() {
             onClick={() => navigate(-1)}
           >
             취소
+          </button>
+          <button
+            type="button"
+            style={styles.btnDelete}
+            onClick={handleDelete}
+          >
+            삭제
           </button>
         </div>
       </form>

@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.ToString;
 
 @Entity
-@Table(name = "Employee_table")
+@Table(name = "Employee_table", schema = "member")
 @Data
 @ToString
 
@@ -23,17 +23,6 @@ public class Employee {
     @Column(name = "employee_id")
     private Long employeeId;
 
-    private String name;
-
-    private String department;
-
-    private String position;
-
-    private Date hireDate;
-
-    private String phoneNumber;
-
-    private String email;
 
     public static EmployeeRepository repository() {
         EmployeeRepository employeeRepository = MemberApplication.applicationContext.getBean(

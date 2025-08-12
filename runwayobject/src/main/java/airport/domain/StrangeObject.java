@@ -15,7 +15,7 @@ import javax.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "StrangeObject_table")
+@Table(name = "StrangeObject_table", schema = "runwayobject")
 @Data
 //<<< DDD / Aggregate Root
 public class StrangeObject {

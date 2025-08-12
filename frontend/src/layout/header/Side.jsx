@@ -153,17 +153,17 @@ const Side = ({ open, setOpen }) => {
                       sx={{
                         pl: 6,
                         height: 36,
-                        bgcolor: location.pathname === "/crack/report" ? "rgba(255,255,255,0.1)" : "transparent",
+                        bgcolor: location.pathname === "/crack/report/list" ? "rgba(255,255,255,0.1)" : "transparent",
                         "&:hover": { bgcolor: "rgba(255,255,255,0.12)" },
                       }}
-                      onClick={() => navigate("/crack/report")}
+                      onClick={() => navigate("/crack/report/list")}
                     >
                       <ListItemText
                         primary="Crack Report"
                         primaryTypographyProps={{
                           fontSize: 12,
-                          fontWeight: location.pathname === "/crack/report" ? "bold" : "normal",
-                          opacity: location.pathname === "/crack/report" ? 1 : 0.7,
+                          fontWeight: location.pathname === "/crack/report/list" ? "bold" : "normal",
+                          opacity: location.pathname === "/crack/report/list" ? 1 : 0.7,
                         }}
                       />
                     </ListItem>

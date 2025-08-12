@@ -1,21 +1,18 @@
-import React from 'react';
-import { Route } from "react-router-dom";
-import AdminLayout from "../component/admin/Layout/AdminLayout";
-import AdminHome from "../component/admin/AdminHome";
-import UsersList from "../component/admin/UsersList";
-import UserDetail from "../component/admin/UserDetail";
-import NotificationsPage from "../component/notifications/NotificationsPage";
+import React from "react";
+import AdminRoute from "../component/admin/AdminRoute";
+import EmployeeRegister from "../component/admin/EmployeeRegister";
 
 const adminRoutes = [
   {
     path: "/admin",
-    element: <AdminLayout />,
-    children: [
-      { path: "home", element: <AdminHome /> },
-      { path: "management", element: <UsersList /> },
-      { path: "users/:id", element: <UserDetail /> },
-      { path: "notifications", element: <NotificationsPage /> },
-    ],
+    element: (
+      <AdminRoute>
+        {/* AdminLayout 없이 바로 EmployeeRegister */}
+        <EmployeeRegister />
+      </AdminRoute>
+    ),
+    children: [], // 자식 경로 없음
   },
 ];
+
 export default adminRoutes;

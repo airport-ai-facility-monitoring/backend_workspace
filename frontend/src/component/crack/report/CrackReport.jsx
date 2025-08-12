@@ -28,19 +28,31 @@ export default function CrackReport() {
   if (loading) return <div>로딩 중...</div>;
   if (!reportData) return <div>데이터가 없습니다.</div>;
 
-  // 새 DB 필드명에 맞게 구조분해 할당
   const {
-    title,
-    cause,
-    reportContents,
-    repairPeriod,
-    repairCost,
     imageUrl,
     length,
     area,
     cctvId,
     detectedDate,
+    title,
+    damageInfo,
+    repairMaterials,
+    estimatedCost,
+    estimatedPeriod,
+    summary,
+    writingDate,
+    employeeId,
+    maskEmployeeId,
   } = reportData;
+
+  // localStorage에 저장된 로그인된 작성자 ID 가져오기 (string)
+  const loggedEmployeeId = localStorage.getItem("employeeId");
+
+  // 실제 작성자 ID와 로그인한 사용자 ID가 같으면 편집 버튼 노출
+  const canEdit =
+    loggedEmployeeId &&
+    employeeId &&
+    loggedEmployeeId.toString() === employeeId.toString();
 
   const styles = {
     container: {
@@ -101,10 +113,17 @@ export default function CrackReport() {
       <div style={styles.section}>
         <div>
           <span style={styles.label}>보고서 작성일자:</span>{" "}
+          {writingDate ? new Date(writingDate).toLocaleDateString() : "미지정"}
+        </div>
+        <div>
+          <span style={styles.label}>파손 감지일자:</span>{" "}
           {detectedDate ? new Date(detectedDate).toLocaleDateString() : "미지정"}
         </div>
         <div>
           <span style={styles.label}>CCTV ID:</span> {cctvId || "미지정"}
+        </div>
+        <div>
+          <span style={styles.label}>작성자 ID:</span> {maskEmployeeId || "-"}
         </div>
         <div>
           <span style={styles.label}>조사 방식:</span> 자동 분석 시스템 기반
@@ -126,25 +145,28 @@ export default function CrackReport() {
       {/* 3. 파손 상세 내역 */}
       <div style={styles.section}>
         <div>
-          <span style={styles.label}>파손 길이:</span> {length} cm
+          <span style={styles.label}>파손 길이:</span> {length || "미측정"} cm
         </div>
         <div>
-          <span style={styles.label}>파손 면적:</span> {area} ㎠
+          <span style={styles.label}>파손 면적:</span> {area || "미측정"} ㎠
         </div>
         <div>
-          <span style={styles.label}>파손 원인:</span> {cause || "분석 중"}
+          <span style={styles.label}>손상 정보:</span> {damageInfo || "분석 중"}
         </div>
       </div>
 
       <div style={styles.hr} />
 
-      {/* 4. 예측 수리 정보 */}
+      {/* 4. 수리 정보 */}
       <div style={styles.section}>
         <div>
-          <span style={styles.label}>예상 수리 기간:</span> {repairPeriod} 일
+          <span style={styles.label}>수리 자료:</span> {repairMaterials || "미정"}
         </div>
         <div>
-          <span style={styles.label}>예상 수리 비용:</span> ₩{repairCost?.toLocaleString()} 원
+          <span style={styles.label}>예상 수리 기간:</span> {estimatedPeriod || "미정"}
+        </div>
+        <div>
+          <span style={styles.label}>예상 수리 비용:</span> {estimatedCost || "미정"}
         </div>
       </div>
 
@@ -156,18 +178,21 @@ export default function CrackReport() {
           <span style={styles.label}>종합 의견:</span>
         </div>
         <div style={{ whiteSpace: "pre-wrap", marginTop: "0.5rem" }}>
-          {reportContents || "해당 사항 없음"}
+          {summary || "해당 사항 없음"}
         </div>
       </div>
 
-      <div style={styles.buttonRow}>
-        <button
-          style={styles.button}
-          onClick={() => navigate(`/report/edit/${rcId}`)}
-        >
-          편집하기
-        </button>
-      </div>
+      {/* 편집 버튼: 로그인한 작성자만 보여줌 */}
+      {canEdit && (
+        <div style={styles.buttonRow}>
+          <button
+            style={styles.button}
+            onClick={() => navigate(`/crack/report/edit/${rcId}`)}
+          >
+            편집하기
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Notification_table")
+@Table(name = "Notification_table", schema = "notification")
 @Data
 //<<< DDD / Aggregate Root
 public class Notification {

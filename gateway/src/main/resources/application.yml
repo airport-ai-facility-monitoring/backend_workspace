@@ -54,14 +54,10 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://fictional-space-fishstick-q7g77vvv7ww5c64w9-5173.app.github.dev/"
+              - "https://upgraded-bassoon-g4w47xwqjv7v294gw-5173.app.github.dev"
             allowedMethods:
               - "*"
             allowedHeaders:
-              - "X-Employee-Id"
-              - "X-Authorities"
-              - "Authorization"
-              - "Content-Type"
               - "*"
             allowCredentials: true
 

@@ -6,34 +6,49 @@ import airport.domain.User.UserDto;
 import airport.domain.User.UserRepository;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-@RequestMapping(value="/employees")
+@RequestMapping("/employees")
 @Transactional
 public class EmployeeController {
 
     @Autowired
-    UserRepository userRepository;
+    private EmployeeRepository employeeRepository;
 
-    @GetMapping("/setting")
-    public UserDto getEmployeeById(
-        @RequestHeader("X-Employee-Id") String employeeId
-     ) {
-        System.out.println("🚀 [employeeId 헤더 값]: " + employeeId); // 로그 확인용
-        Long employeeIdLong = Long.valueOf(employeeId);
-        User user =  userRepository.findByEmployeeId(employeeIdLong)
-                .orElseThrow(() -> new RuntimeException("해당 직원이 없습니다."));
+    @Autowired
+    private UserRepository userRepository;
 
-        return new UserDto(user);
+    @GetMapping
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAll();
     }
 
+    @PostMapping
+    public Employee registerEmployee(@RequestBody Employee employee) {
+        if (employeeRepository.findById(employee.getEmployeeId()).isPresent()) {
+            throw new RuntimeException("이미 등록된 사번입니다.");
+        }
+        return employeeRepository.save(employee);
+    }
 
+    @DeleteMapping("/employees/{employeeId}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long employeeId) {
+        // 1. Employee 삭제
+        employeeRepository.deleteById(employeeId);
+        
+        if (userRepository.existsByEmployeeId(employeeId)) {
+            userRepository.deleteByEmployeeId(employeeId);
+        }
+        return ResponseEntity.noContent().build();
+    }
 }
