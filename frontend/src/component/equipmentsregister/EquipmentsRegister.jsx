@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Box, TextField, Button, Typography, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import api from "../../config/api";
 
 const EquipmentsRegister = () => {
   const navigate = useNavigate();
 
-  // ✅ 장비 등록 폼 상태
   const [form, setForm] = useState({
     category: "",
     name: "",
@@ -20,10 +20,62 @@ const EquipmentsRegister = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // TODO: 백엔드 연동 필요
-  const handleSubmit = () => {
-    console.log("장비 등록 요청:", form);
-    navigate("/equipment"); // 등록 완료 후 장비 리스트로 이동
+  const handleSubmit = async () => {
+    let endpoint = "";
+    let details = {};
+
+    switch (form.category) {
+      case "조명":
+        endpoint = "/equipments/lighting";
+        // TODO: 조명 장비 상세 정보 필드 추가 필요
+        details = { lightingDetail: {} }; 
+        break;
+      case "기상":
+        endpoint = "/equipments/weather";
+        // TODO: 기상 장비 상세 정보 필드 추가 필요
+        details = { weatherDetail: {} };
+        break;
+      case "표시-표지":
+        endpoint = "/equipments/sign";
+        // TODO: 표시-표지 장비 상세 정보 필드 추가 필요
+        details = { signDetail: {} };
+        break;
+      default:
+        console.error("Invalid category selected");
+        return;
+    }
+
+    const equipmentData = {
+      equipment: {
+        equipmentName: form.name,
+        category: '',
+        manufacturer: form.manufacturer,
+        protectionRating: form.ipRating,
+        purchase: parseInt(form.price, 10) || 0,
+       purchaseDate: form.purchaseDate 
+       ? `${form.purchaseDate}T09:00:00`: null,
+        serviceYears: parseInt(form.lifespan, 10) || 0,
+        // 기본값 필드들 (백엔드 Not-Null 제약조건 방지)
+        state: 'normal',
+        failure: 0,
+        runtime: 0,
+        repairCost: 0,
+        repairTime: 0,
+        laborRate: 0,
+        avgLife: 0,
+        maintenanceCost: 0,
+      },
+      ...details,
+    };
+
+    try {
+      await api.post(endpoint, equipmentData);
+      alert("장비가 성공적으로 등록되었습니다.");
+      navigate("/equipment"); // 등록 완료 후 장비 리스트로 이동
+    } catch (error) {
+      console.error("Failed to register equipment:", error);
+      alert("장비 등록에 실패했습니다.");
+    }
   };
 
   return (
@@ -32,7 +84,6 @@ const EquipmentsRegister = () => {
         신규 장비 등록
       </Typography>
 
-      {/* 카테고리 선택 */}
       <TextField
         select
         name="category"
@@ -43,11 +94,10 @@ const EquipmentsRegister = () => {
         sx={{ mt: 2 }}
       >
         <MenuItem value="조명">조명</MenuItem>
-        <MenuItem value="전기">기상관측</MenuItem>
-        <MenuItem value="기계">표지-표시</MenuItem>
+        <MenuItem value="기상">기상</MenuItem>
+        <MenuItem value="표시-표지">표시-표지</MenuItem>
       </TextField>
 
-      {/* 장비명 */}
       <TextField
         name="name"
         label="장비명"
@@ -57,7 +107,6 @@ const EquipmentsRegister = () => {
         sx={{ mt: 2 }}
       />
 
-      {/* 제조사 */}
       <TextField
         select
         name="manufacturer"
@@ -73,7 +122,6 @@ const EquipmentsRegister = () => {
         <MenuItem value="LSElectric">LSElectric</MenuItem>
       </TextField>
 
-      {/* 구매 금액 */}
       <TextField
         name="price"
         label="구매 금액(원)"
@@ -83,7 +131,6 @@ const EquipmentsRegister = () => {
         sx={{ mt: 2 }}
       />
 
-      {/* 구매일 */}
       <TextField
         name="purchaseDate"
         label="구매일"
@@ -95,7 +142,6 @@ const EquipmentsRegister = () => {
         sx={{ mt: 2 }}
       />
 
-      {/* 보호등급 */}
       <TextField
         select
         name="ipRating"
@@ -110,7 +156,6 @@ const EquipmentsRegister = () => {
         <MenuItem value="IP67">IP67</MenuItem>
       </TextField>
 
-      {/* 내용연수 */}
       <TextField
         name="lifespan"
         label="내용연수(년)"
@@ -120,14 +165,11 @@ const EquipmentsRegister = () => {
         sx={{ mt: 2 }}
       />
 
-      {/* 버튼 */}
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3, gap: 1 }}>
         <Button variant="contained" color="primary" onClick={handleSubmit}>
           등록
         </Button>
-        <Button sx={{ ml: 1 }} onClick={() => navigate(-1)}>
-          취소
-        </Button>
+        <Button onClick={() => navigate(-1)}>취소</Button>
       </Box>
     </Box>
   );

@@ -31,7 +31,9 @@ const DashDetail = () => {
     return () => clearInterval(interval);
   }, [id]);
 
-  const videoPath = `/videos/${id}.mp4`;
+  console.log("ID from URL params:", id);
+  const videoPath = `${import.meta.env.BASE_URL}videos/${id}.mp4`;
+  console.log("Constructed video path:", videoPath);
 
   // 🔸 프레임 캡처 및 객체 탐지 API 요청
   const handleDetect = async () => {
@@ -42,7 +44,7 @@ const DashDetail = () => {
     const imageBase64 = canvas.toDataURL('image/jpeg');
 
     try {
-      const res = await axios.post('https://glowing-space-fiesta-g4w47xwqjgj525qp-8000.app.github.dev/detect', {
+      const res = await axios.post('https://localhost:8000/detect', {
         image_base64: imageBase64,
         cameraId: Number(id)
       });
