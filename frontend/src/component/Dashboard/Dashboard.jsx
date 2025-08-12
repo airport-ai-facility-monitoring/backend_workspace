@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import AddIcon from "@mui/icons-material/Add";
 import CCTVFeed from "./CCTVFeed";
 import { useNavigate } from 'react-router-dom';
 import api from "../../api/axios"; // api import 추가
@@ -136,7 +137,9 @@ const DashBoardMg = () => {
             >
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                 <Typography variant="h6">알림 로그</Typography>
-                <IconButton size="small"><MoreVertIcon /></IconButton>
+                <IconButton size="small">
+                  <AddIcon onClick={() => navigate('/alert')} sx={{ cursor: 'pointer' }} />
+                </IconButton>
               </Box>
               <List sx={{ overflow: "auto", flexGrow: 1 }}>
                 {alerts.map((alert, index) => (
@@ -145,6 +148,8 @@ const DashBoardMg = () => {
                       <ListItemText
                         primary={alert.alertLog}
                         secondary={new Date(alert.alertDate).toLocaleString()}
+                        onClick={() => navigate(`/dashdetail/${alert.cctvId}`)}
+                        sx={{ cursor: 'pointer' }}
                       />
                     </ListItem>
                     {index < alerts.length - 1 && <Divider />}

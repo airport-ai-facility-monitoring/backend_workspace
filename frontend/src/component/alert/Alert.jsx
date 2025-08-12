@@ -33,9 +33,11 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const Alert = () => {
   const [alerts, setAlerts] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchInitialAlerts = async () => {
@@ -68,6 +70,15 @@ const Alert = () => {
     console.log(message);
     alert(message);
     // 나중에 실제 API 호출 로직을 여기에 추가할 수 있습니다.
+  };
+
+  // New function to handle alert log click
+  const handleAlertClick = (cctvId) => {
+    if (cctvId) { // Only navigate if cctvId exists
+      navigate(`/dashdetail/${cctvId}`); // Assuming the detail page route is /cctv-detail/:cctvId
+    } else {
+      console.warn("cctvId is undefined for this alert. Cannot navigate.");
+    }
   };
 
   return (
@@ -148,7 +159,12 @@ const Alert = () => {
                         <TableCell component="th" scope="row">
                           {new Date(row.alertDate).toLocaleString()}
                         </TableCell>
-                        <TableCell>{row.alertLog}</TableCell>
+                        <TableCell
+                          onClick={() => handleAlertClick(row.cctvId)} // Make alertLog clickable
+                          sx={{ cursor: 'pointer' }} // Add cursor style
+                        >
+                          {row.alertLog}
+                        </TableCell>
                         <TableCell sx={{ textAlign: "center" }}>
                           {isTargetAlert && (
                             <Button
