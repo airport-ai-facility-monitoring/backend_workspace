@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import AddIcon from "@mui/icons-material/Add";
 import WeatherBox from "./WeatherBox";
 import NotificationBox from "./NotificationBox";
 import api from "../../api/axios"; // api import 추가
@@ -150,18 +151,20 @@ const MainHomeMg = () => {
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
               <Typography variant="h6">날씨</Typography>
               <IconButton size="small">
-                <MoreVertIcon />
+                <AddIcon onClick={() => navigate('/weather-detail')} sx={{ cursor: 'pointer' }} />
               </IconButton>
             </Box>
             <WeatherBox />
           </Paper>
 
           {/* 공지사항 카드 */}
-          <Paper sx={{ width: 400, minHeight: 180, p: 4 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                    <Paper 
+            sx={{ width: 400, minHeight: 180, p: 4 }}
+          >
+                                                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
               <Typography variant="h6">공지사항</Typography>
               <IconButton size="small">
-                <MoreVertIcon />
+                <AddIcon onClick={() => navigate('/notifications')} sx={{ cursor: 'pointer' }} />
               </IconButton>
             </Box>
             <NotificationBox />
@@ -172,7 +175,7 @@ const MainHomeMg = () => {
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
               <Typography variant="h6">알림 로그</Typography>
               <IconButton size="small">
-                <MoreVertIcon />
+                <AddIcon onClick={() => navigate('/alert')} sx={{ cursor: 'pointer' }} />
               </IconButton>
             </Box>
             <List sx={{ overflow: "auto", flexGrow: 1 }}>
@@ -182,6 +185,8 @@ const MainHomeMg = () => {
                       <ListItemText
                         primary={alert.alertLog}
                         secondary={new Date(alert.alertDate).toLocaleString()}
+                        onClick={() => navigate(`/dashdetail/${alert.cctvId}`)}
+                        sx={{ cursor: 'pointer' }}
                       />
                     </ListItem>
                     {index < alerts.length - 1 && <Divider />}
