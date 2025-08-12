@@ -107,13 +107,23 @@ const EquipmentReportDetail = () => {
   if (!report) return <div style={{ padding: 24 }}>데이터가 없습니다.</div>;
 
   // ===== 엔티티 필드 매핑(필드명은 프로젝트에 맞게 조정) =====
-  const equipmentName   = report.equipmentName || report.title || "-";
-  const equipmentType   = report.equipmentType || report.type || "-";
+  // const equipmentName   = report.equipmentName || report.title || "-";
+  // const equipmentType   = report.equipmentType || report.type || "-";
+  const equipmentName   = report.manufacturer || "-";      // 이름 없으니 제조사로 대체 표기
+  const equipmentType   = report.category || "-";
   const category        = report.category || report.subCategory || "-";
-  const maintenanceCost = report.maintenanceCost ?? report.predictedMaintenanceCost ?? report.cost;
-  const purchase        = report.newPurchaseCost ?? report.purchase ?? null;
-  const createdAt       = report.createdAt || report.created_date || report.created || null;
-
+  // const maintenanceCost = report.maintenanceCost ?? report.predictedMaintenanceCost ?? report.cost;
+  const maintenanceCost = (
+    Number.isFinite(report.maintenanceCostNum) ? report.maintenanceCostNum :
+    (report.cost != null ? Number(report.cost) : null)
+  );
+  // const purchase        = report.newPurchaseCost ?? report.purchase ?? null;
+  const purchase        = (
+    report.newPurchaseCost != null ? Number(report.newPurchaseCost) :
+    (report.purchase != null ? Number(report.purchase) : null)
+  );
+  // const createdAt       = report.createdAt || report.created_date || report.created || null;
+  const createdAt       = null; // 현재 엔티티에 없음 → '-'로 표기
   return (
     <div style={styles.appContainer}>
       <div style={styles.reportContainer}>

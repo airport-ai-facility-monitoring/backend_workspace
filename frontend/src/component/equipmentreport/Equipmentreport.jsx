@@ -13,12 +13,21 @@ function EquipmentReportDashboard() {
 
   // 백엔드 엔티티 -> 화면용 데이터 매핑
   // 필드명은 추정치이므로, 실제 엔티티 필드명에 맞게만 아래를 수정하면 됨.
+  // const mapEntityToView = (e) => ({
+  //   id: e.id ?? e.reportId ?? e.equipmentReportId,               // PK
+  //   type: e.equipmentType ?? e.type ?? '미지정',                  // 장비 종류
+  //   name: e.equipmentName ?? e.name ?? e.code ?? '이름 없음',      // 장비명
+  //   timestamp: formatDateTime(e.createdAt ?? e.registeredAt ?? e.updatedAt ?? e.timestamp),
+  //   cost: e.predictedCost ?? e.cost ?? e.estimatedCost ?? null,   // 예측 유지보수 비용
+  // });
   const mapEntityToView = (e) => ({
-    id: e.id ?? e.reportId ?? e.equipmentReportId,               // PK
-    type: e.equipmentType ?? e.type ?? '미지정',                  // 장비 종류
-    name: e.equipmentName ?? e.name ?? e.code ?? '이름 없음',      // 장비명
-    timestamp: formatDateTime(e.createdAt ?? e.registeredAt ?? e.updatedAt ?? e.timestamp),
-    cost: e.predictedCost ?? e.cost ?? e.estimatedCost ?? null,   // 예측 유지보수 비용
+    id: e.id,
+    type: e.category || '미지정',
+    name: e.manufacturer || '이름 없음',
+    timestamp: e.createdAt || '-', // 엔티티에 없으니 당장은 '-'
+    cost: typeof e.maintenanceCostNum === 'number'
+            ? e.maintenanceCostNum
+            : (e.cost != null ? Number(e.cost) : null),
   });
 
   const fetchReports = async () => {
