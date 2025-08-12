@@ -26,6 +26,7 @@ const EquipmentsList = () => {
     const fetchEquipments = async () => {
       try {
         const response = await api.get("/equipments");
+        console.log(response)
         // DTO 구조에 맞게 equipmentList 상태 업데이트
         const formattedData = response.data.map(item => ({
           id: item.equipment.equipmentId,

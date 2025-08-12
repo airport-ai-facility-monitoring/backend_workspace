@@ -3,9 +3,8 @@ package airport.domain;
 import airport.domain.*;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-
+import org.springframework.data.jpa.repository.JpaRepository;
 //<<< PoEAA / Repository
-@RepositoryRestResource(collectionResourceRel = "equipment", path = "equipment")
 public interface EquipmentRepository
-    extends PagingAndSortingRepository<Equipment, Long> {}
+    extends JpaRepository<Equipment, Long> {}
  

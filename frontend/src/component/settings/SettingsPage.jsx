@@ -6,7 +6,7 @@ const SettingsPage = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    api.get('/employees/setting')
+    api.get('/users/setting')
       .then(response => {
         setUser(response.data);
         console.log("성공")

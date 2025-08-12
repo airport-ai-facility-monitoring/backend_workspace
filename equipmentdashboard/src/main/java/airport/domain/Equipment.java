@@ -20,7 +20,7 @@ import lombok.Data;
 public class Equipment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long equipmentId;
 
     private String equipmentType; // 조명, 기상, 표시-표지

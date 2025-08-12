@@ -7,7 +7,7 @@ const EquipmentsRegister = () => {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    category: "",
+    equipmentType: "",
     name: "",
     manufacturer: "",
     price: "",
@@ -24,7 +24,7 @@ const EquipmentsRegister = () => {
     let endpoint = "";
     let details = {};
 
-    switch (form.category) {
+    switch (form.equipmentType) {
       case "조명":
         endpoint = "/equipments/lighting";
         // TODO: 조명 장비 상세 정보 필드 추가 필요
@@ -48,7 +48,7 @@ const EquipmentsRegister = () => {
     const equipmentData = {
       equipment: {
         equipmentName: form.name,
-        category: '',
+        equipmentType: form.equipmentType,
         manufacturer: form.manufacturer,
         protectionRating: form.ipRating,
         purchase: parseInt(form.price, 10) || 0,
@@ -69,6 +69,7 @@ const EquipmentsRegister = () => {
     };
 
     try {
+      console.log(equipmentData)
       await api.post(endpoint, equipmentData);
       alert("장비가 성공적으로 등록되었습니다.");
       navigate("/equipment"); // 등록 완료 후 장비 리스트로 이동
@@ -86,10 +87,10 @@ const EquipmentsRegister = () => {
 
       <TextField
         select
-        name="category"
+        name="equipmentType"
         label="카테고리"
         fullWidth
-        value={form.category}
+        value={form.equipmentType}
         onChange={handleChange}
         sx={{ mt: 2 }}
       >

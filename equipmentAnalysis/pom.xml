@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.1.RELEASE</version>
+		<version>2.7.18</version> <!-- 변경: 2.3.1.RELEASE → 2.7.18 (안정성과 호환성 개선) -->
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>airport</groupId>
@@ -16,8 +16,8 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
-		<spring-cloud-stream.version>Germantown.SR1</spring-cloud-stream.version>
+		<spring-cloud.version>2021.0.8</spring-cloud.version> <!-- 변경: Hoxton.SR12 → 2021.0.8 (Spring Boot 2.7과 호환) -->
+		<!-- 제거: spring-cloud-stream.version (불필요, Spring Cloud BOM에서 관리) -->
 		<cucumber.version>6.8.1</cucumber.version>
 	</properties>
 
@@ -39,12 +39,12 @@
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-      <!-- lombok -->
+		<!-- lombok -->
 		<dependency>
-				<groupId>org.projectlombok</groupId>
-				<artifactId>lombok</artifactId>
-				<version>1.18.30</version>
-				<scope>provided</scope>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.30</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -90,12 +90,13 @@
 			<version>${cucumber.version}</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- Google GenAI - 버전 확인 필요 (1.0.0이 실제 존재하는지 검증 필요) -->
 		<dependency>
 			<groupId>com.google.genai</groupId>
 			<artifactId>google-genai</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
@@ -113,17 +114,11 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-stream-dependencies</artifactId>
-				<version>${spring-cloud-stream.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
+			<!-- 제거: spring-cloud-stream-dependencies (Spring Cloud BOM에 이미 포함) -->
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>32.1.2-jre</version>
+				<version>32.1.2-jre</version> <!-- 유지 (Spring Boot 2.7과 호환) -->
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
