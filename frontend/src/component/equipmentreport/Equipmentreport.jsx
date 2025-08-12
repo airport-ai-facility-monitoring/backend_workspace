@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 const mockReports = [
   { id: 1, type: '조명', name: 'REL-001', timestamp: '2023-10-27 10:30:00', cost: 150000 },
   { id: 2, type: '기상관측', name: 'Anemometer-A5', timestamp: '2023-10-27 09:15:00', cost: 550000 },
-  { id: 3, type: '표시-표지', name: 'RDRS-T2', timestamp: '2023-10-26 17:45:00', cost: 300000 },
+  { id: 3, type: '표지', name: 'RDRS-T2', timestamp: '2023-10-26 17:45:00', cost: 300000 },
   { id: 4, type: '조명', name: 'RCL-012', timestamp: '2023-10-26 14:20:00', cost: 120000 },
   { id: 5, type: '기상관측', name: 'Visibilitysensor-V2', timestamp: '2023-10-25 11:05:00', cost: 780000 },
 ];

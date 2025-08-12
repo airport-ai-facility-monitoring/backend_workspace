@@ -47,7 +47,7 @@ const EquipmentsDetail = () => {
     switch (k) {
       case "조명": return "lighting";
       case "기상": return "weather";
-      case "표시-표지": return "sign";
+      case "표지": return "sign";
       default: return "";
     }
   };
@@ -144,7 +144,7 @@ const EquipmentsDetail = () => {
         >
           <MenuItem value="조명">조명</MenuItem>
           <MenuItem value="기상">기상</MenuItem>
-          <MenuItem value="표시-표지">표시-표지</MenuItem>
+          <MenuItem value="표지">표지</MenuItem>
         </TextField>
 
         {/* 장비명 */}
@@ -228,6 +228,7 @@ const EquipmentsDetail = () => {
           onClick={() =>
               navigate(`/equipment/report/regist/${toReportParam(equipment.equipmentType)}`, {
                 state: {
+                  equipmentId: equipment.id || equipment.equipmentId,
                   equipmentName: equipment.name,
                   manufacturer: equipment.manufacturer,
                   purchase: equipment.price,
@@ -237,7 +238,7 @@ const EquipmentsDetail = () => {
               })
             }
         >
-          수리요청
+          분석요청
         </Button>
         <Button
           variant="contained"

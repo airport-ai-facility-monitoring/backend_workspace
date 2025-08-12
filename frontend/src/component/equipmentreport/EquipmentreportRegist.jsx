@@ -5,17 +5,17 @@ import { useLocation } from 'react-router-dom';
 const subCategoryMap = {
   '조명': ['REL', 'RCL', 'TDZL', 'REIL'],
   '기상관측': ['Anemometer', 'Windvane', 'Visibilitysensor', 'RVRsensor'],
-  '표시-표지': ['RDRS', 'TEL', 'TS'],
+  '표지': ['RDRS', 'TEL', 'TS'],
 };
 const initialFormData = {
   '조명': { failure: 1, repair_cost: 150000, repair_time: 25, labor_rate: 30000, runtime: 150, avg_life: 5000, lamp_type: 'LED', power_consumption: 50 },
   '기상관측': { failure: 1, repair_cost: 550000, repair_time: 40, labor_rate: 50000, runtime: 650, avg_life: 90000, power_consumption: 5, mount_type: 'pole' },
-  '표시-표지': { failure: 0, repair_cost: 300000, repair_time: 25, labor_rate: 35000, runtime: 690, avg_life: 100000, panel_width: 15, panel_height: 20, material: 'Polycarbonate', sign_color: 'Yellow', mount_type: 'surface' },
+  '표지': { failure: 0, repair_cost: 300000, repair_time: 25, labor_rate: 35000, runtime: 690, avg_life: 100000, panel_width: 15, panel_height: 20, material: 'Polycarbonate', sign_color: 'Yellow', mount_type: 'surface' },
 };
 const categoryNameMap = {
   lighting: '조명',
   weather: '기상관측',
-  sign: '표시-표지',
+  sign: '표지',
 };
 const styles = {
     container: { backgroundColor: '#f0f2f5', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '50px', fontFamily: 'sans-serif' },
@@ -47,13 +47,14 @@ const EquipmentReportRegist = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-    const {
-      equipmentName,
-      manufacturer,
-      purchase,
-      protectionRating,
-      serviceYears,
-    } = location.state || {};
+  const {
+    equipmentId,      // ✅ 추가: 스프링에 보낼 장비 ID
+    equipmentName,
+    manufacturer,
+    purchase,
+    protectionRating,
+    serviceYears,
+  } = location.state || {};
 
   const mainCategory = categoryNameMap[category] || '조명';
   
@@ -84,14 +85,12 @@ const EquipmentReportRegist = () => {
 
   // --- ⬇️ 주요 수정 사항 ⬇️ ---
   const getApiUrl = () => {
-    // 백엔드의 @RequestMapping 경로인 /equipmentReports를 URL에 추가합니다.
-    const baseUrl = 'https://shiny-space-cod-q775qq4rwxp6cx757-8088.app.github.dev/equipmentReports';
-    switch (mainCategory) {
-      case '조명': return `${baseUrl}/regist/lighting`;
-      case '기상관측': return `${baseUrl}/regist/weather`;
-      case '표시-표지': return `${baseUrl}/regist/sign`;
-      default: return `${baseUrl}/analyze`; // 기본 fallback URL도 일관성을 위해 수정
+    if (!equipmentId) {
+      throw new Error('equipmentId가 없습니다. 장비 상세에서 equipmentId를 넘겨주세요.');
     }
+    // ⚠️ 실제 스프링 백엔드 주소/포트로 교체
+    const base = 'https://glowing-space-fiesta-g4w47xwqjgj525qp-8088.app.github.dev';
+    return `${base}/equipments/${equipmentId}/predict`;
   };
   // --- ⬆️ 주요 수정 사항 ⬆️ ---
 
@@ -101,48 +100,14 @@ const EquipmentReportRegist = () => {
     setAnalysisResult(null);
     setError(null);
 
-    // location.state에서 넘겨받은 필드만 분리
-    const equipmentBaseData = {
-      equipmentName: equipmentName || '',
-      manufacturer: manufacturer || '',
-      purchase: purchase !== undefined ? Number(purchase) : 0,
-      protection_rating: protectionRating || '',
-      service_years: serviceYears !== undefined ? Number(serviceYears) : 0,
-    };
-
-    // formData에 있는 필드들 (ex: failure, repair_cost, lamp_type 등)
-    // 이 중복되지 않는 필드만 합침
-    // 혹시 겹치면 equipmentBaseData 우선
-    const combinedData = {
-      ...formData,
-      ...equipmentBaseData,
-      category: subCategory,
-    };
-
-    // 숫자형 필드 강제 변환
-    const numericFields = [
-      'purchase', 'failure', 'runtime', 'service_years', 'maintenance_cost',
-      'repair_cost', 'repair_time', 'labor_rate', 'avg_life', 'power_consumption',
-      'panel_width', 'panel_height'
-    ];
-
-    const payload = Object.fromEntries(
-      Object.entries(combinedData).map(([key, value]) => {
-        if (numericFields.includes(key) && value !== null && value !== '') {
-          return [key, Number(value)];
-        }
-        return [key, value];
-      })
-    );
-
-    const apiUrl = getApiUrl();
-    
     try {
-      console.log(payload)
+      const apiUrl = getApiUrl();
+      // ✅ 화면에서 입력한 숫자만 덮어쓰기
+      const overrides = buildOverrides(formData);
       const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ values: overrides }),
       });
       if (!response.ok) {
         const errorText = await response.text();
@@ -175,6 +140,30 @@ const EquipmentReportRegist = () => {
     </>
   );
 
+  const keyMap = {
+    failure: 'failure',
+    runtime: 'runtime',
+    avg_life: 'avgLife',
+    repair_cost: 'repairCost',
+    repair_time: 'repairTime',
+    labor_rate: 'laborRate',
+    power_consumption: 'powerConsumption',
+    panel_width: 'panelWidth',
+    panel_height: 'panelHeight',
+    // lamp_type, mount_type, material, sign_color는 일단 보내지 않음(라벨→코드 변환 필요)
+  };
+
+  function buildOverrides(form) {
+    const overrides = {};
+    Object.entries(keyMap).forEach(([from, to]) => {
+      const v = form?.[from];
+      if (v !== '' && v !== null && v !== undefined && !Number.isNaN(Number(v))) {
+        overrides[to] = Number(v);
+      }
+    });
+    return overrides;
+  }
+
   return (
     <div style={styles.container}>
       <form style={styles.form} onSubmit={handleSubmit}>
@@ -184,7 +173,7 @@ const EquipmentReportRegist = () => {
           <select style={styles.select} value={mainCategory} disabled>
             <option value="조명">조명</option>
             <option value="기상관측">기상관측</option>
-            <option value="표시-표지">표시-표지</option>
+            <option value="표지">표지</option>
           </select>
         </div>
         <div style={styles.formRow}>
@@ -221,7 +210,7 @@ const EquipmentReportRegist = () => {
           </>
         )}
 
-        {mainCategory === '표시-표지' && (
+        {mainCategory === '표지' && (
           <>
             <div style={styles.formRow}><label style={styles.label}>판넬 너비(mm)</label><input style={styles.input} type="number" name="panel_width" value={formData.panel_width || ''} onChange={handleInputChange} /></div>
             <div style={styles.formRow}><label style={styles.label}>판넬 높이(mm)</label><input style={styles.input} type="number" name="panel_height" value={formData.panel_height || ''} onChange={handleInputChange} /></div>

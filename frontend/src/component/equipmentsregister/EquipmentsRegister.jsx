@@ -35,9 +35,9 @@ const EquipmentsRegister = () => {
         // TODO: 기상 장비 상세 정보 필드 추가 필요
         details = { weatherDetail: {} };
         break;
-      case "표시-표지":
+      case "표지":
         endpoint = "/equipments/sign";
-        // TODO: 표시-표지 장비 상세 정보 필드 추가 필요
+        // TODO: 표지 장비 상세 정보 필드 추가 필요
         details = { signDetail: {} };
         break;
       default:
@@ -95,7 +95,7 @@ const EquipmentsRegister = () => {
       >
         <MenuItem value="조명">조명</MenuItem>
         <MenuItem value="기상">기상</MenuItem>
-        <MenuItem value="표시-표지">표시-표지</MenuItem>
+        <MenuItem value="표지">표지</MenuItem>
       </TextField>
 
       <TextField

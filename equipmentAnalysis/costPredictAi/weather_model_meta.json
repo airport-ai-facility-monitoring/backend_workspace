@@ -1,0 +1,20 @@
+{
+  "numeric_cols": [],
+  "categorical_cols": {},
+  "order": [
+    "category",
+    "manufacturer",
+    "protectionRating",
+    "mountType",
+    "purchase",
+    "failure",
+    "runtime",
+    "serviceYears",
+    "repairCost",
+    "repairTime",
+    "laborRate",
+    "powerConsumption",
+    "avgLife"
+  ],
+  "unknown_policy": "ignore"
+}
