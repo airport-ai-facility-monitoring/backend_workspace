@@ -35,9 +35,9 @@ const EquipmentsRegister = () => {
         // TODO: 기상 장비 상세 정보 필드 추가 필요
         details = { weatherDetail: {} };
         break;
-      case "표지판":
+      case "표시-표지":
         endpoint = "/equipments/sign";
-        // TODO: 표지판 장비 상세 정보 필드 추가 필요
+        // TODO: 표시-표지 장비 상세 정보 필드 추가 필요
         details = { signDetail: {} };
         break;
       default:
@@ -48,11 +48,12 @@ const EquipmentsRegister = () => {
     const equipmentData = {
       equipment: {
         equipmentName: form.name,
-        category: form.category, // 카테고리도 함께 전송
+        category: '',
         manufacturer: form.manufacturer,
         protectionRating: form.ipRating,
         purchase: parseInt(form.price, 10) || 0,
-        purchaseDate: form.purchaseDate ? new Date(form.purchaseDate).toISOString() : null,
+       purchaseDate: form.purchaseDate 
+       ? `${form.purchaseDate}T09:00:00`: null,
         serviceYears: parseInt(form.lifespan, 10) || 0,
         // 기본값 필드들 (백엔드 Not-Null 제약조건 방지)
         state: 'normal',
@@ -94,7 +95,7 @@ const EquipmentsRegister = () => {
       >
         <MenuItem value="조명">조명</MenuItem>
         <MenuItem value="기상">기상</MenuItem>
-        <MenuItem value="표지판">표지판</MenuItem>
+        <MenuItem value="표시-표지">표시-표지</MenuItem>
       </TextField>
 
       <TextField
