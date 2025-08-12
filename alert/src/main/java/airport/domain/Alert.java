@@ -33,99 +33,7 @@ public class Alert {
         );
         return alertRepository;
     }
-
-    //<<< Clean Arch / Port Method
-    public static void sendAlert(DangerDetected dangerDetected) {
-        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
-            CctvRepository.class
-        );
-        cctvRepository
-            .findById(dangerDetected.getCctvId())
-            .ifPresent(cctv -> {
-                Alert alert = new Alert();
-                alert.setCctvId(dangerDetected.getCctvId());
-                alert.setAlertLog(
-                    "[" +
-                    cctv.getCctvArea() +
-                    "] " +
-                    "FOD 감지"
-                );
-                alert.setAlertDate(new Date());
-                repository().save(alert);
-
-                System.out.println("##### alert log : " + alert.getAlertLog());
-
-                // 새로운 알림이 생성될 때 SSE로 전송
-                airport.domain.alertapi.AlertController alertController = airport.AlertApplication.applicationContext.getBean(airport.domain.alertapi.AlertController.class);
-                alertController.sendNewAlert(alert);
-
-                AlertSent alertSent = new AlertSent(alert);
-                alertSent.publishAfterCommit();
-            });
-    }
-
-    //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
-    public static void sendAlert(WorkerCountExceeded workerCountExceeded) {
-        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
-            CctvRepository.class
-        );
-        cctvRepository
-            .findById(workerCountExceeded.getCctvId())
-            .ifPresent(cctv -> {
-                Alert alert = new Alert();
-                alert.setCctvId(workerCountExceeded.getCctvId());
-                alert.setAlertLog(
-                    "[" +
-                    cctv.getCctvArea() +
-                    "] " +
-                    "작업자 수 초과"
-                );
-                alert.setAlertDate(new Date());
-                repository().save(alert);
-
-                System.out.println("##### alert log : " + alert.getAlertLog());
-
-                // 새로운 알림이 생성될 때 SSE로 전송
-                airport.domain.alertapi.AlertController alertController = airport.AlertApplication.applicationContext.getBean(airport.domain.alertapi.AlertController.class);
-                alertController.sendNewAlert(alert);
-
-                AlertSent alertSent = new AlertSent(alert);
-                alertSent.publishAfterCommit();
-            });
-    }
-
-    //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
-    public static void sendAlert(WorkTimeNotMatched workTimeNotMatched) {
-        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
-            CctvRepository.class
-        );
-        cctvRepository
-            .findById(workTimeNotMatched.getCctvId())
-            .ifPresent(cctv -> {
-                Alert alert = new Alert();
-                alert.setCctvId(workTimeNotMatched.getCctvId());
-                alert.setAlertLog(
-                    "[" +
-                    cctv.getCctvArea() +
-                    "] " +
-                    "작업 시간 불일치"
-                );
-                alert.setAlertDate(new Date());
-                repository().save(alert);
-
-                System.out.println("##### alert log : " + alert.getAlertLog());
-
-                // 새로운 알림이 생성될 때 SSE로 전송
-                airport.domain.alertapi.AlertController alertController = airport.AlertApplication.applicationContext.getBean(airport.domain.alertapi.AlertController.class);
-                alertController.sendNewAlert(alert);
-
-                AlertSent alertSent = new AlertSent(alert);
-                alertSent.publishAfterCommit();
-            });
-    }
-
+    
     //>>> Clean Arch / Port Method
     
 
@@ -184,6 +92,48 @@ public class Alert {
                 alertSent.publishAfterCommit();
             });
     }
+    public static void sendAlert(WorkerCountExceeded workerCountExceeded) {
+        CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
+            CctvRepository.class
+        );
+        Long cctvId = workerCountExceeded.getCameraId(); // Get cctvId here
+        System.out.println("##### WorkerCountExceeded - Received cctvId: " + cctvId); // Log cctvId
+
+        if (cctvId == null) {
+            System.err.println("##### WorkerCountExceeded - cctvId is null. Cannot find CCTV.");
+            return; // Exit if cctvId is null
+        }
+
+        try {
+            cctvRepository
+                .findById(cctvId) // Use the local cctvId variable
+                .ifPresent(cctv -> {
+                    Alert alert = new Alert();
+                                        alert.setCctvId(cctvId); // Use the local cctvId variable
+                                        alert.setAlertLog(
+                        "[" +
+                        cctv.getCctvArea() +
+                        "] " +
+                        "작업자 수 초과: " + workerCountExceeded.getWorkerCount() + "명 (" + (workerCountExceeded.getWorkerCount() - workerCountExceeded.getLimit()) + "명 초과)"
+                    );
+                    alert.setAlertDate(new Date());
+                    repository().save(alert);
+
+                    System.out.println("##### alert log : " + alert.getAlertLog());
+
+                    // 새로운 알림이 생성될 때 SSE로 전송
+                    airport.domain.alertapi.AlertController alertController = airport.AlertApplication.applicationContext.getBean(airport.domain.alertapi.AlertController.class);
+                    alertController.sendNewAlert(alert);
+
+                    AlertSent alertSent = new AlertSent(alert);
+                    alertSent.publishAfterCommit();
+                });
+        } catch (Exception e) {
+            System.err.println("##### Error processing WorkerCountExceeded alert: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
     public static void sendAlert(WorkNotInProgress workNotInProgress) {
         CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
