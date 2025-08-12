@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
+import { useLocation } from 'react-router-dom';
 // (subCategoryMap, initialFormData, categoryNameMap, styles 등 상단 설정은 기존과 동일)
 const subCategoryMap = {
   '조명': ['REL', 'RCL', 'TDZL', 'REIL'],
@@ -45,6 +45,15 @@ const dropdownOptions = {
 const EquipmentReportRegist = () => {
   const { category } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
+    const {
+      equipmentName,
+      manufacturer,
+      purchase,
+      protectionRating,
+      serviceYears,
+    } = location.state || {};
 
   const mainCategory = categoryNameMap[category] || '조명';
   
@@ -55,6 +64,7 @@ const EquipmentReportRegist = () => {
   const [error, setError] = useState(null);
   
   useEffect(() => {
+    console.log("location.state:", location.state);
     const subCategoryList = subCategoryMap[mainCategory];
     const initialData = initialFormData[mainCategory];
     if (subCategoryList && initialData) {
@@ -91,20 +101,33 @@ const EquipmentReportRegist = () => {
     setAnalysisResult(null);
     setError(null);
 
-    const otherDataFromSomewhere = {
-        manufacturer: 'Test-Manufacturer',
-        purchase: 200000,
-        purchase_date: '2025-01-15',
-        protection_rating: 'IP65',
-        service_years: 5,
-        maintenance_cost: 20000,
+    // location.state에서 넘겨받은 필드만 분리
+    const equipmentBaseData = {
+      equipmentName: equipmentName || '',
+      manufacturer: manufacturer || '',
+      purchase: purchase !== undefined ? Number(purchase) : 0,
+      protection_rating: protectionRating || '',
+      service_years: serviceYears !== undefined ? Number(serviceYears) : 0,
     };
 
-    const combinedData = { ...otherDataFromSomewhere, ...formData, category: subCategory };
+    // formData에 있는 필드들 (ex: failure, repair_cost, lamp_type 등)
+    // 이 중복되지 않는 필드만 합침
+    // 혹시 겹치면 equipmentBaseData 우선
+    const combinedData = {
+      ...formData,
+      ...equipmentBaseData,
+      category: subCategory,
+    };
+
+    // 숫자형 필드 강제 변환
+    const numericFields = [
+      'purchase', 'failure', 'runtime', 'service_years', 'maintenance_cost',
+      'repair_cost', 'repair_time', 'labor_rate', 'avg_life', 'power_consumption',
+      'panel_width', 'panel_height'
+    ];
 
     const payload = Object.fromEntries(
       Object.entries(combinedData).map(([key, value]) => {
-        const numericFields = ['purchase', 'failure', 'runtime', 'service_years', 'maintenance_cost', 'repair_cost', 'repair_time', 'labor_rate', 'avg_life', 'power_consumption', 'panel_width', 'panel_height'];
         if (numericFields.includes(key) && value !== null && value !== '') {
           return [key, Number(value)];
         }
@@ -113,7 +136,9 @@ const EquipmentReportRegist = () => {
     );
 
     const apiUrl = getApiUrl();
+    
     try {
+      console.log(payload)
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
