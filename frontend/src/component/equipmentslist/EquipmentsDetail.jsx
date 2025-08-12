@@ -16,19 +16,21 @@ const EquipmentsDetail = () => {
       try {
         const response = await api.get(`/equipments/${id}`);
         const data = response.data;
+
         const fetchedEquipment = {
           id: data.equipment.equipmentId,
-          category: data.equipment.category, 
+          equipmentType: data.equipment.equipmentType,
           name: data.equipment.equipmentName,
           manufacturer: data.equipment.manufacturer,
           price: data.equipment.purchase,
-          purchaseDate: data.equipment.purchaseDate,
+          purchaseDate: data.equipment.purchaseDate, // yyyy-MM-ddTHH:mm:ss
           ipRating: data.equipment.protectionRating,
           lifespan: data.equipment.serviceYears,
           lightingDetail: data.lightingDetail,
           weatherDetail: data.weatherDetail,
           signDetail: data.signDetail,
         };
+        console.log(data)
         setEquipment(fetchedEquipment);
         setEditableEquipment(fetchedEquipment);
       } catch (error) {
@@ -40,6 +42,15 @@ const EquipmentsDetail = () => {
 
     fetchEquipmentDetail();
   }, [id]);
+
+  const toReportParam = (k) => {
+    switch (k) {
+      case "조명": return "lighting";
+      case "기상": return "weather";
+      case "표시-표지": return "sign";
+      default: return "";
+    }
+  };
 
   const handleDelete = async () => {
     if (window.confirm("정말로 이 장비를 삭제하시겠습니까?")) {
@@ -67,11 +78,11 @@ const EquipmentsDetail = () => {
       const updatePayload = {
         equipmentId: editableEquipment.id,
         equipmentName: editableEquipment.name,
-        category: editableEquipment.category,
+        equipmentType: editableEquipment.equipmentType,
         manufacturer: editableEquipment.manufacturer,
         protectionRating: editableEquipment.ipRating,
         purchase: parseInt(editableEquipment.price, 10) || 0,
-        purchaseDate: editableEquipment.purchaseDate,
+        purchaseDate: editableEquipment.purchaseDate, // 그대로 유지
         serviceYears: parseInt(editableEquipment.lifespan, 10) || 0,
         state: equipment.state,
         failure: equipment.failure,
@@ -82,6 +93,7 @@ const EquipmentsDetail = () => {
         avgLife: equipment.avgLife,
         maintenanceCost: equipment.maintenanceCost,
       };
+      console.log(updatePayload)
 
       await api.put(`/equipments/${id}`, updatePayload);
       alert("장비 정보가 성공적으로 수정되었습니다.");
@@ -120,10 +132,11 @@ const EquipmentsDetail = () => {
           boxShadow: 1,
         }}
       >
+        {/* 카테고리 */}
         <Typography sx={{ alignSelf: "center" }}>카테고리</Typography>
         <TextField
-          name="category"
-          value={isEditing ? editableEquipment.category : equipment.category}
+          name="equipmentType"
+          value={isEditing ? editableEquipment.equipmentType : equipment.equipmentType}
           onChange={handleFieldChange}
           InputProps={{ readOnly: !isEditing }}
           size="small"
@@ -131,9 +144,10 @@ const EquipmentsDetail = () => {
         >
           <MenuItem value="조명">조명</MenuItem>
           <MenuItem value="기상">기상</MenuItem>
-          <MenuItem value="표지판">표지판</MenuItem>
+          <MenuItem value="표시-표지">표시-표지</MenuItem>
         </TextField>
 
+        {/* 장비명 */}
         <Typography sx={{ alignSelf: "center" }}>장비명</Typography>
         <TextField
           name="name"
@@ -143,6 +157,7 @@ const EquipmentsDetail = () => {
           size="small"
         />
 
+        {/* 제조사 */}
         <Typography sx={{ alignSelf: "center" }}>제조사</Typography>
         <TextField
           name="manufacturer"
@@ -158,6 +173,7 @@ const EquipmentsDetail = () => {
           <MenuItem value="LSElectric">LSElectric</MenuItem>
         </TextField>
 
+        {/* 구매 금액 */}
         <Typography sx={{ alignSelf: "center" }}>구매 금액(원)</Typography>
         <TextField
           name="price"
@@ -167,17 +183,18 @@ const EquipmentsDetail = () => {
           size="small"
         />
 
+        {/* 구매일 (수정 불가) */}
         <Typography sx={{ alignSelf: "center" }}>구매일</Typography>
         <TextField
           name="purchaseDate"
-          value={isEditing ? editableEquipment.purchaseDate : equipment.purchaseDate}
-          onChange={handleFieldChange}
-          InputProps={{ readOnly: !isEditing }}
+          value={(equipment.purchaseDate || "").split("T")[0]}
+          InputProps={{ readOnly: true }}
           type="date"
           InputLabelProps={{ shrink: true }}
           size="small"
         />
 
+        {/* 보호등급 */}
         <Typography sx={{ alignSelf: "center" }}>보호등급(IP)</Typography>
         <TextField
           name="ipRating"
@@ -192,6 +209,7 @@ const EquipmentsDetail = () => {
           <MenuItem value="IP67">IP67</MenuItem>
         </TextField>
 
+        {/* 내용연수 */}
         <Typography sx={{ alignSelf: "center" }}>내용연수(년)</Typography>
         <TextField
           name="lifespan"
@@ -207,7 +225,7 @@ const EquipmentsDetail = () => {
         <Button
           variant="contained"
           sx={{ backgroundColor: "#000", color: "#fff", "&:hover": { backgroundColor: "#333" } }}
-          onClick={() => console.log("수리요청", id)}
+          onClick={() => navigate(`/equipment/report/regist/${toReportParam(equipment.equipmentType)}`)}
         >
           수리요청
         </Button>

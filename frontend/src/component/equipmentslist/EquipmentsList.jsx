@@ -31,8 +31,9 @@ const EquipmentsList = () => {
           id: item.equipment.equipmentId,
           category: item.equipment.equipmentType,
           name: item.equipment.equipmentName,
-          registeredAt: new Date(item.equipment.purchaseDate).toLocaleString(),
+          registeredAt: new Date(item.equipment.purchaseDate).toISOString().split("T")[0], // 날짜만 표시
         }));
+        console.log("a")
         setEquipmentList(formattedData);
       } catch (error) {
         console.error("Failed to fetch equipments:", error);
@@ -64,7 +65,7 @@ const EquipmentsList = () => {
             <MenuItem value="전체">전체</MenuItem>
             <MenuItem value="조명">조명</MenuItem>
             <MenuItem value="기상">기상</MenuItem>
-            <MenuItem value="표지판">표지판</MenuItem>
+            <MenuItem value="표시-표지">표시-표지</MenuItem>
           </Select>
         </Box>
       </Box>
@@ -77,7 +78,7 @@ const EquipmentsList = () => {
               <TableCell>번호</TableCell>
               <TableCell>장비 종류</TableCell>
               <TableCell>장비명</TableCell>
-              <TableCell>장비 등록 시간</TableCell>
+              <TableCell>장비 등록 일자</TableCell>
               <TableCell align="center">상세</TableCell>
             </TableRow>
           </TableHead>
