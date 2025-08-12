@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-// 인라인 스타일 객체
+// ... (스타일 객체는 기존과 동일합니다)
 const styles = {
   appContainer: {
     display: 'flex',
@@ -96,96 +97,137 @@ const styles = {
   saveButton: {
     backgroundColor: '#007bff',
   },
+  // --- ⬇️ 확인 버튼 스타일 추가 ⬇️ ---
+  confirmButton: {
+    backgroundColor: '#6c757d',
+    marginLeft: '10px',
+  },
+  // --- ⬆️ 확인 버튼 스타일 추가 ⬆️ ---
 };
 
 
-// --- 장비 분석 보고서 UI 컴포넌트 ---
-const EquipmentReport = () => {
-  // 샘플 데이터 (이 부분은 나중에 API 연동으로 대체 가능)
-  const reportData = {
-    equipmentName: 'runway_9',
-    equipmentType: '조명(시각유도)',
-    category: 'REL',
-    predictions: '100,000',
-    purchase: '350,000',
-    initialOpinion: "초기 분석 결과, 터빈 블레이드의 미세 균열이 감지되었습니다. 잔여 수명 예측 모델(LLM)을 기반으로 3년 내 유지보수 비용이 급증할 것으로 예상됩니다.\n\n교체 장비로는 '차세대 GT-2000 모델'을 추천하며, 관련 LLM 프롬프트는 다음과 같습니다:\n'GT-2000 모델의 10년간 TCO(총소유비용)와 기존 모델 대비 에너지 효율 개선율을 비교 분석해줘.'",
-  };
+const EquipmentReportDetail = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
 
-  // 편집 모드와 종합의견 텍스트를 관리하기 위한 state
-  const [isEditing, setIsEditing] = useState(false);
-  const [opinion, setOpinion] = useState(reportData.initialOpinion);
+    const { reportItem } = location.state || {};
 
-  // 편집/저장 버튼 클릭 핸들러
-  const handleButtonClick = () => {
-    setIsEditing(!isEditing);
-    // 실제 애플리케이션에서는 저장 버튼을 누를 때 API 호출로 데이터를 서버에 전송합니다.
-    if (isEditing) {
-      console.log('저장된 내용:', opinion);
-    // 페이지 이동 
-    alert('내용이 저장되었습니다. 보고서 페이지로 이동합니다.'); // 사용자에게 알림
-    window.location.href = '/equipment/report'; // 지정된 경로로 페이지 이동
+    if (!reportItem) {
+        return (
+            <div style={styles.appContainer}>
+                <div style={styles.reportContainer}>
+                    <h1 style={styles.title}>데이터 오류</h1>
+                    <p style={{textAlign: 'center'}}>보고서 데이터를 찾을 수 없습니다. 목록 페이지에서 다시 시도해주세요.</p>
+                    <div style={styles.buttonContainer}>
+                        <button style={{...styles.button, ...styles.editButton}} onClick={() => navigate('/equipment/report')}>
+                            목록으로 돌아가기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
     }
-    // '편집하기' 또는 '저장하기' 클릭 시 항상 편집 모드를 토글
-    setIsEditing(!isEditing);
-  };
+    
+    const { reportData, formData, type: mainCategory, opinion: initialOpinion } = reportItem;
+    
+    const [isEditing, setIsEditing] = useState(false);
+    const [opinion, setOpinion] = useState(initialOpinion);
 
-  return (
-    <div style={styles.appContainer}>
-      <div style={styles.reportContainer}>
-        <h1 style={styles.title}>{reportData.equipmentName} 장비 분석 보고서</h1>
-        <p style={styles.date}>보고서 작성일자: 2025. 8. 8.</p>
-        <hr style={styles.hr} />
+    const handleButtonClick = () => {
+        if (isEditing) {
+            try {
+                const savedReports = JSON.parse(localStorage.getItem('reports') || '[]');
+                const updatedReports = savedReports.map(report => {
+                    if (report.id === reportItem.id) {
+                        return { ...report, opinion: opinion };
+                    }
+                    return report;
+                });
+                localStorage.setItem('reports', JSON.stringify(updatedReports));
+                alert('수정된 내용이 저장되었습니다.');
+                
+                navigate('/equipment/report');
 
-        <dl style={styles.infoGrid}>
-          <dt style={styles.dt}>장비명:</dt>
-          <dd style={styles.dd}>{reportData.equipmentName}</dd>
-          <dt style={styles.dt}>장비 종류:</dt>
-          <dd style={styles.dd}>{reportData.equipmentType}</dd>
-          <dt style={styles.dt}>카테고리:</dt>
-          <dd style={styles.dd}>{reportData.category}</dd>
-        </dl>
+            } catch (error) {
+                console.error("localStorage 저장 중 오류 발생:", error);
+                alert("저장에 실패했습니다.");
+            }
+        }
+        setIsEditing(!isEditing);
+    };
 
-        <hr style={styles.hr} />
+    const today = new Date();
+    const formattedDate = `${today.getFullYear()}. ${today.getMonth() + 1}. ${today.getDate()}.`;
 
-        <dl style={styles.infoGrid}>
-          <dt style={styles.dt}>유지보수 비용예측:</dt>
-          <dd style={styles.dd}>{reportData.predictions} 원</dd>
-          <dt style={styles.dt}>신규 장비 구매비용:</dt>
-          <dd style={styles.dd}>{reportData.purchase} 원</dd>
-        </dl>
+    return (
+        <div style={styles.appContainer}>
+            <div style={styles.reportContainer}>
+                <h1 style={styles.title}>{formData.equipmentName || 'N/A'} 장비 분석 보고서</h1>
+                <p style={styles.date}>보고서 작성일자: {formattedDate}</p>
+                <hr style={styles.hr} />
 
-        <hr style={styles.hr} />
+                <dl style={styles.infoGrid}>
+                    <dt style={styles.dt}>장비명:</dt>
+                    <dd style={styles.dd}>{formData.equipmentName || 'N/A'}</dd>
+                    <dt style={styles.dt}>장비 종류:</dt>
+                    <dd style={styles.dd}>{mainCategory}</dd>
+                    <dt style={styles.dt}>카테고리:</dt>
+                    <dd style={styles.dd}>{formData.category}</dd>
+                </dl>
 
-        <div>
-          <h3 style={styles.h3}>종합의견:</h3>
-          {/* <p style={{fontSize: '14px', color: '#888', margin: '0 0 10px 0'}}>
-            추천장비 및 LLM 프롬프트
-          </p> */}
-          <textarea
-            style={{
-              ...styles.opinionTextarea,
-              ...(isEditing ? {} : styles.opinionTextareaReadOnly) // 편집 모드가 아닐 때 readonly 스타일 적용
-            }}
-            value={opinion}
-            onChange={(e) => setOpinion(e.target.value)}
-            readOnly={!isEditing} // isEditing이 false이면 수정 불가
-          />
+                <hr style={styles.hr} />
+
+                <dl style={styles.infoGrid}>
+                    <dt style={styles.dt}>유지보수 비용예측:</dt>
+                    <dd style={styles.dd}>{Number(reportData.cost).toLocaleString()} 원</dd>
+                    <dt style={styles.dt}>신규 장비 구매비용:</dt>
+                    <dd style={styles.dd}>{Number(formData.purchase).toLocaleString()} 원</dd>
+                </dl>
+
+                <hr style={styles.hr} />
+
+                <div>
+                    <h3 style={styles.h3}>종합의견:</h3>
+                    <textarea
+                        style={{ ...styles.opinionTextarea, ...(isEditing ? {} : styles.opinionTextareaReadOnly) }}
+                        value={opinion}
+                        onChange={(e) => setOpinion(e.target.value)}
+                        readOnly={!isEditing}
+                    />
+                </div>
+
+                {/* --- ⬇️ 주요 수정 사항: 버튼 컨테이너 로직 변경 ⬇️ --- */}
+                <div style={styles.buttonContainer}>
+                    {isEditing ? (
+                        // 편집 모드일 때: '저장하기' 버튼만 표시
+                        <button
+                            style={{ ...styles.button, ...styles.saveButton }}
+                            onClick={handleButtonClick}
+                        >
+                            저장하기
+                        </button>
+                    ) : (
+                        // 기본 모드일 때: '편집하기'와 '확인' 버튼 표시
+                        <>
+                            <button
+                                style={{ ...styles.button, ...styles.editButton }}
+                                onClick={handleButtonClick}
+                            >
+                                편집하기
+                            </button>
+                            <button
+                                style={{ ...styles.button, ...styles.confirmButton }}
+                                onClick={() => navigate('/equipment/report')}
+                            >
+                                확인
+                            </button>
+                        </>
+                    )}
+                </div>
+                 {/* --- ⬆️ 주요 수정 사항 ⬆️ --- */}
+            </div>
         </div>
-
-        <div style={styles.buttonContainer}>
-          <button
-            style={{
-              ...styles.button,
-              ...(isEditing ? styles.saveButton : styles.editButton)
-            }}
-            onClick={handleButtonClick}
-          >
-            {isEditing ? '저장하기' : '편집하기'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
-export default EquipmentReport;
+export default EquipmentReportDetail;
