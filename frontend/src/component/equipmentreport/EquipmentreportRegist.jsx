@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
+import api from '../../config/api';
 // (subCategoryMap, initialFormData, categoryNameMap, styles 등 상단 설정은 기존과 동일)
 const subCategoryMap = {
   '조명': ['REL', 'RCL', 'TDZL', 'REIL'],
@@ -83,14 +84,19 @@ const EquipmentReportRegist = () => {
   };
 
   // --- ⬇️ 주요 수정 사항 ⬇️ ---
+  // getApiUrl 함수 수정: baseURL을 api 객체에서 가져오도록 변경
   const getApiUrl = () => {
-    // 백엔드의 @RequestMapping 경로인 /equipmentReports를 URL에 추가합니다.
-    const baseUrl = 'https://shiny-space-cod-q775qq4rwxp6cx757-8088.app.github.dev/equipmentReports';
+    const baseUrl = api.defaults.baseURL + "/equipmentReports";
+
     switch (mainCategory) {
-      case '조명': return `${baseUrl}/regist/lighting`;
-      case '기상관측': return `${baseUrl}/regist/weather`;
-      case '표시-표지': return `${baseUrl}/regist/sign`;
-      default: return `${baseUrl}/analyze`; // 기본 fallback URL도 일관성을 위해 수정
+      case "조명":
+        return `${baseUrl}/regist/lighting`;
+      case "기상관측":
+        return `${baseUrl}/regist/weather`;
+      case "표시-표지":
+        return `${baseUrl}/regist/sign`;
+      default:
+        return `${baseUrl}/analyze`;
     }
   };
   // --- ⬆️ 주요 수정 사항 ⬆️ ---

@@ -23,8 +23,10 @@ public class Equipment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long equipmentId;
 
-    private String equipmentType; // 조명, 기상, 표시-표지
+    @Column(columnDefinition = "NVARCHAR(255)")
+    private String equipmentType;
 
+    @Column(columnDefinition = "NVARCHAR(255)")
     private String equipmentName;
 
     private String state;
