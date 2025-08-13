@@ -55,6 +55,23 @@ const DashDetail = () => {
     }
   };
 
+  // 처리 요청 버튼 클릭 핸들러 (Alert.jsx에서 가져옴)
+  const handleRequest = (alertLog) => {
+    let message = "";
+    if (alertLog.includes("FOD감지")) {
+      message = "[FOD감지] FOD 전담 처리반을 호출 하였습니다.";
+    } else if (alertLog.includes("조류 출현")) {
+      message = "[조류 출현] 조류 전담 처리반을 호출 하였습니다.";
+    } else if (alertLog.includes("동물 출현")) {
+      message = "[동물 출현] 동물 처리 전담반을 호출하였습니다.";
+    } else {
+      message = "[처리 요청] 신호를 보냈습니다.";
+    }
+    console.log(message);
+    alert(message);
+    // 나중에 실제 API 호출 로직을 여기에 추가할 수 있습니다.
+  };
+
   return (
     <Box sx={{ p: 4 }}>
       {/* 뒤로가기 */}
@@ -100,15 +117,7 @@ const DashDetail = () => {
       {/* 캔버스 (숨겨짐, 프레임 캡처용) */}
       <canvas ref={canvasRef} width={640} height={480} style={{ display: 'none' }} />
 
-      {/* 탐지 버튼 */}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleDetect}
-        sx={{ mb: 2 }}
-      >
-        객체 탐지 실행
-      </Button>
+      
 
       {/* 탐지 결과 이미지 */}
       {detectedImage && (
@@ -135,15 +144,34 @@ const DashDetail = () => {
             <TableRow>
               <TableCell><strong>Date</strong></TableCell>
               <TableCell><strong>Detail</strong></TableCell>
+              <TableCell><strong>Action</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {alerts.map((alert, index) => (
-              <TableRow key={index}>
-                <TableCell>{new Date(alert.alertDate).toLocaleString()}</TableCell>
-                <TableCell>{alert.alertLog}</TableCell>
-              </TableRow>
-            ))}
+            {alerts.map((alert, index) => {
+              const isTargetAlert =
+                alert.alertLog.includes("FOD감지") ||
+                alert.alertLog.includes("조류 출현") ||
+                alert.alertLog.includes("동물 출현");
+
+              return (
+                <TableRow key={index}>
+                  <TableCell>{new Date(alert.alertDate).toLocaleString()}</TableCell>
+                  <TableCell>{alert.alertLog}</TableCell>
+                  <TableCell>
+                    {isTargetAlert && (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleRequest(alert.alertLog)}
+                      >
+                        처리 요청
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

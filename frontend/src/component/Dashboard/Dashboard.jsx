@@ -31,12 +31,12 @@ const runwayLabels = [
 const DashBoardMg = () => {
   const [alerts, setAlerts] = useState([]);
   const cameraList = [
-    { id: 1, src: "/app/videos/1.mp4" },
-    { id: 2, src: "/app/videos/2.mp4" },
-    { id: 3, src: "/app/videos/3.mp4" },
-    { id: 4, src: "/app/videos/4.mp4" },
-    { id: 5, src: "/app/videos/5.mp4" },
-    { id: 6, src: "/app/videos/6.mp4" },
+    { id: 1, src: "/videos/1.mp4" },
+    { id: 2, src: "/videos/2.mp4" },
+    { id: 3, src: "/videos/3.mp4" },
+    { id: 4, src: "/videos/4.mp4" },
+    { id: 5, src: "/videos/5.mp4" },
+    { id: 6, src: "/videos/6.mp4" },
   ];
   const navigate = useNavigate();
 
@@ -86,7 +86,7 @@ const DashBoardMg = () => {
             >
               <Box
                 component="img"
-                src="/app/chart.png"
+                src="/chart.png"
                 alt="차트"
                 sx={{
                   maxHeight: "100%",
