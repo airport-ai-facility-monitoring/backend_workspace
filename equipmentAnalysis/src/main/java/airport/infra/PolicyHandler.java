@@ -2,6 +2,8 @@ package airport.infra;
 
 import airport.config.kafka.KafkaProcessor;
 import airport.domain.*;
+import airport.domain.report.EquipmentReportRepository;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.naming.NameParser;
@@ -17,8 +19,8 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class PolicyHandler {
 
-    @Autowired
-    EquipmentReportRepository equipmentReportRepository;
+    // @Autowired
+    // EquipmentReportRepository equipmentReportRepository;
 
     @StreamListener(KafkaProcessor.INPUT)
     public void whatever(@Payload String eventString) {}
@@ -28,7 +30,7 @@ public class PolicyHandler {
         condition = "headers['type']=='EquipmentIAnalyRequested'"
     )
     public void wheneverEquipmentAnalyzeRequested(@Payload EquipmentIAnalyRequested event) {
-        
+
     }
 }
 //>>> Clean Arch / Inbound Adaptor

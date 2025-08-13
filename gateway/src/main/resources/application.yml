@@ -54,7 +54,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://cuddly-space-pancake-wqppr57pvp9h5p7p-5173.app.github.dev/"
+              - "https://cuddly-space-pancake-wqppr57pvp9h5p7p-5173.app.github.dev"
             allowedMethods:
               - "*"
             allowedHeaders:

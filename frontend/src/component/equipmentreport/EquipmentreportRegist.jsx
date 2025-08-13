@@ -83,86 +83,68 @@ const EquipmentReportRegist = () => {
     }
   };
 
-  // --- ⬇️ 주요 수정 사항 ⬇️ ---
-  // getApiUrl 함수 수정: baseURL을 api 객체에서 가져오도록 변경
-  const getApiUrl = () => {
-    const baseUrl = api.defaults.baseURL + "/equipmentReports";
 
-    switch (mainCategory) {
-      case "조명":
-        return `${baseUrl}/regist/lighting`;
-      case "기상관측":
-        return `${baseUrl}/regist/weather`;
-      case "표시-표지":
-        return `${baseUrl}/regist/sign`;
-      default:
-        return `${baseUrl}/analyze`;
-    }
-  };
-  // --- ⬆️ 주요 수정 사항 ⬆️ ---
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setAnalysisResult(null);
-    setError(null);
+  e.preventDefault();
+  setIsLoading(true);
+  setAnalysisResult(null);
+  setError(null);
 
-    // location.state에서 넘겨받은 필드만 분리
-    const equipmentBaseData = {
-      equipmentName: equipmentName || '',
-      manufacturer: manufacturer || '',
-      purchase: purchase !== undefined ? Number(purchase) : 0,
-      protection_rating: protectionRating || '',
-      service_years: serviceYears !== undefined ? Number(serviceYears) : 0,
-    };
+  // location.state에서 넘겨받은 필드만 분리
+  const equipmentBaseData = {
+    equipmentName: equipmentName || '',
+    manufacturer: manufacturer || '',
+    purchase: purchase !== undefined ? Number(purchase) : 0,
+    protection_rating: protectionRating || '',
+    service_years: serviceYears !== undefined ? Number(serviceYears) : 0,
+  };
 
-    // formData에 있는 필드들 (ex: failure, repair_cost, lamp_type 등)
-    // 이 중복되지 않는 필드만 합침
-    // 혹시 겹치면 equipmentBaseData 우선
-    const combinedData = {
-      ...formData,
-      ...equipmentBaseData,
-      category: subCategory,
-    };
+  const combinedData = {
+    ...formData,
+    ...equipmentBaseData,
+    category: subCategory,
+  };
 
-    // 숫자형 필드 강제 변환
-    const numericFields = [
-      'purchase', 'failure', 'runtime', 'service_years', 'maintenance_cost',
-      'repair_cost', 'repair_time', 'labor_rate', 'avg_life', 'power_consumption',
-      'panel_width', 'panel_height'
-    ];
+  const numericFields = [
+    'purchase', 'failure', 'runtime', 'service_years', 'maintenance_cost',
+    'repair_cost', 'repair_time', 'labor_rate', 'avg_life', 'power_consumption',
+    'panel_width', 'panel_height'
+  ];
 
-    const payload = Object.fromEntries(
-      Object.entries(combinedData).map(([key, value]) => {
-        if (numericFields.includes(key) && value !== null && value !== '') {
-          return [key, Number(value)];
-        }
-        return [key, value];
-      })
-    );
-
-    const apiUrl = getApiUrl();
-    
-    try {
-      console.log(payload)
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API 요청 실패: ${response.status} ${errorText}`);
+  const payload = Object.fromEntries(
+    Object.entries(combinedData).map(([key, value]) => {
+      if (numericFields.includes(key) && value !== null && value !== '') {
+        return [key, Number(value)];
       }
-      const result = await response.json();
-      setAnalysisResult(result);
-    } catch (err) {
-      setError(err.message);
-      console.error('API 호출 중 에러 발생:', err);
-    } finally {
-      setIsLoading(false);
+      return [key, value];
+    })
+  );
+
+  // getApiUrl을 상대경로로 변경 (baseURL 제외)
+  const getRelativeApiUrl = () => {
+    switch (mainCategory) {
+      case "조명":
+        return `/equipmentReports/regist/lighting`;
+      case "기상관측":
+        return `/equipmentReports/regist/weather`;
+      case "표시-표지":
+        return `/equipmentReports/regist/sign`;
+      default:
+        return `/equipmentReports/analyze`;
     }
   };
+
+  try {
+    const response = await api.post(getRelativeApiUrl(), payload);
+    setAnalysisResult(response.data);
+  } catch (err) {
+    setError(err.message || 'API 호출 중 에러가 발생했습니다.');
+    console.error('API 호출 중 에러 발생:', err);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleCancel = () => { navigate('/equipment/report'); };
   
