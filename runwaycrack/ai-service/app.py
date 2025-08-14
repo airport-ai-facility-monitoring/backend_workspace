@@ -6,6 +6,9 @@ import json
 import time
 import base64
 import math
+import tempfile
+import requests
+
 
 from detect_damage import DamageDetector
 
@@ -101,18 +104,44 @@ def group_key_from_box(box, precision=16):
     k = (round(x1/precision), round(y1/precision), round(x2/precision), round(y2/precision))
     return str(k)
 
+# 컨테이너 URL
+CONTAINER_URL = "https://airportfrontendstorage.blob.core.windows.net/videos?sp=rl&st=2025-08-14T02:41:16Z&se=2025-08-15T10:56:16Z&sip=0.0.0.0-255.255.255.255&sv=2024-11-04&sr=c&sig=vNrqki0K7PVIngwoleACYOJsrm4JocnjtqJ%2BTeDMFXQ%3D"
+
+# 선택할 영상 파일
+VIDEO_FILE = "4.mp4"
+
+# 영상 URL 조합
+def get_video_url():
+    # 컨테이너 URL 끝에 '?'가 있으면 '&', 없으면 '?'
+    sep = '&' if '?' in CONTAINER_URL else '?'
+    return f"{CONTAINER_URL.split('?')[0]}/{VIDEO_FILE}?{CONTAINER_URL.split('?')[1]}"
+
+def get_local_video(video_url: str) -> str:
+    # 임시 파일 생성
+    tmp = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
+    resp = requests.get(video_url, stream=True)
+    if resp.status_code != 200:
+        raise RuntimeError(f"Failed to download video: {video_url}")
+    for chunk in resp.iter_content(chunk_size=8192):
+        tmp.write(chunk)
+    tmp.close()
+    return tmp.name
+
 @app.get("/video_tick")
 def video_tick(
-    video: str = Query("videos/crack_test1.mp4"),
+    # video: str = Query("videos/crack_test1.mp4"),
     mpp: float = Query(0.01),
     stride: int = Query(2)
 ):
+    video_url = get_video_url()
+    local_video = get_local_video(video_url)
+
     """
     - 프레임 탐지 → 같은 균열(겹치거나 가까운 박스)은 병합 → '그룹' 단위로 1회만 저장
     - 저장 항목: 이미지(JPG), length_m(최대), area_m2(합)
     """
     try:
-        vs = get_session(video)
+        vs = get_session(local_video)
     except RuntimeError as e:
         return JSONResponse({"error": str(e)}, status_code=400)
 
