@@ -34,6 +34,10 @@ spring:
           uri: http://localhost:8085
           predicates:
             - Path=/strangeObjects/**, /workers/**, /workTrucks/**
+        - id: runwaycrack-python
+          uri: http://localhost:8001
+          predicates:
+            - Path=/api/runwaycracksDetect/**
         - id: runwaycrack
           uri: http://localhost:8086
           predicates:
@@ -54,7 +58,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://cuddly-space-pancake-wqppr57pvp9h5p7p-5173.app.github.dev"
+              - "https://orange-space-meme-xg775v9rgpv26-5173.app.github.dev"
             allowedMethods:
               - "*"
             allowedHeaders:

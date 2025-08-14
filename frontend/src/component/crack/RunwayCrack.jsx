@@ -25,44 +25,54 @@ const RunwayCrack = () => {
 
 // 🚀 1. 페이지 진입 시 더미 데이터 추가 및 리스트 요청
 useEffect(() => {
-  const fetchDataAndInsertDummy = async () => {
+  const fetchAndSaveData = async () => {
     try {
       setLoading(true);
 
-      // 백엔드 API로 보낼 더미 데이터 정의
-      const dummyData = [{
-        imageUrl: "https://via.placeholder.com/150",
-        cctvId: 201,
-        lengthCm: 30,
-        areaCm2: 150,
-        detectedDate: "2025-07-18",
-        reportState: false,
-      }, {
-        imageUrl: "https://via.placeholder.com/150",
-        cctvId: 202,
-        lengthCm: 50,
-        areaCm2: 250,
-        detectedDate: "2025-07-17",
-        reportState: true,
-      }];
+      // 1. 감지 데이터 가져오기
+      const res = await api.get("/api/runwaycracksDetect", {
+        params: { mpp: 0.01, stride: 2 },
+      });
 
-      // 1. 더미 데이터들을 서버에 POST 요청으로 보냅니다.
-      const postPromises = dummyData.map(data => api.post("/runwaycracks", data));
-      await Promise.all(postPromises);
-      
-      // 2. POST 요청이 완료되면, 전체 데이터를 GET 요청으로 다시 가져옵니다.
-      const res = await api.get("/runwaycracks");
-      setData(res.data);
+      console.log("감지결과:", res.data);
+
+      // 2. 프론트 표시용 변환
+      const newItems = res.data.saved.map(item => ({
+        rcId: item.timestamp,
+        imageUrl: item.image_path ? `${item.image_path}` : null,
+        cctvId: item.track_ids[0] || null, // 첫 번째 ID만 저장 (Long 변환 가능)
+        lengthCm: parseFloat((item.length_m ).toFixed(1)),
+        areaCm2: parseFloat((item.area_m2).toFixed(1)),
+        detectedDate: item.timestamp,
+        reportState: false,
+      }));
+  
+      // 3. DB 저장 (백엔드에서 필요한 필드만 전송)
+      const savePromises = newItems.map(item =>
+        api.post("/runwaycracks", {
+          imageUrl: item.imageUrl || "", // null 방지
+          cctvId: Number(item.cctvId) || 0, // 숫자로 변환
+          lengthCm: Number(item.lengthCm) || 0,
+          areaCm2: Number(item.areaCm2) || 0
+        })
+      );
+
+
+      await Promise.all(savePromises);
+
+      // 4. 저장 후 전체 목록 재조회
+      const listRes = await api.get("/runwaycracks");
+      setData(listRes.data);
+
     } catch (err) {
-      console.error("데이터 처리 중 오류 발생:", err);
+      console.error("데이터 처리 실패:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  fetchDataAndInsertDummy();
+  fetchAndSaveData();
 }, []);
-
   return (
     <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f3f6fe" }}>
       <Box sx={{ flexGrow: 1, overflow: "auto" }}>
@@ -118,8 +128,8 @@ useEffect(() => {
                   <TableCell align="center">#</TableCell>
                   <TableCell align="center">상태</TableCell>
                   <TableCell align="center">현장 (CCTV ID)</TableCell>
-                  <TableCell align="center">파손 길이 (cm)</TableCell>
-                  <TableCell align="center">파손 면적 (cm²)</TableCell>
+                  <TableCell align="center">파손 길이 (m)</TableCell>
+                  <TableCell align="center">파손 면적 (m²)</TableCell>
                   <TableCell align="center">사진</TableCell>
                   <TableCell align="center">발견 날짜</TableCell>
                   <TableCell align="center">상태</TableCell>
@@ -145,7 +155,7 @@ useEffect(() => {
                       <TableCell align="center">
                         {row.imageUrl ? (
                           <img
-                            src={row.imageUrl}
+                            src={ "https://airportfrontendstorage.blob.core.windows.net/videos/20250814-082611.jpg"} //row.imageUrl}
                             alt="이상 이미지"
                             width={60}
                             height={40}
