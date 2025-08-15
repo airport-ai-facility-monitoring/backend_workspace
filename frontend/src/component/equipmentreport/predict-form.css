@@ -1,0 +1,50 @@
+/* src/pages/equipment/predict-form.css */
+
+:root {
+  --box-bg: #fff;
+  --box-bd: #cbd5e1;        /* #94a3b8 계열 */
+  --box-radius: 12px;
+  --box-h: 48px;
+}
+
+/* ✅ 모든 input/select 공통 박스 */
+.box {
+  width: 100%;
+  height: var(--box-h);
+  padding: 10px 12px;
+  border: 1px solid var(--box-bd);
+  border-radius: var(--box-radius);
+  background: var(--box-bg);
+  font-size: 14px;
+  color: #111827;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.box:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* ✅ number 입력 화살표 제거 (크롬/엣지/사파리) */
+input[type="number"].no-spin::-webkit-outer-spin-button,
+input[type="number"].no-spin::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* ✅ number 입력 화살표 제거 (파이어폭스) */
+input[type="number"].no-spin {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* ✅ select의 드롭다운 화살표 일관화 */
+select.box {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 8l4 4 4-4' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px; /* 화살표 영역 확보 */
+}
