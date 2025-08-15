@@ -35,7 +35,7 @@ export default function EquipmentsRegister() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    equipmentType: "",
+    category: "",
     name: "",
     manufacturer: "",
     price: "",
@@ -135,7 +135,7 @@ export default function EquipmentsRegister() {
     let endpoint = "";
     let details = {};
 
-    switch (form.equipmentType) {
+    switch (form.category) {
       case "조명":
         endpoint = "/equipments/lighting";
         details = { lightingDetail: {} };
