@@ -19,7 +19,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "EquipmentReport_table", schema = "equipmentanalysis")
+@Table(name = "equipment_report_table", schema = "equipmentanalysis")
 @Data
 //<<< DDD / Aggregate Root
 public class EquipmentReport {
