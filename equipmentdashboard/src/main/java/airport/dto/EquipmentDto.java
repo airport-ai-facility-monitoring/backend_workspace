@@ -1,8 +1,9 @@
 package airport.dto;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 import lombok.Data;
-
+import java.time.LocalDateTime;
 @Data
 public class EquipmentDto {
 
@@ -14,7 +15,9 @@ public class EquipmentDto {
     private String manufacturer;
     private String protectionRating;
     private Integer purchase;
+
     private LocalDateTime purchaseDate;
+
     private Integer failure;
     private Integer runtime;
     private Integer serviceYears;

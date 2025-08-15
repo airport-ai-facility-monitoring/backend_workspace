@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import lombok.Data;
+import java.time.LocalDateTime;
+
+import java.time.ZonedDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "EquipmentReport_table", schema = "equipmentanalysis")
@@ -20,7 +26,7 @@ public class EquipmentReport {
     /**
      * 리포트의 고유 식별자(Primary Key)입니다.
      * `@Id` 어노테이션으로 기본 키 필드임을 나타냅니다.
-     * `@GeneratedValue`는 기본 키 값을 자동으로 생성하도록 설정합니다. (AUTO 전략 사용)
+     * `@GeneratedValue`는 기본 키 값을 자동으로 생성하도록 설정합니다. (IDENTITY 전략 사용)
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +58,36 @@ public class EquipmentReport {
 
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String cost;
+
+     // LLM이 만들어준 전체 보고서 본문
+    @Column(columnDefinition = "TEXT")
+    private String llmReport;      // ✅ 프론트에서 편집한 텍스트를 그대로 저장
+
+    // (선택) 디버깅용
+    @Column(columnDefinition = "TEXT")
+    private String rawJson;
+
+    // (선택) 메타들 저장해두면 상세에서 다시 호출 없이 표시 가능
+    private Long equipmentId;
+    private String name;
+    private String category;
+    private String subCategory;
+    private String manufacturer;
+    private Integer purchase;
+    private String protectionRating;
+    private Integer failure;
+    private Integer runtime;
+    private Integer serviceYears;
+    private Integer maintenanceCostNum;
+    private Integer repairCost;
+    private Integer repairTime;
+    private Integer laborRate;
+    private Integer avgLife;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private ZonedDateTime createdAt;
 
     // @PreUpdate
     // public void onPreUpdate() {

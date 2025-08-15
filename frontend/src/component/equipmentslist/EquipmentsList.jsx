@@ -66,7 +66,7 @@ const EquipmentsList = () => {
             <MenuItem value="전체">전체</MenuItem>
             <MenuItem value="조명">조명</MenuItem>
             <MenuItem value="기상">기상</MenuItem>
-            <MenuItem value="표시-표지">표시-표지</MenuItem>
+            <MenuItem value="표지">표지</MenuItem>
           </Select>
         </Box>
       </Box>

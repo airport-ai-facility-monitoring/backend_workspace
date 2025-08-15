@@ -8,6 +8,9 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.http.MediaType;
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping(value = "/equipments")
 @Transactional
@@ -17,7 +20,7 @@ public class EquipmentController {
     EquipmentRepository equipmentRepository;
 
     // ===================== UPDATE 장비 =====================
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public UnifiedEquipmentDto updateEquipment(@PathVariable Long id, @RequestBody EquipmentDto dto) {
         Equipment equipment = equipmentRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("장비를 찾을 수 없습니다"));
@@ -27,7 +30,13 @@ public class EquipmentController {
         equipment.setManufacturer(dto.getManufacturer());
         equipment.setProtectionRating(dto.getProtectionRating());
         equipment.setPurchase(dto.getPurchase());
+
+        // // ✅ DTO(LocalDate) → 엔티티(LocalDateTime)로 저장
+        // equipment.setPurchaseDate(
+        //     dto.getPurchaseDate() != null ? dto.getPurchaseDate().atStartOfDay() : null
+        // );
         equipment.setPurchaseDate(dto.getPurchaseDate());
+
         equipment.setServiceYears(dto.getServiceYears());
         equipment.setState(dto.getState());
         equipment.setFailure(dto.getFailure());
@@ -74,7 +83,7 @@ public class EquipmentController {
     @PostMapping("/sign")
     public UnifiedEquipmentDto createSign(@RequestBody CreateSignRequest request) {
         Equipment equipment = convertToEntity(request.getEquipment());
-        equipment.setEquipmentType("표지-표시");
+        equipment.setEquipmentType("표지");
 
         SignEquipmentDetail detail = new SignEquipmentDetail();
         detail.setMaterial(request.getSignDetail().getMaterial());
@@ -144,7 +153,14 @@ public class EquipmentController {
         entity.setManufacturer(dto.getManufacturer());
         entity.setProtectionRating(dto.getProtectionRating());
         entity.setPurchase(dto.getPurchase());
+
+        // ✅ LocalDate → LocalDateTime
+        // entity.setPurchaseDate(
+        //     dto.getPurchaseDate() != null ? dto.getPurchaseDate().atStartOfDay() : null
+        // );
+
         entity.setPurchaseDate(dto.getPurchaseDate());
+
         entity.setFailure(dto.getFailure());
         entity.setRuntime(dto.getRuntime());
         entity.setServiceYears(dto.getServiceYears());
