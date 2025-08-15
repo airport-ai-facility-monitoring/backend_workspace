@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class CommonMaintenanceRequest {
     private String category;          // 장비 분류
+    private String name;
     private String manufacturer;      // 제조사
     private int purchase;              // 구매 금액 (원)
     private String purchase_date;     // 구매일 (YYYY-MM-DD)

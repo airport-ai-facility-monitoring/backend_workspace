@@ -53,6 +53,7 @@ public class EquipmentReport {
     private String rawJson;
 
     // (선택) 메타들 저장해두면 상세에서 다시 호출 없이 표시 가능
+    private String name;
     private String category;
     private String manufacturer;
     private Integer purchase;

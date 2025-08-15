@@ -50,6 +50,7 @@ export default function EquipmentReportPreview() {
   const headerFields = useMemo(() => {
     const common = [
       ["category", "장비 대분류", (v) => catLabel[category] || v || "-"],
+      ["name", "장비명"],
       ["manufacturer", "제조사"],
       ["purchase", "구매 금액(원)", (v) => (v != null ? v.toLocaleString() + " 원" : "-")],
       ["protection_rating", "보호 등급"],

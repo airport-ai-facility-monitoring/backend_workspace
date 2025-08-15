@@ -1,280 +1,154 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Button, TextField, MenuItem } from "@mui/material";
+import {
+  Box, Typography, Button, Chip, Divider, Card, CardContent, CircularProgress,
+} from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../config/api";
 
-const EquipmentsDetail = () => {
-  const navigate = useNavigate();
+function fmtCurrency(n) {
+  if (n === null || n === undefined || isNaN(n)) return "-";
+  try { return Number(n).toLocaleString(); } catch { return String(n); }
+}
+function fmtDate(d) {
+  if (!d) return "-";
+  return d.includes("T") ? d.split("T")[0] : d;
+}
+const toReportParam = (t) => {
+  switch (t) {
+    case "조명": return "lighting";
+    case "기상": return "weather";
+    case "표지": return "sign";
+    default: return "";
+  }
+};
+
+export default function EquipmentsDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [equipment, setEquipment] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editableEquipment, setEditableEquipment] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchEquipmentDetail = async () => {
+    (async () => {
       try {
-        const response = await api.get(`/equipments/${id}`);
-        const data = response.data;
-
-        const fetchedEquipment = {
-          id: data.equipment.equipmentId,
-          equipmentType: data.equipment.equipmentType,
-          name: data.equipment.equipmentName,
-          manufacturer: data.equipment.manufacturer,
-          price: data.equipment.purchase,
-          purchaseDate: data.equipment.purchaseDate, // yyyy-MM-ddTHH:mm:ss
-          ipRating: data.equipment.protectionRating,
-          lifespan: data.equipment.serviceYears,
-          lightingDetail: data.lightingDetail,
-          weatherDetail: data.weatherDetail,
-          signDetail: data.signDetail,
-        };
-        console.log(data)
-        setEquipment(fetchedEquipment);
-        setEditableEquipment(fetchedEquipment);
-      } catch (error) {
-        console.error("Failed to fetch equipment detail:", error);
-        setEquipment(null);
-        setEditableEquipment(null);
+        const res = await api.get(`/equipments/${id}`);
+        const d = res.data;
+        setEquipment({
+          id: d.equipment.equipmentId,
+          equipmentType: d.equipment.equipmentType,
+          name: d.equipment.equipmentName,
+          manufacturer: d.equipment.manufacturer,
+          price: d.equipment.purchase,
+          purchaseDate: d.equipment.purchaseDate, // ISO
+          ipRating: d.equipment.protectionRating,
+          lifespan: d.equipment.serviceYears,
+          lightingDetail: d.lightingDetail,
+          weatherDetail: d.weatherDetail,
+          signDetail: d.signDetail,
+        });
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
       }
-    };
-
-    fetchEquipmentDetail();
+    })();
   }, [id]);
 
-  const toReportParam = (k) => {
-    switch (k) {
-      case "조명": return "lighting";
-      case "기상": return "weather";
-      case "표지": return "sign";
-      default: return "";
-    }
-  };
-
   const handleDelete = async () => {
-    if (window.confirm("정말로 이 장비를 삭제하시겠습니까?")) {
-      try {
-        await api.delete(`/equipments/${id}`);
-        alert("장비가 성공적으로 삭제되었습니다.");
-        navigate("/equipment");
-      } catch (error) {
-        console.error("Failed to delete equipment:", error);
-        alert("장비 삭제에 실패했습니다.");
-      }
-    }
-  };
-
-  const handleFieldChange = (e) => {
-    const { name, value } = e.target;
-    setEditableEquipment((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleUpdate = async () => {
+    if (!window.confirm("정말로 이 장비를 삭제하시겠습니까?")) return;
     try {
-      const updatePayload = {
-        equipmentId: editableEquipment.id,
-        equipmentName: editableEquipment.name,
-        equipmentType: editableEquipment.equipmentType,
-        manufacturer: editableEquipment.manufacturer,
-        protectionRating: editableEquipment.ipRating,
-        purchase: parseInt(editableEquipment.price, 10) || 0,
-        purchaseDate: editableEquipment.purchaseDate, // 그대로 유지
-        serviceYears: parseInt(editableEquipment.lifespan, 10) || 0,
-        state: equipment.state,
-        failure: equipment.failure,
-        runtime: equipment.runtime,
-        repairCost: equipment.repairCost,
-        repairTime: equipment.repairTime,
-        laborRate: equipment.laborRate,
-        avgLife: equipment.avgLife,
-        maintenanceCost: equipment.maintenanceCost,
-      };
-      console.log(updatePayload)
-
-      await api.put(`/equipments/${id}`, updatePayload);
-      alert("장비 정보가 성공적으로 수정되었습니다.");
-      setIsEditing(false);
-      setEquipment(editableEquipment);
-    } catch (error) {
-      console.error("Failed to update equipment:", error);
-      alert("장비 정보 수정에 실패했습니다.");
+      await api.delete(`/equipments/${id}`);
+      alert("장비가 삭제되었습니다.");
+      navigate("/equipment");
+    } catch (e) {
+      console.error(e);
+      alert("장비 삭제에 실패했습니다.");
     }
   };
 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    setEditableEquipment(equipment);
+  const goReport = () => {
+    if (!equipment) return;
+    navigate(`/equipment/report/regist/${toReportParam(equipment.equipmentType)}`, {
+      state: {
+        equipmentId: equipment.id,
+        equipmentName: equipment.name,
+        manufacturer: equipment.manufacturer,
+        purchase: equipment.price,
+        protectionRating: equipment.ipRating,
+        serviceYears: equipment.lifespan,
+      },
+    });
   };
 
-  if (!equipment || !editableEquipment) {
+  if (loading) {
     return (
-      <Typography sx={{ mt: 4, textAlign: "center" }}>로딩 중...</Typography>
+      <Box sx={{ mt: 6, display: "flex", justifyContent: "center" }}>
+        <CircularProgress />
+      </Box>
     );
+  }
+  if (!equipment) {
+    return <Typography sx={{ mt: 4, textAlign: "center" }}>장비 정보를 불러올 수 없습니다.</Typography>;
   }
 
   return (
-    <Box sx={{ maxWidth: 900, mx: "auto", mt: 4 }}>
-      {/* 장비 정보 */}
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "150px 1fr",
-          rowGap: 2,
-          columnGap: 2,
-          mt: 2,
-          backgroundColor: "#fff",
-          p: 3,
-          borderRadius: 2,
-          boxShadow: 1,
-        }}
-      >
-        {/* 카테고리 */}
-        <Typography sx={{ alignSelf: "center" }}>카테고리</Typography>
-        <TextField
-          name="equipmentType"
-          value={isEditing ? editableEquipment.equipmentType : equipment.equipmentType}
-          onChange={handleFieldChange}
-          InputProps={{ readOnly: !isEditing }}
-          size="small"
-          select={isEditing}
-        >
-          <MenuItem value="조명">조명</MenuItem>
-          <MenuItem value="기상">기상</MenuItem>
-          <MenuItem value="표지">표지</MenuItem>
-        </TextField>
-
-        {/* 장비명 */}
-        <Typography sx={{ alignSelf: "center" }}>장비명</Typography>
-        <TextField
-          name="name"
-          value={isEditing ? editableEquipment.name : equipment.name}
-          onChange={handleFieldChange}
-          InputProps={{ readOnly: !isEditing }}
-          size="small"
-        />
-
-        {/* 제조사 */}
-        <Typography sx={{ alignSelf: "center" }}>제조사</Typography>
-        <TextField
-          name="manufacturer"
-          value={isEditing ? editableEquipment.manufacturer : equipment.manufacturer}
-          onChange={handleFieldChange}
-          InputProps={{ readOnly: !isEditing }}
-          size="small"
-          select={isEditing}
-        >
-          <MenuItem value="Samsung">Samsung</MenuItem>
-          <MenuItem value="Honeywell">Honeywell</MenuItem>
-          <MenuItem value="GE">GE</MenuItem>
-          <MenuItem value="LSElectric">LSElectric</MenuItem>
-        </TextField>
-
-        {/* 구매 금액 */}
-        <Typography sx={{ alignSelf: "center" }}>구매 금액(원)</Typography>
-        <TextField
-          name="price"
-          value={isEditing ? editableEquipment.price : equipment.price?.toLocaleString()}
-          onChange={handleFieldChange}
-          InputProps={{ readOnly: !isEditing }}
-          size="small"
-        />
-
-        {/* 구매일 (수정 불가) */}
-        <Typography sx={{ alignSelf: "center" }}>구매일</Typography>
-        <TextField
-          name="purchaseDate"
-          value={(equipment.purchaseDate || "").split("T")[0]}
-          InputProps={{ readOnly: true }}
-          type="date"
-          InputLabelProps={{ shrink: true }}
-          size="small"
-        />
-
-        {/* 보호등급 */}
-        <Typography sx={{ alignSelf: "center" }}>보호등급(IP)</Typography>
-        <TextField
-          name="ipRating"
-          value={isEditing ? editableEquipment.ipRating : equipment.ipRating}
-          onChange={handleFieldChange}
-          InputProps={{ readOnly: !isEditing }}
-          size="small"
-          select={isEditing}
-        >
-          <MenuItem value="IP65">IP65</MenuItem>
-          <MenuItem value="IP66">IP66</MenuItem>
-          <MenuItem value="IP67">IP67</MenuItem>
-        </TextField>
-
-        {/* 내용연수 */}
-        <Typography sx={{ alignSelf: "center" }}>내용연수(년)</Typography>
-        <TextField
-          name="lifespan"
-          value={isEditing ? editableEquipment.lifespan : equipment.lifespan}
-          onChange={handleFieldChange}
-          InputProps={{ readOnly: !isEditing }}
-          size="small"
-        />
+    <Box sx={{ maxWidth: 960, mx: "auto", mt: 3, mb: 6 }}>
+      {/* 헤더 */}
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+        <Box>
+          <Typography variant="h5" fontWeight={700}>{equipment.name}</Typography>
+          <Box sx={{ mt: 0.5, display: "flex", gap: 1, alignItems: "center" }}>
+            <Chip label={equipment.equipmentType || "-"} size="small" />
+            <Chip label={equipment.manufacturer || "-"} size="small" variant="outlined" />
+            <Chip label={`IP ${equipment.ipRating || "-"}`} size="small" variant="outlined" />
+          </Box>
+        </Box>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button variant="outlined" onClick={() => navigate("/equipment")}>뒤로</Button>
+          <Button variant="contained" onClick={() => navigate(`/equipment/${equipment.id}/edit`)}>수정</Button>
+          <Button color="error" variant="outlined" onClick={handleDelete}>삭제</Button>
+          <Button variant="contained" onClick={goReport}>분석요청</Button>
+        </Box>
       </Box>
 
-      {/* 버튼 */}
-      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}>
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: "#000", color: "#fff", "&:hover": { backgroundColor: "#333" } }}
-          onClick={() =>
-              navigate(`/equipment/report/regist/${toReportParam(equipment.equipmentType)}`, {
-                state: {
-                  equipmentId: equipment.id || equipment.equipmentId,
-                  equipmentName: equipment.name,
-                  manufacturer: equipment.manufacturer,
-                  purchase: equipment.price,
-                  protectionRating: equipment.ipRating,
-                  serviceYears: equipment.lifespan,
-                }
-              })
-            }
-        >
-          분석요청
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: "#000", color: "#fff", "&:hover": { backgroundColor: "#333" } }}
-          onClick={isEditing ? handleUpdate : () => setIsEditing(true)}
-        >
-          {isEditing ? "저장" : "수정"}
-        </Button>
-        {isEditing && (
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#000", color: "#fff", "&:hover": { backgroundColor: "#333" } }}
-            onClick={handleCancel}
-          >
-            취소
-          </Button>
-        )}
-        {!isEditing && (
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#000", color: "#fff", "&:hover": { backgroundColor: "#333" } }}
-            onClick={handleDelete}
-          >
-            삭제
-          </Button>
-        )}
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: "#000", color: "#fff", "&:hover": { backgroundColor: "#333" } }}
-          onClick={() => navigate(-1)}
-        >
-          뒤로
-        </Button>
-      </Box>
+      <Divider sx={{ mb: 2 }} />
+
+      {/* 기본 정보만 표시 */}
+      <Card variant="outlined">
+        <CardContent>
+          <Typography variant="subtitle1" fontWeight={700} gutterBottom>
+            기본 정보
+          </Typography>
+          <Box sx={{
+            display: "grid",
+            gridTemplateColumns: "160px 1fr",
+            rowGap: 1.5,
+            columnGap: 2,
+          }}>
+            <Typography color="text.secondary">장비명</Typography>
+            <Typography>{equipment.name || "-"}</Typography>
+
+            <Typography color="text.secondary">카테고리</Typography>
+            <Typography>{equipment.equipmentType || "-"}</Typography>
+
+            <Typography color="text.secondary">제조사</Typography>
+            <Typography>{equipment.manufacturer || "-"}</Typography>
+
+            <Typography color="text.secondary">구매 금액(원)</Typography>
+            <Typography>{fmtCurrency(equipment.price)}</Typography>
+
+            <Typography color="text.secondary">구매일</Typography>
+            <Typography>{fmtDate(equipment.purchaseDate)}</Typography>
+
+            <Typography color="text.secondary">보호등급</Typography>
+            <Typography>{equipment.ipRating || "-"}</Typography>
+
+            <Typography color="text.secondary">내용연수(년)</Typography>
+            <Typography>{equipment.lifespan ?? "-"}</Typography>
+          </Box>
+        </CardContent>
+      </Card>
     </Box>
   );
-};
-
-export default EquipmentsDetail;
+}

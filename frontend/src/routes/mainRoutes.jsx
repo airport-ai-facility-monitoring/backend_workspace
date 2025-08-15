@@ -12,6 +12,7 @@ import SettingsPage from "../component/settings/SettingsPage";
 import EquipmentsRegister from "../component/equipmentsregister/EquipmentsRegister";
 import EquipmentsList from "../component/equipmentslist/EquipmentsList";
 import EquipmentsDetail from "../component/equipmentslist/EquipmentsDetail"; // ✅ 추가
+import EquipmentsEdit from "../component/equipmentslist/EquipmentsEdit";
 import Equipmentreport from "../component/equipmentreport/Equipmentreport";
 import EquipmentreportDetail from "../component/equipmentreport/EquipmentreportDetail";
 import RunwayCrack from '../component/crack/RunwayCrack';
@@ -38,7 +39,8 @@ const mainRoutes = [
       { path: "dashdetail/:id", element: <DashDetail /> },
       { path: "equipment/regist", element: <EquipmentsRegister /> },
       { path: "equipment", element: <EquipmentsList /> },
-      { path: "equipment/:id", element: <EquipmentsDetail /> }, // ✅ 상세 페이지 라우트
+      { path: "equipment/:id", element: <EquipmentsDetail /> }, // 상세 페이지 라우트
+      { path: "equipment/:id/edit", element: <EquipmentsEdit />},
       { path: "/report/:rcId", element: <Crackreport /> },
       { path: "equipment/report", element: <Equipmentreport /> },
       { path: "equipment/report/:id", element: <EquipmentreportDetail /> },

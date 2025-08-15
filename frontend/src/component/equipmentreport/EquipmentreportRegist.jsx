@@ -191,6 +191,7 @@ const handleReportGenerate = () => {
     // 1) 현재 페이지 컨텍스트에서 값 수집
     // - location.state 에서 받은 기본 정보들 (네 컴포넌트에 있는 변수명에 맞춰 조정)
     const {
+      equipmentName,
       manufacturer,
       purchase,
       protectionRating,
@@ -231,6 +232,7 @@ const handleReportGenerate = () => {
     // 4) 공통(스네이크) 페이로드 구성
     const payload = {
       category: catLabel,                                   // 표시용 한글 라벨
+      name: equipmentName,
       manufacturer: manufacturer ?? '',                     // 문자열
       purchase: num(purchase),                              // 숫자
       purchase_date: purchaseDate || undefined,             // 선택

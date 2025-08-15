@@ -23,7 +23,7 @@ function EquipmentReportDashboard() {
   const mapEntityToView = (e) => ({
     id: e.id,
     type: e.category || '미지정',
-    name: e.manufacturer || '이름 없음',
+    name: e.name || '기상 장비1',
     timestamp: e.createdAt || '-', // 엔티티에 없으니 당장은 '-'
     cost: typeof e.maintenanceCostNum === 'number'
             ? e.maintenanceCostNum

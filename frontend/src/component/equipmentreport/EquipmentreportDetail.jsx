@@ -109,7 +109,7 @@ const EquipmentReportDetail = () => {
   // ===== 엔티티 필드 매핑(필드명은 프로젝트에 맞게 조정) =====
   // const equipmentName   = report.equipmentName || report.title || "-";
   // const equipmentType   = report.equipmentType || report.type || "-";
-  const equipmentName   = report.manufacturer || "-";      // 이름 없으니 제조사로 대체 표기
+  const equipmentName   = report.name || "-";      
   const equipmentType   = report.category || "-";
   const category        = report.category || report.subCategory || "-";
   // const maintenanceCost = report.maintenanceCost ?? report.predictedMaintenanceCost ?? report.cost;
