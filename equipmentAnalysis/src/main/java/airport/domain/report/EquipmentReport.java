@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import lombok.Data;
+import java.time.LocalDateTime;
+
+import java.time.ZonedDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "EquipmentReport_table")
@@ -53,8 +59,10 @@ public class EquipmentReport {
     private String rawJson;
 
     // (선택) 메타들 저장해두면 상세에서 다시 호출 없이 표시 가능
+    private Long equipmentId;
     private String name;
     private String category;
+    private String subCategory;
     private String manufacturer;
     private Integer purchase;
     private String protectionRating;
@@ -66,6 +74,11 @@ public class EquipmentReport {
     private Integer repairTime;
     private Integer laborRate;
     private Integer avgLife;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private ZonedDateTime createdAt;
 
     // @PreUpdate
     // public void onPreUpdate() {
