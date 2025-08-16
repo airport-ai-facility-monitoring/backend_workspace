@@ -115,11 +115,14 @@ function EquipmentReport() {
               {loading ? (
                 <SkeletonRows />
               ) : filteredReports.length > 0 ? (
-                filteredReports.map((r) => {
+                // filteredReports.map((r) => {
+                filteredReports.map((r, i) => {
+                  const rowNo = i + 1; // 1부터 시작 (필터/삭제 후에도 자연스럽게 재번호)
                   const { pretty, tooltip, badge } = formatDateTimePretty(r.timestamp);
                   return (
                     <tr key={r.id} style={S.tr}>
-                      <td style={S.td}>{r.id}</td>
+                      {/* <td style={S.td}>{r.id}</td> */}
+                      <td style={S.td}>{rowNo}</td>
                       <td style={S.td}>
                         <span style={{ ...S.chip, ...chipColor(r.type) }}>{r.type}</span>
                       </td>
