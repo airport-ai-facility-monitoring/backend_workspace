@@ -1,9 +1,10 @@
 // src/pages/EquipmentReportGenerate.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import api from "../../config/api";
 
 // 네 스프링 백엔드 주소
-const BASE = 'https://supreme-carnival-x7wr65q5gp43vgp9-8088.app.github.dev';
+// const BASE = 'https://supreme-carnival-x7wr65q5gp43vgp9-8088.app.github.dev';
 
 const styles = {
   page: { background: '#f3f6fe', minHeight: '100vh', padding: '40px 16px', fontFamily: 'sans-serif' },
@@ -44,8 +45,8 @@ export default function EquipmentReportGenerate() {
   const [createdId, setCreatedId] = useState(null); // 서버가 리턴한 보고서 ID
 
   const analyzeUrl = useMemo(() => {
-    if (!equipmentId) return '';
-    return `${BASE}/equipmentReports/analyze/${equipmentId}`;
+    if (!equipmentId) return "";
+    return `/equipmentReports/analyze/${equipmentId}`;
   }, [equipmentId]);
 
   // payload(LLM 프롬프트 DTO: snake_case) 만들기
@@ -90,26 +91,23 @@ export default function EquipmentReportGenerate() {
   useEffect(() => {
     const run = async () => {
       try {
-        if (!equipmentId) throw new Error('equipmentId가 없습니다.');
-        if (!analyzeUrl) throw new Error('분석 URL을 만들 수 없습니다.');
+        if (!equipmentId) throw new Error("equipmentId가 없습니다.");
+        if (!analyzeUrl) throw new Error("분석 URL을 만들 수 없습니다.");
         const payload = buildPayload();
-        if (!payload) throw new Error('보고서 생성에 필요한 데이터가 없습니다.');
+        if (!payload) throw new Error("보고서 생성에 필요한 데이터가 없습니다.");
 
-        const res = await fetch(analyzeUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
+        // ✅ fetch → axios
+        const res = await api.post(analyzeUrl, payload);
+        const data = res.data;
 
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`보고서 생성 실패: ${res.status} ${text}`);
-        }
-
-        const data = await res.json();
         // 백엔드 응답 유연 처리
         const rid = data.eqReportId || data.reportId || data.id || null;
-        const text = data.report || data.reportHtml || data.content || data.llmReport || '';
+        const text =
+          data.report ||
+          data.reportHtml ||
+          data.content ||
+          data.llmReport ||
+          "";
 
         if (rid && !text) {
           // 서버가 저장만 하고 본문은 상세 페이지에서 보여주는 경우 → 상세로 이동
@@ -120,7 +118,9 @@ export default function EquipmentReportGenerate() {
         if (rid) setCreatedId(rid);
         if (text) setReportText(text);
       } catch (e) {
-        setError(e.message || String(e));
+        setError(
+          e.response?.data?.message || e.message || "알 수 없는 오류가 발생했습니다."
+        );
       } finally {
         setLoading(false);
       }

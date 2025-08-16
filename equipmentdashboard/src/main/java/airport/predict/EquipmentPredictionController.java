@@ -14,15 +14,15 @@ import java.util.Map;
  * 필요 시 body로 일부 값을 override할 수 있음.
  */
 @RestController
-@RequestMapping("/equipments")
+@RequestMapping("/equip")
 @RequiredArgsConstructor
 public class EquipmentPredictionController {
 
     private final EquipmentPredictionService predictionService;
 
-    // 예: POST /equipments/123/predict
+    // 예: POST /equip/predict/123
     // body는 선택(없어도 됨). 있으면 해당 키만 DB값 위에 덮어씀.
-    @PostMapping("/{id}/predict")
+    @PostMapping("/predict/{id}")
     public PredictClient.PredictResponse predict(@PathVariable Long id,
                                                  @RequestBody(required = false) OverrideRequest overrides) {
         Map<String, Object> payload = overrides == null ? null : overrides.getValues();

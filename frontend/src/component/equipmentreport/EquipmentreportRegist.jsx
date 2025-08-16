@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import "./predict-form.css";
+import api from "../../config/api";
 
 /** ===== 상수/매핑 ===== */
 const subCategoryMap = {
@@ -180,11 +181,11 @@ export default function EquipmentReportRegist() {
   });
 
   /** ===== 예측 호출 ===== */
-  const BASE = "https://supreme-carnival-x7wr65q5gp43vgp9-8088.app.github.dev"; // TODO: 실제 백엔드 주소
-  const getPredictUrl = () => {
-    if (!equipmentId) throw new Error("equipmentId가 없습니다. 상세 페이지에서 state로 넘겨주세요.");
-    return `${BASE}/equipments/${equipmentId}/predict`;
-  };
+  // const BASE = "https://supreme-carnival-x7wr65q5gp43vgp9-8088.app.github.dev"; // TODO: 실제 백엔드 주소
+  // const getPredictUrl = () => {
+  //   if (!equipmentId) throw new Error("equipmentId가 없습니다. 상세 페이지에서 state로 넘겨주세요.");
+  //   return `${BASE}/equip/predict/${equipmentId}`;
+  // };
   const buildOverrides = (form) => {
     const overrides = {};
     Object.entries(keyMap).forEach(([from, to]) => {
@@ -201,18 +202,25 @@ export default function EquipmentReportRegist() {
     setIsLoading(true);
     setError(null);
     setPrediction(null);
+
     try {
-      const res = await fetch(getPredictUrl(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ values: buildOverrides(formData) }),
+      const res = await api.post(`/equip/predict/${equipmentId}`, {
+        values: buildOverrides(formData),
       });
-      if (!res.ok) throw new Error(`API 실패 (${res.status}) ${await res.text()}`);
-      const data = await res.json();
-      setPrediction(data);
+
+      // axios는 res.data에 응답 JSON이 들어 있음
+      setPrediction(res.data);
     } catch (err) {
       console.error(err);
-      setError(err.message);
+
+      // axios 에러 처리 (서버 응답, 네트워크, 그 외 케이스 분리)
+      if (err.response) {
+        setError(`API 실패 (${err.response.status}) ${JSON.stringify(err.response.data)}`);
+      } else if (err.request) {
+        setError("서버 응답 없음. 네트워크 상태를 확인하세요.");
+      } else {
+        setError(err.message);
+      }
     } finally {
       setIsLoading(false);
     }

@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import ReportViewer from "..//ReportViewer"; // ✅ 경로 수정
+import ReportViewer from "../ReportViewer"; // ✅ 경로 수정
+import api from "../../config/api";
 
 /** ✅ 환경에 맞게 백엔드 베이스 URL만 맞춰주세요 */
-const API_BASE = "https://supreme-carnival-x7wr65q5gp43vgp9-8088.app.github.dev";
+// const API_BASE = "https://supreme-carnival-x7wr65q5gp43vgp9-8088.app.github.dev";
 
 const LABELS = { lighting: "조명", weather: "기상관측", sign: "표지" };
 
@@ -171,23 +172,25 @@ export default function EquipmentReportPreview() {
       setError("미리보기 입력이 없습니다. 이전 화면에서 다시 시도하세요.");
       return;
     }
+
     (async () => {
       try {
         setLoading(true);
         setError("");
-        const url = API_BASE + PREVIEW_PATH[category];
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-        const data = await res.json();
+
+        const url = PREVIEW_PATH[category]; // baseURL은 api 인스턴스에 이미 설정됨
+        const res = await api.post(url, payload);
+
+        const data = res.data;
         setLlmText(data.llmReport || "");
-        const pc = typeof data.maintenanceCost === "number" ? data.maintenanceCost : payload.maintenance_cost;
+
+        const pc =
+          typeof data.maintenanceCost === "number"
+            ? data.maintenanceCost
+            : payload.maintenance_cost;
         setPredCost(pc);
       } catch (e) {
-        setError("미리보기 생성 실패: " + e.message);
+        setError("미리보기 생성 실패: " + (e.response?.data || e.message));
       } finally {
         setLoading(false);
       }
@@ -198,24 +201,30 @@ export default function EquipmentReportPreview() {
     try {
       setLoading(true);
       setError("");
-      const url = API_BASE + REGIST_PATH[category];
+
+      const url = REGIST_PATH[category]; // baseURL은 api 인스턴스에 이미 있음
       const body = { ...payload, llm_report: llmText };
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-      const saved = await res.json();
-      const id = saved.id || saved.equipmentReportId || saved.reportId || saved.equipment_report_id;
+
+      const res = await api.post(url, body);
+      const saved = res.data;
+
+      const id =
+        saved.id ||
+        saved.equipmentReportId ||
+        saved.reportId ||
+        saved.equipment_report_id;
+
       if (!id) {
         alert("저장은 되었지만 ID를 찾지 못했습니다. 목록으로 이동합니다.");
         navigate("/equipment/report");
         return;
       }
+
       navigate(`/equipment/report/${id}`);
     } catch (e) {
-      setError("저장 실패: " + e.message);
+      setError(
+        "저장 실패: " + (e.response?.data?.message || e.message || "알 수 없는 오류")
+      );
     } finally {
       setLoading(false);
     }

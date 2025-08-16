@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReportViewer from "../../component/ReportViewer";
+import api from "../../config/api";
 
 // ⚠️ 백엔드 주소
-const BASE = "https://supreme-carnival-x7wr65q5gp43vgp9-8088.app.github.dev";
+// const BASE = "https://supreme-carnival-x7wr65q5gp43vgp9-8088.app.github.dev";
 
 const styles = {
   page: { background: "#f5f7fc", minHeight: "100vh", padding: 24 },
@@ -131,14 +132,23 @@ export default function EquipmentReportDetail() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${BASE}/equipmentReports/${id}`);
-        if (!res.ok) throw new Error(`보고서 조회 실패: ${res.status} ${await res.text()}`);
-        const data = await res.json();
+        const res = await api.get(`/equipmentReports/${id}`);
+        const data = res.data;
+
         setReport(data);
-        const llmText = data.llmReport || data.report || data.content || data.llm_report || "";
+
+        const llmText =
+          data.llmReport ||
+          data.report ||
+          data.content ||
+          data.llm_report ||
+          "";
+
         setOpinion(llmText);
       } catch (e) {
-        setErr(e.message || String(e));
+        setErr(
+          e.response?.data?.message || e.message || "보고서 조회 중 오류가 발생했습니다."
+        );
       } finally {
         setLoading(false);
       }
@@ -167,17 +177,16 @@ export default function EquipmentReportDetail() {
   // 저장
   const handleSave = async () => {
     try {
-      const res = await fetch(`${BASE}/equipmentReports/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ llm_report: opinion }),
+      const res = await api.put(`/equipmentReports/${id}`, {
+        llm_report: opinion,
       });
-      if (!res.ok) throw new Error(`저장 실패: ${res.status} ${await res.text()}`);
-      const saved = await res.json();
+      const saved = res.data;
       setReport(saved);
       setMode("preview");
     } catch (e) {
-      alert(e.message);
+      alert(
+        e.response?.data?.message || e.message || "저장 중 오류가 발생했습니다."
+      );
     }
   };
 
@@ -185,12 +194,13 @@ export default function EquipmentReportDetail() {
   const handleDelete = async () => {
     if (!window.confirm(`정말 ${id}번 보고서를 삭제하시겠습니까?`)) return;
     try {
-      const res = await fetch(`${BASE}/equipmentReports/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error(`삭제 실패: ${res.status} ${await res.text()}`);
+      await api.delete(`/equipmentReports/${id}`);
       alert("삭제되었습니다.");
       navigate("/equipment/report");
     } catch (e) {
-      alert(e.message);
+      alert(
+        e.response?.data?.message || e.message || "삭제 중 오류가 발생했습니다."
+      );
     }
   };
 
