@@ -230,6 +230,29 @@ const ResetPassword = () => {
           >
             비밀번호 재설정
           </Button>
+
+          {/* 뒤로가기 버튼 추가 */}
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{
+              mt: 1, // 위 버튼과 간격
+              color: "white",
+              borderColor: "white",
+              height: 45,
+              borderRadius: 1,
+              fontFamily: "Montserrat-SemiBold, Helvetica",
+              fontWeight: 600,
+              fontSize: "1rem",
+              "&:hover": {
+                borderColor: "#a8c1ff",
+                color: "#a8c1ff",
+              },
+            }}
+            onClick={() => navigate("/login")} // 이전 페이지로 이동
+          >
+            뒤로가기
+          </Button>
         </Stack>
       </Container>
     </Box>
