@@ -18,7 +18,7 @@ const DashDetail = () => {
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
-        const response = await api.get(`/alerts/search/findByCctvId?cctvId=${id}&sort=alertDate,desc`);
+        const response = await api.get(`/alerts/search/findByCctvId?cctvId=${id}`);
         setAlerts(response.data._embedded.alerts || []);
       } catch (error) {
         console.error('Error fetching alerts:', error);

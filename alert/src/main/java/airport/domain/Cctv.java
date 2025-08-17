@@ -17,7 +17,7 @@ import lombok.Data;
 public class Cctv {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cctvId;
 
     private String cctvUrl;

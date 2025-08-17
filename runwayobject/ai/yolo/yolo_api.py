@@ -109,7 +109,7 @@ def detect_objects(req: FrameRequest):
                     "objectCount": count
                 }
                 print(f"KAFKA SEND: {event}")
-                producer.send('airport', event)
+                producer.send('event-in', event)
                 last_sent_times[event_key] = current_time
 
         # 규칙 2: 작업자 수 초과 (라벨 10)
@@ -125,7 +125,7 @@ def detect_objects(req: FrameRequest):
                     "limit": WORKER_LIMIT
                 }
                 print(f"KAFKA SEND: {event}")
-                producer.send('airport', event)
+                producer.send('event-in', event)
                 last_sent_times[event_key] = current_time
 
         # 규칙 3: 허용되지 않은 작업 시간 (라벨 13-22)
@@ -141,7 +141,7 @@ def detect_objects(req: FrameRequest):
                     "objectCount": count
                 }
                 print(f"KAFKA SEND: {event}")
-                producer.send('airport', event)
+                producer.send('event-in', event)
                 last_sent_times[event_key] = current_time
 
     # 4. 이미지 결과 base64로 변환
