@@ -1,30 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: runwaycrack-api
+  name: objectdectect-api
   labels:
-    app: runwaycrack-api
+    app: objectdectect-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: runwaycrack-api
+      app: objectdectect-api
   template:
     metadata:
       labels:
-        app: runwaycrack-api
+        app: objectdectect-api
     spec:
       containers:
-        - name: runwaycrack-api
-          image: "your-dockerhub-username/runwaycrack-api:latest"
+        - name: objectdectect-api
+          image: "jinsuheo/objectdectect-api:latest"
           ports:
             - containerPort: 8000
-          env:
-            - name: SAS_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: azure-sas-token
-                  key: token
           readinessProbe:
             httpGet:
               path: '/docs'

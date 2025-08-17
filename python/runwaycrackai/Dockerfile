@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # 4️⃣ 의존성 설치
+# CPU 전용 PyTorch 먼저 설치하여 용량 최적화
+RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+# 나머지 의존성 설치
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 

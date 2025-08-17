@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: runway-predictor
+  labels:
+    app: runway-predictor
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: runway-predictor

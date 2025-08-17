@@ -1,0 +1,27 @@
+# Git 관련 파일
+.git
+.gitignore
+
+# 파이썬 캐시 및 가상환경
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+
+# Docker 관련
+Dockerfile
+.dockerignore
+
+# 쿠버네티스 설정
+kubernetes/
+
+# 테스트용 동영상
+videos/
+
+# 문서
+README.md
+
+# 기타 불필요한 파일
+check_values.py
