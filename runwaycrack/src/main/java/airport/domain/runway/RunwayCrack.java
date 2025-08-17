@@ -64,6 +64,7 @@ public class RunwayCrack {
     private Long rcId;
 
     private String imageUrl;
+    @Column(unique = true )
     private Long cctvId;
     private Double lengthCm;      // 파손 길이 (cm)
     private Double areaCm2;       // 파손 면적 (cm²)

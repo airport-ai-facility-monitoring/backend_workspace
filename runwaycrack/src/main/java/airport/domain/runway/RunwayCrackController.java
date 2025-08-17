@@ -36,30 +36,49 @@ public class RunwayCrackController {
     //1. 탐지된 모델에서 값 받아올 api
     @PostMapping
     public ResponseEntity<Map<String, Object>> runwayCrackDetect(@RequestBody Map<String, Object> req) {
-        try {
-            RunwayCrack crack = new RunwayCrack();
+            try {
+                RunwayCrack crack;
+                Optional<RunwayCrack> existing = runwayCrackRepository.findByCctvId(
+                        Long.valueOf(req.get("cctvId").toString())
+                );
 
-            crack.setImageUrl((String) req.get("imageUrl"));
-            crack.setCctvId(Long.valueOf(req.get("cctvId").toString()));
-            crack.setLengthCm(Double.valueOf(req.get("lengthCm").toString()));  // 수정: length
-            crack.setAreaCm2(Double.valueOf(req.get("areaCm2").toString()));      // 수정: area
-            crack.setReportState(false); // 기본값
-            crack.setDetectedDate(LocalDate.now()); // 현재 날짜
+                if(existing.isPresent()) {
+                    crack = existing.get();
+                    
+                    // 기존 면적이 새 면적보다 크면 업데이트
+                    if(crack.getLengthCm() < Double.valueOf(req.get("lengthCm").toString())) {
+                        crack.setLengthCm(Double.valueOf(req.get("lengthCm").toString()));
+                        crack.setAreaCm2(Double.valueOf(req.get("areaCm2").toString()));
+                        crack.setImageUrl((String) req.get("imageUrl"));
+                        crack.setDetectedDate(LocalDate.now());
+                        // 필요하면 reportState도 업데이트
+                    }
+                } else {
+                    crack = new RunwayCrack();
+                    crack.setCctvId(Long.valueOf(req.get("cctvId").toString()));
+                    crack.setLengthCm(Double.valueOf(req.get("lengthCm").toString()));
+                    crack.setAreaCm2(Double.valueOf(req.get("areaCm2").toString()));
+                    crack.setImageUrl((String) req.get("imageUrl"));
+                    crack.setReportState(false);
+                    crack.setDetectedDate(LocalDate.now());
+                }
 
-            runwayCrackRepository.save(crack);
+                // DB 저장 (새로 생성 또는 업데이트)
+                runwayCrackRepository.save(crack);
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "활주로 손상 정보가 성공적으로 저장되었습니다.");
-            response.put("rcId", crack.getRcId());
 
-            return ResponseEntity.ok(response);
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "활주로 손상 정보가 성공적으로 저장되었습니다.");
+                response.put("rcId", crack.getRcId());
 
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "요청 처리 중 오류 발생: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+                return ResponseEntity.ok(response);
+
+            } catch (Exception e) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "요청 처리 중 오류 발생: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            }
         }
-    }
 
 
     @PostMapping("/report")

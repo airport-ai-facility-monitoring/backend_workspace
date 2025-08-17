@@ -29,37 +29,6 @@ useEffect(() => {
     try {
       setLoading(true);
 
-      // 1. 감지 데이터 가져오기
-      const res = await api.get("/api/runwaycracksDetect", {
-        params: { mpp: 0.01, stride: 2 },
-      });
-
-      console.log("감지결과:", res.data);
-
-      // 2. 프론트 표시용 변환
-      const newItems = res.data.saved.map(item => ({
-        rcId: item.timestamp,
-        imageUrl: item.image_path ? `${item.image_path}` : null,
-        cctvId: item.track_ids[0] || null, // 첫 번째 ID만 저장 (Long 변환 가능)
-        lengthCm: parseFloat((item.length_m ).toFixed(1)),
-        areaCm2: parseFloat((item.area_m2).toFixed(1)),
-        detectedDate: item.timestamp,
-        reportState: false,
-      }));
-  
-      // 3. DB 저장 (백엔드에서 필요한 필드만 전송)
-      const savePromises = newItems.map(item =>
-        api.post("/runwaycracks", {
-          imageUrl: item.imageUrl || "", // null 방지
-          cctvId: Number(item.cctvId) || 0, // 숫자로 변환
-          lengthCm: Number(item.lengthCm) || 0,
-          areaCm2: Number(item.areaCm2) || 0
-        })
-      );
-
-
-      await Promise.all(savePromises);
-
       // 4. 저장 후 전체 목록 재조회
       const listRes = await api.get("/runwaycracks");
       setData(listRes.data);

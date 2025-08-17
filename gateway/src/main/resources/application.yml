@@ -58,7 +58,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://orange-space-meme-xg775v9rgpv26-5173.app.github.dev"
+              - "https://orange-space-meme-xg775v9rgpv26-5173.app.github.dev/"
             allowedMethods:
               - "*"
             allowedHeaders:
