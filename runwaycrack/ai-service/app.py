@@ -18,7 +18,7 @@ import os
 STORAGE_ACCOUNT_NAME = "airportfrontendstorage"
 CONTAINER_NAME = "videos"
 STORAGE_URL = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/{CONTAINER_NAME}"
-SAS_TOKEN = "si=gonggu&sv=2024-11-04&sr=c&sig=jGNm0AKntMwPTlxTiBvTQ6hkSZuAd04c74f6HAVZ3g0%3D" # os.getenv("SAS_TOKEN")
+SAS_TOKEN = os.getenv("SAS_TOKEN")
 
 # 컨테이너 클라이언트 생성
 def get_container_client():
