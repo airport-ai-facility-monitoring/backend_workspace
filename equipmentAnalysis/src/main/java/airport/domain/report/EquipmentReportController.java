@@ -19,6 +19,9 @@ import airport.domain.report.dto.LightingDto;
 import airport.domain.report.dto.SignDto;
 import airport.domain.report.dto.WeatherDto;
 
+import org.springframework.web.bind.annotation.PutMapping;
+import java.util.Map;
+
 
 /**
  * EquipmentReport에 대한 API 요청을 처리하는 컨트롤러 클래스입니다.
@@ -33,36 +36,14 @@ public class EquipmentReportController {
     @Autowired
     MaintenanceService maintenanceService;
 
-    /**
-     * 조명 장비 정보에 대한 유지보수 분석을 요청하는 API입니다.
-     */
-    @PostMapping("/regist/lighting")
-    public ResponseEntity<EquipmentReport> analyzeLighting(@RequestBody LightingDto request) throws JsonProcessingException {
-        System.out.println((CommonMaintenanceRequest)request);
-        EquipmentReport report = maintenanceService.analyzeAndSave(request);
-        return ResponseEntity.ok(report);
-    }
+    @GetMapping
+    public ResponseEntity<List<EquipmentReport>> getAllReports() {
+        // 1. 데이터베이스에서 모든 EquipmentReport 엔티티 목록을 조회합니다.
+        List<EquipmentReport> entities = equipmentReportRepository.findAll();
 
-    /**
-     * 기상관측 장비 정보에 대한 유지보수 분석을 요청하는 API입니다.
-     */
-    @PostMapping("/regist/weather")
-    public ResponseEntity<EquipmentReport> analyzeWeather(@RequestBody WeatherDto request) throws JsonProcessingException {
-        System.out.println((CommonMaintenanceRequest)request);
-        EquipmentReport report = maintenanceService.analyzeAndSave(request);
-        return ResponseEntity.ok(report);
+        // 3. 변환된 DTO 목록을 성공 상태(200 OK)와 함께 응답합니다.
+        return ResponseEntity.ok(entities);
     }
-
-    /**
-     * 표시-표지 장비 정보에 대한 유지보수 분석을 요청하는 API입니다.
-     */
-    @PostMapping("/regist/sign")
-    public ResponseEntity<EquipmentReport> analyzeSign(@RequestBody SignDto request) throws JsonProcessingException {
-        System.out.println((CommonMaintenanceRequest)request);
-        EquipmentReport report = maintenanceService.analyzeAndSave(request);
-        return ResponseEntity.ok(report);
-    }
-
 
     /**
      * 특정 ID의 장비 보고서를 조회하는 API 입니다.
@@ -86,5 +67,88 @@ public class EquipmentReportController {
         }
         equipmentReportRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // ✅ 저장 안하고 LLM 결과만 생성해서 돌려줌
+    @PostMapping("/preview/lighting")
+    public ResponseEntity<ReportPreviewResponse> previewLighting(@RequestBody LightingDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.preview(request));
+    }
+    @PostMapping("/preview/weather")
+    public ResponseEntity<ReportPreviewResponse> previewWeather(@RequestBody WeatherDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.preview(request));
+    }
+    @PostMapping("/preview/sign")
+    public ResponseEntity<ReportPreviewResponse> previewSign(@RequestBody SignDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.preview(request));
+    }
+
+    // ✅ 저장(기존 regist) — 편집한 본문이 오면 그대로 저장
+    @PostMapping("/regist/lighting")
+    public ResponseEntity<EquipmentReport> analyzeLighting(@RequestBody LightingDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.analyzeAndSave(request));
+    }
+    @PostMapping("/regist/weather")
+    public ResponseEntity<EquipmentReport> analyzeWeather(@RequestBody WeatherDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.analyzeAndSave(request));
+    }
+    @PostMapping("/regist/sign")
+    public ResponseEntity<EquipmentReport> analyzeSign(@RequestBody SignDto request) throws JsonProcessingException {
+        return ResponseEntity.ok(maintenanceService.analyzeAndSave(request));
+    }
+
+    // @PutMapping("/{id}") // JDK 17 이상
+    // public ResponseEntity<EquipmentReport> updateReport(
+    //         @PathVariable Long id,
+    //         @RequestBody Map<String, Object> body) {
+
+    //     EquipmentReport r = equipmentReportRepository.findById(id)
+    //         .orElseThrow(() -> new RuntimeException("보고서를 찾을 수 없습니다."));
+
+    //     // LLM 본문 갱신
+    //     Object llm = body.getOrDefault("llm_report", body.get("llmReport"));
+    //     if (llm instanceof String s) r.setLlmReport(s);
+
+    //     // 선택 필드들 필요 시 함께 갱신 허용
+    //     if (body.get("name") instanceof String s2) r.setName(s2);
+    //     if (body.get("maintenanceCost") instanceof Number n) r.setMaintenanceCostNum(n.intValue());
+    //     if (body.get("purchase") instanceof Number p) r.setPurchase(p.intValue());
+
+    //     EquipmentReport saved = equipmentReportRepository.save(r);
+    //     return ResponseEntity.ok(saved);
+    // }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EquipmentReport> updateReport(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> body) {
+
+        EquipmentReport r = equipmentReportRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("보고서를 찾을 수 없습니다."));
+
+        // LLM 본문 갱신 (llm_report 또는 llmReport 둘 다 허용)
+        Object llm = body.containsKey("llm_report") ? body.get("llm_report") : body.get("llmReport");
+        if (llm != null && llm instanceof String) {
+            r.setLlmReport((String) llm);
+        }
+
+        // 선택 필드 갱신
+        Object nm = body.get("name");
+        if (nm != null && nm instanceof String) {
+            r.setName((String) nm);
+        }
+
+        Object mc = body.get("maintenanceCost");
+        if (mc != null && mc instanceof Number) {
+            r.setMaintenanceCostNum(((Number) mc).intValue());
+        }
+
+        Object pc = body.get("purchase");
+        if (pc != null && pc instanceof Number) {
+            r.setPurchase(((Number) pc).intValue());
+        }
+
+        EquipmentReport saved = equipmentReportRepository.save(r);
+        return ResponseEntity.ok(saved);
     }
 }

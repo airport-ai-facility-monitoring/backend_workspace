@@ -1,191 +1,299 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import ReportViewer from "../../component/ReportViewer";
+import api from "../../config/api";
 
-// 인라인 스타일 객체
+// ⚠️ 백엔드 주소
+// const BASE = "https://supreme-carnival-x7wr65q5gp43vgp9-8088.app.github.dev";
+
 const styles = {
-  appContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '40px 20px',
-    backgroundColor: '#f9f9f9',
-    fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif",
-    color: '#333',
-    minHeight: '100vh',
-    boxSizing: 'border-box',
+  page: { background: "#f5f7fc", minHeight: "100vh", padding: 24 },
+  shell: {
+    maxWidth: 1120,
+    margin: "0 auto",
+    display: "grid",
+    gridTemplateColumns: "1fr 1.4fr",
+    gap: 20,
   },
-  reportContainer: {
-    width: '100%',
-    maxWidth: '800px',
-    backgroundColor: '#fff',
-    padding: '40px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-    border: '1px solid #eee',
+  header: { gridColumn: "1 / -1", marginBottom: 4 },
+  h1: { margin: 0, fontSize: 26, fontWeight: 800, color: "#111827" },
+  sub: { color: "#6b7280", marginTop: 6, fontSize: 14 },
+
+  card: {
+    background: "#fff",
+    border: "1px solid #e6e8ef",
+    borderRadius: 12,
+    boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
   },
-  title: {
-    textAlign: 'center',
-    fontSize: '26px',
-    fontWeight: '600',
-    margin: '0 0 10px 0',
+  body: { padding: 18 },
+
+  sectionTitle: { fontSize: 16, fontWeight: 800, marginBottom: 12, color: "#111827" },
+  kv: { display: "grid", gridTemplateColumns: "140px 1fr", rowGap: 8, columnGap: 12 },
+  k: { color: "#6b7280", fontWeight: 600 },
+  v: { color: "#111827" },
+  hr: { border: 0, borderTop: "1px solid #edf0f6", margin: "16px 0" },
+
+  // 버튼
+  btnRow: { display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 12 },
+  btn: {
+    padding: "10px 18px",
+    borderRadius: 10,
+    cursor: "pointer",
+    fontWeight: 700,
+    border: "1px solid #d7dde8",
+    background: "#fff",
   },
-  date: {
-    textAlign: 'center',
-    fontSize: '16px',
-    color: '#666',
-    marginBottom: '20px',
+  btnPrimary: { borderColor: "#0ea5e9", background: "#0ea5e9", color: "#fff" },
+  btnDanger: { borderColor: "#ef4444", color: "#b91c1c", background: "#fff" },
+
+  // 본문 탭/뷰
+  tabRow: { padding: "10px 12px", borderBottom: "1px solid #edf0f6", display: "flex", gap: 8 },
+  tab: (active) => ({
+    padding: "8px 10px",
+    borderRadius: 8,
+    fontSize: 13,
+    fontWeight: 700,
+    cursor: "pointer",
+    border: active ? "1px solid #0ea5e9" : "1px solid #e6e8ef",
+    color: active ? "#0ea5e9" : "#374151",
+    background: active ? "rgba(14,165,233,0.06)" : "#fff",
+  }),
+  viewerBox: {
+    minHeight: 420,
+    maxHeight: 640,
+    overflow: "auto",
+    border: "1px solid #e0e6ef",
+    borderRadius: 10,
+    padding: 16,
+    background: "#fff",
+    lineHeight: 1.68,
+    fontSize: 14,
   },
-  hr: {
-    border: '0',
-    height: '1px',
-    backgroundColor: '#e0e0e0',
-    margin: '30px 0',
+  editor: {
+    width: "100%",
+    maxWidth: "100%",
+    minHeight: 420,
+    maxHeight: 640,
+    overflow: "auto",
+    border: "1px solid #e0e6ef",
+    borderRadius: 10,
+    padding: 14,
+    lineHeight: 1.68,
+    fontSize: 14,
+    resize: "vertical",
+    background: "#fff",
+    boxSizing: "border-box",
+    whiteSpace: "pre-wrap",
+    wordBreak: "break-word",
   },
-  infoGrid: {
-    display: 'grid',
-    gridTemplateColumns: '150px 1fr',
-    gap: '12px 15px',
-    fontSize: '16px',
-  },
-  dt: {
-    fontWeight: 'bold',
-    color: '#555',
-  },
-  dd: {
-    margin: 0,
-    color: '#222',
-  },
-  h3: {
-    fontSize: '18px',
-    fontWeight: '600',
-    margin: '0 0 15px 0',
-  },
-  opinionTextarea: {
-    width: '100%',
-    minHeight: '250px',
-    padding: '12px',
-    fontSize: '16px',
-    lineHeight: 1.7,
-    border: '1px solid #ccc',
-    borderRadius: '5px',
-    boxSizing: 'border-box',
-    resize: 'vertical',
-    fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif",
-  },
-  opinionTextareaReadOnly: {
-    backgroundColor: '#f9f9f9',
-    border: '1px solid #e0e0e0',
-  },
-  buttonContainer: {
-    textAlign: 'right',
-    marginTop: '30px',
-  },
-  button: {
-    color: '#fff',
-    border: 'none',
-    padding: '12px 24px',
-    fontSize: '16px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    borderRadius: '5px',
-    transition: 'background-color 0.2s, box-shadow 0.2s',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  },
-  editButton: {
-    backgroundColor: '#333',
-  },
-  saveButton: {
-    backgroundColor: '#007bff',
-  },
+
+  "@print": `
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff !important; }
+      .shell { grid-template-columns: 1fr !important; }
+    }
+  `,
 };
 
+function fmtDate(d) {
+  try {
+    if (!d) return "";
+    const dt = new Date(d);
+    if (Number.isNaN(dt.getTime())) return `${d}`;
+    return `${dt.getFullYear()}. ${dt.getMonth() + 1}. ${dt.getDate()}.`;
+  } catch {
+    return "";
+  }
+}
 
-// --- 장비 분석 보고서 UI 컴포넌트 ---
-const EquipmentReport = () => {
-  // 샘플 데이터 (이 부분은 나중에 API 연동으로 대체 가능)
-  const reportData = {
-    equipmentName: 'runway_9',
-    equipmentType: '조명(시각유도)',
-    category: 'REL',
-    predictions: '100,000',
-    purchase: '350,000',
-    initialOpinion: "초기 분석 결과, 터빈 블레이드의 미세 균열이 감지되었습니다. 잔여 수명 예측 모델(LLM)을 기반으로 3년 내 유지보수 비용이 급증할 것으로 예상됩니다.\n\n교체 장비로는 '차세대 GT-2000 모델'을 추천하며, 관련 LLM 프롬프트는 다음과 같습니다:\n'GT-2000 모델의 10년간 TCO(총소유비용)와 기존 모델 대비 에너지 효율 개선율을 비교 분석해줘.'",
-  };
+const PrintStyle = () => {
+  useEffect(() => {
+    const el = document.createElement("style");
+    el.innerHTML = styles["@print"];
+    document.head.appendChild(el);
+    return () => document.head.removeChild(el);
+  }, []);
+  return null;
+};
 
-  // 편집 모드와 종합의견 텍스트를 관리하기 위한 state
-  const [isEditing, setIsEditing] = useState(false);
-  const [opinion, setOpinion] = useState(reportData.initialOpinion);
+export default function EquipmentReportDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  // 편집/저장 버튼 클릭 핸들러
-  const handleButtonClick = () => {
-    setIsEditing(!isEditing);
-    // 실제 애플리케이션에서는 저장 버튼을 누를 때 API 호출로 데이터를 서버에 전송합니다.
-    if (isEditing) {
-      console.log('저장된 내용:', opinion);
-    // 페이지 이동 
-    alert('내용이 저장되었습니다. 보고서 페이지로 이동합니다.'); // 사용자에게 알림
-    window.location.href = '/equipment/report'; // 지정된 경로로 페이지 이동
+  const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+
+  // 'preview' | 'edit'
+  const [mode, setMode] = useState("preview");
+  const [opinion, setOpinion] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.get(`/equipmentReports/${id}`);
+        const data = res.data;
+
+        setReport(data);
+
+        const llmText =
+          data.llmReport ||
+          data.report ||
+          data.content ||
+          data.llm_report ||
+          "";
+
+        setOpinion(llmText);
+      } catch (e) {
+        setErr(
+          e.response?.data?.message || e.message || "보고서 조회 중 오류가 발생했습니다."
+        );
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [id]);
+
+  const createdAt = useMemo(
+    () => report?.createdAt || report?.created_at || report?.created || null,
+    [report]
+  );
+
+  const equipmentName = report?.name || "-";
+  const category = report?.category || "-";
+  const subCategory = report?.subCategory || report?.sub_category || "-";
+  const manufacturer = report?.manufacturer || "-";
+  const rating = report?.protectionRating || report?.protection_rating || "-";
+  const years = report?.serviceYears ?? report?.service_years ?? "-";
+
+  const maintenanceCost =
+    Number.isFinite(report?.maintenanceCostNum) ? report.maintenanceCostNum :
+    report?.cost != null ? Number(report.cost) : null;
+  const purchase =
+    report?.newPurchaseCost != null ? Number(report.newPurchaseCost) :
+    report?.purchase != null ? Number(report.purchase) : null;
+
+  // 저장
+  const handleSave = async () => {
+    try {
+      const res = await api.put(`/equipmentReports/${id}`, {
+        llm_report: opinion,
+      });
+      const saved = res.data;
+      setReport(saved);
+      setMode("preview");
+    } catch (e) {
+      alert(
+        e.response?.data?.message || e.message || "저장 중 오류가 발생했습니다."
+      );
     }
-    // '편집하기' 또는 '저장하기' 클릭 시 항상 편집 모드를 토글
-    setIsEditing(!isEditing);
   };
+
+  // 삭제
+  const handleDelete = async () => {
+    if (!window.confirm(`정말 ${id}번 보고서를 삭제하시겠습니까?`)) return;
+    try {
+      await api.delete(`/equipmentReports/${id}`);
+      alert("삭제되었습니다.");
+      navigate("/equipment/report");
+    } catch (e) {
+      alert(
+        e.response?.data?.message || e.message || "삭제 중 오류가 발생했습니다."
+      );
+    }
+  };
+
+  if (loading) return <div style={{ padding: 24 }}>로딩 중…</div>;
+  if (err) return <div style={{ padding: 24, color: "red" }}>에러: {err}</div>;
+  if (!report) return <div style={{ padding: 24 }}>데이터가 없습니다.</div>;
 
   return (
-    <div style={styles.appContainer}>
-      <div style={styles.reportContainer}>
-        <h1 style={styles.title}>{reportData.equipmentName} 장비 분석 보고서</h1>
-        <p style={styles.date}>보고서 작성일자: 2025. 8. 8.</p>
-        <hr style={styles.hr} />
+    <>
+      <PrintStyle />
+      <div style={styles.page}>
+        <div style={styles.shell} className="shell">
+          {/* Header */}
+          <div style={styles.header}>
+            <h1 style={styles.h1}>{equipmentName} 장비 분석 보고서</h1>
+            <div style={styles.sub}>보고서 작성일자: {fmtDate(createdAt) || "-"}</div>
+          </div>
 
-        <dl style={styles.infoGrid}>
-          <dt style={styles.dt}>장비명:</dt>
-          <dd style={styles.dd}>{reportData.equipmentName}</dd>
-          <dt style={styles.dt}>장비 종류:</dt>
-          <dd style={styles.dd}>{reportData.equipmentType}</dd>
-          <dt style={styles.dt}>카테고리:</dt>
-          <dd style={styles.dd}>{reportData.category}</dd>
-        </dl>
+          {/* 좌측: 요약 */}
+          <div style={styles.card}>
+            <div style={styles.body}>
+              <div style={styles.sectionTitle}>장비 요약</div>
+              <div style={styles.kv}>
+                <div style={styles.k}>장비명</div><div style={styles.v}>{equipmentName}</div>
+                <div style={styles.k}>대분류</div><div style={styles.v}>{category}</div>
+                <div style={styles.k}>소분류</div><div style={styles.v}>{subCategory}</div>
+                <div style={styles.k}>제조사</div><div style={styles.v}>{manufacturer}</div>
+                <div style={styles.k}>보호등급</div><div style={styles.v}>{rating}</div>
+                <div style={styles.k}>내용연수</div><div style={styles.v}>{years}</div>
+              </div>
 
-        <hr style={styles.hr} />
+              <div style={styles.hr} />
 
-        <dl style={styles.infoGrid}>
-          <dt style={styles.dt}>유지보수 비용예측:</dt>
-          <dd style={styles.dd}>{reportData.predictions} 원</dd>
-          <dt style={styles.dt}>신규 장비 구매비용:</dt>
-          <dd style={styles.dd}>{reportData.purchase} 원</dd>
-        </dl>
+              <div style={styles.sectionTitle}>비용 요약</div>
+              <div style={styles.kv}>
+                <div style={styles.k}>유지보수 비용</div>
+                <div style={styles.v}>
+                  {Number.isFinite(maintenanceCost) ? `${Math.round(maintenanceCost).toLocaleString()} 원` : "-"}
+                </div>
+                <div style={styles.k}>신규 구매비용</div>
+                <div style={styles.v}>
+                  {Number.isFinite(purchase) ? `${Math.round(purchase).toLocaleString()} 원` : "-"}
+                </div>
+              </div>
 
-        <hr style={styles.hr} />
+              {/* 뒤로 / 인쇄 / 삭제 */}
+              <div className="no-print" style={styles.btnRow}>
+                <button style={styles.btn} onClick={() => navigate("/equipment/report")}>뒤로</button>
+                <button style={styles.btn} onClick={() => window.print()}>인쇄</button>
+                <button style={{ ...styles.btn, ...styles.btnDanger }} onClick={handleDelete}>삭제</button>
+              </div>
+            </div>
+          </div>
 
-        <div>
-          <h3 style={styles.h3}>종합의견:</h3>
-          {/* <p style={{fontSize: '14px', color: '#888', margin: '0 0 10px 0'}}>
-            추천장비 및 LLM 프롬프트
-          </p> */}
-          <textarea
-            style={{
-              ...styles.opinionTextarea,
-              ...(isEditing ? {} : styles.opinionTextareaReadOnly) // 편집 모드가 아닐 때 readonly 스타일 적용
-            }}
-            value={opinion}
-            onChange={(e) => setOpinion(e.target.value)}
-            readOnly={!isEditing} // isEditing이 false이면 수정 불가
-          />
-        </div>
+          {/* 우측: 본문 */}
+          <div style={styles.card}>
+            <div className="no-print" style={styles.tabRow}>
+              <button type="button" style={styles.tab(mode === "preview")} onClick={() => setMode("preview")}>
+                미리보기
+              </button>
+              <button type="button" style={styles.tab(mode === "edit")} onClick={() => setMode("edit")}>
+                편집
+              </button>
+            </div>
 
-        <div style={styles.buttonContainer}>
-          <button
-            style={{
-              ...styles.button,
-              ...(isEditing ? styles.saveButton : styles.editButton)
-            }}
-            onClick={handleButtonClick}
-          >
-            {isEditing ? '저장하기' : '편집하기'}
-          </button>
+            <div style={styles.body}>
+              <div style={styles.sectionTitle}>보고서 본문</div>
+
+              {mode === "preview" ? (
+                <div style={styles.viewerBox}>
+                  <ReportViewer html={opinion} content={opinion} />
+                </div>
+              ) : (
+                <textarea
+                  style={styles.editor}
+                  value={opinion}
+                  onChange={(e) => setOpinion(e.target.value)}
+                />
+              )}
+
+              {/* 미리보기 모드에서는 숨김 */}
+              {mode === "edit" && (
+                <div className="no-print" style={styles.btnRow}>
+                  <button style={styles.btn} onClick={() => setMode("preview")}>취소</button>
+                  <button style={{ ...styles.btn, ...styles.btnPrimary }} onClick={handleSave}>
+                    저장하기
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
-};
-
-export default EquipmentReport;
+}

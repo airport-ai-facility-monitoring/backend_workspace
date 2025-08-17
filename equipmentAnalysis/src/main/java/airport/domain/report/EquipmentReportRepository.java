@@ -4,13 +4,17 @@ import airport.domain.*;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 //<<< PoEAA / Repository
 @RepositoryRestResource(
     collectionResourceRel = "equipmentReports",
     path = "equipmentReports"
 )
-public interface EquipmentReportRepository
-    extends PagingAndSortingRepository<EquipmentReport, Long> {}
+public interface EquipmentReportRepository extends JpaRepository<EquipmentReport, Long> {
+}
+
+// public interface EquipmentReportRepository
+//     extends PagingAndSortingRepository<EquipmentReport, Long> {}
 // package airport.domain.report;
 
 // import org.springframework.data.jpa.repository.JpaRepository;

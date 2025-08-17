@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 표시-표지 장비 유지보수 요청 DTO
+ * 표지 장비 유지보수 요청 DTO
  */
 @Data
 public class SignDto extends CommonMaintenanceRequest {

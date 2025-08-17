@@ -70,7 +70,7 @@ public class Equipment {
     @JoinColumn(name = "weather_detail_id")
     private WeatherEquipmentDetail weatherDetail;
 
-    // 표시-표지 장비 상세
+    // 표지 장비 상세
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "sign_detail_id")
     private SignEquipmentDetail signDetail;

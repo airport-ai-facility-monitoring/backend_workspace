@@ -47,7 +47,7 @@ public class JwtFilter implements WebFilter {
         //     return chain.filter(exchange); 
         // }
 
-        if (path.equals("/**") || 
+        if (path.equals("/") || 
             path.equals("/users/signup") || 
             path.equals("/users/login/jwt") || 
             path.equals("/users/refresh-token") ||

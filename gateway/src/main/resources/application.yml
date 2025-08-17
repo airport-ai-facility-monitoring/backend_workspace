@@ -49,7 +49,7 @@ spring:
         - id: equipmentdashboard
           uri: http://localhost:8089
           predicates:
-            - Path=/equipments/**
+            - Path=/equipments/**, /equip/**
         - id: frontend
           uri: http://localhost:5173
           predicates:
@@ -58,7 +58,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://orange-space-meme-xg775v9rgpv26-5173.app.github.dev/"
+              - "https://supreme-carnival-x7wr65q5gp43vgp9-5173.app.github.dev"
             allowedMethods:
               - "*"
             allowedHeaders:
