@@ -254,10 +254,10 @@ export default function CrackReportList() {
               ) : (
                 filtered.map((report, idx) => (
                   <TableRow
-                    key={report.rcReportid || `${report.title}-${idx}`}
+                    key={report.rcReportId || `${report.title}-${idx}`}
                     hover
                     sx={{ cursor: "pointer", "&:hover": { bgcolor: "#f9fafb" } }}
-                    onClick={() => navigate(`/crack/report/${report.rcReportid}`)}
+                    onClick={() => navigate(`/crack/report/${report.rcReportId}`)}
                   >
                     <TableCell align="center">{idx + 1}</TableCell>
                     <TableCell sx={{ maxWidth: 560 }}>
@@ -271,7 +271,7 @@ export default function CrackReportList() {
                       <Button
                         variant="contained"
                         size="small"
-                        onClick={() => navigate(`/crack/report/${report.rcReportid}`)}
+                        onClick={() => navigate(`/crack/report/${report.rcReportId}`)}
                         sx={{ textTransform: "none", boxShadow: "none", borderRadius: "10px", fontWeight: 600 }}
                       >
                         상세보기

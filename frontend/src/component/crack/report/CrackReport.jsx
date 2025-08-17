@@ -92,7 +92,7 @@ export default function CrackReport() {
     loggedEmployeeId && employeeId && loggedEmployeeId.toString() === employeeId.toString();
   const canDelete = canEdit || isAdmin;
 
-  const handleBack = () => navigate(-1);
+  const handleBack = () => navigate(`/crack/report/list`);
   const handlePrint = () => window.print();
   const handleEdit = () => navigate(`/crack/report/edit/${rcId}`);
   const handleDelete = async () => {
@@ -169,7 +169,7 @@ export default function CrackReport() {
             <button style={styles.btn} onClick={handleBack} aria-label="뒤로">뒤로</button>
             <button style={{ ...styles.btn, ...styles.btnPrimary }} onClick={handlePrint} aria-label="인쇄">인쇄</button>
             {canEdit && <button style={styles.btn} onClick={handleEdit} aria-label="편집">편집</button>}
-            {canDelete && <button style={{ ...styles.btn, ...styles.btnDanger }} onClick={handleDelete} aria-label="삭제">삭제</button>}
+            {/* {canDelete && <button style={{ ...styles.btn, ...styles.btnDanger }} onClick={handleDelete} aria-label="삭제">삭제</button>} */}
           </div>
         </div>
 
