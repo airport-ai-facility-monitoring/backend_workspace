@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: runwaycrack-api
+  labels:
+    app: runwaycrack-api
+spec:
+  type: ClusterIP
+  selector:
+    app: runwaycrack-api
+  ports:
+    - port: 8000
+      targetPort: 8000

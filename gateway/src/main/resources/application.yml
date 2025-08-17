@@ -34,7 +34,7 @@ spring:
           uri: http://localhost:8085
           predicates:
             - Path=/strangeObjects/**, /workers/**, /workTrucks/**
-        - id: runwaycrack-python
+        - id: runwaycrack-api
           uri: http://localhost:8001
           predicates:
             - Path=/api/runwaycracksDetect/**
@@ -75,7 +75,7 @@ spring:
         - id: member
           uri: http://member:8080
           predicates:
-            - Path=/users/**, /employees/**, /user, /login/jwt
+            - Path=/users/**, /employees/**,
         - id: notification
           uri: http://notification:8080
           predicates:
@@ -92,6 +92,10 @@ spring:
           uri: http://runwaycrack:8080
           predicates:
             - Path=/runwaycracks/**, /runwaycrackreports/**
+        - id: runwaycrack-api
+          uri: http://localhost:8000
+          predicates:
+            - Path=/api/runwaycracksDetect/**
         - id: equipment-analysis
           uri: http://equipmentAnalysis:8080
           predicates:
@@ -99,16 +103,12 @@ spring:
         - id: equipmentdashboard
           uri: http://equipmentdashboard:8080
           predicates:
-            - Path=/equipment/**
-        - id: frontend
-          uri: http://frontend:8080
-          predicates:
-            - Path=/**
+            - Path=/equipment/**, /equip/**
       globalcors:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "*"
+              - "https://airport27.azureedge.net"
             allowedMethods:
               - "*"
             allowedHeaders:

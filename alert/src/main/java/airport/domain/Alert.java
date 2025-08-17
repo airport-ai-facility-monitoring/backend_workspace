@@ -18,7 +18,7 @@ import lombok.Data;
 public class Alert {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long alertId;
 
     private String alertLog;

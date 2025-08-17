@@ -42,8 +42,8 @@ const Alert = () => {
   useEffect(() => {
     const fetchInitialAlerts = async () => {
       try {
-        const response = await api.get("/alerts?sort=alertDate,desc");
-        setAlerts(response.data._embedded.alerts.slice(0, 30));
+        const response = await api.get("/alerts"); // No need for ?sort=... as backend handles it
+        setAlerts(response.data.slice(0, 30)); // Directly use response.data as it's a plain array
       } catch (error) {
         console.error("Error fetching initial alerts:", error);
       }
