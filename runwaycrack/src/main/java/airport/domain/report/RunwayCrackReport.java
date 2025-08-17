@@ -31,7 +31,7 @@ public class RunwayCrackReport {
     @Column(length = 500, columnDefinition = "NVARCHAR(500)")
     private String title;
 
-    @Column(length = 500, columnDefinition = "NVARCHAR(500)")
+    @Column(length = 1000, columnDefinition = "NVARCHAR(1000)")
     private String damageInfo;
 
     @Column(length = 500, columnDefinition = "NVARCHAR(500)")
@@ -43,7 +43,7 @@ public class RunwayCrackReport {
     @Column(length = 500, columnDefinition = "NVARCHAR(500)")
     private String estimatedPeriod;
 
-    @Column(length = 1000, columnDefinition = "NVARCHAR(1000)")
+    @Column(length = 2000, columnDefinition = "NVARCHAR(2000)")
     private String summary;
 
     private LocalDate WritingDate;
