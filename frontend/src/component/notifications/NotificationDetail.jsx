@@ -37,7 +37,9 @@ export default function NotificationDetail() {
   }, [id])
 
   const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
-  const fileHref = notification?.fileUrl ? `${API_BASE}${encodeURI(notification.fileUrl)}` : null;
+  const fileHref = notification?.fileUrl
+  ? `${notification.fileUrl}?rscd=attachment%3Bfilename%3D${encodeURIComponent(notification.originalFilename)}`
+  : null;
 
   const maskWriterId = (id) => {
     if (!id || id.length < 3) return id
@@ -89,19 +91,30 @@ export default function NotificationDetail() {
           {notification.contents?.trim()}
         </pre>
 
-        {notification.fileUrl && notification.originalFilename && fileHref && (
-          <div className="detail-file">
-            <span role="img" aria-label="파일">📎</span> 첨부파일:&nbsp;
-            <a
-              href={fileHref}
-              download={notification.originalFilename}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {notification.originalFilename}
-            </a>
-          </div>
-        )}
+      {notification.fileUrl && notification.originalFilename && (
+        <div className="detail-file">
+          <span role="img" aria-label="파일">📎</span> 첨부파일:&nbsp;
+          <button
+            onClick={async () => {
+              try {
+                const response = await fetch(notification.fileUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = notification.originalFilename;
+                a.click();
+                window.URL.revokeObjectURL(url);
+              } catch (err) {
+                console.error("파일 다운로드 실패:", err);
+                alert("파일 다운로드 중 오류가 발생했습니다.");
+              }
+            }}
+          >
+            {notification.originalFilename} 다운로드
+          </button>
+        </div>
+      )}
       </div>
 
       {isWriter && (

@@ -97,7 +97,7 @@ export default function NotificationWrite() {
       // 3️⃣ 파일 업로드
       if (file) {
         try{
-          await fetch(blobUrl, {
+          fetch(blobUrl, {
             method: 'PUT',
             headers: {
               'x-ms-blob-type': 'BlockBlob',
