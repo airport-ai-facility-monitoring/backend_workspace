@@ -101,6 +101,13 @@
 			<artifactId>mssql-jdbc</artifactId>
 			<version>9.4.1.jre11</version> <!-- Java 11 기준 -->
 		</dependency>
+
+		<!-- Azure Storage Blob -->
+		<dependency>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-storage-blob</artifactId>
+			<version>12.26.0</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>

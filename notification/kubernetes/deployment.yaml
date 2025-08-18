@@ -19,6 +19,16 @@ spec:
           image: "gangmin522/notification:latest"
           ports:
             - containerPort: 8080
+          env:
+            - name: STORAGE_ACCOUNT_NAME
+              value: "airportfrontendstorage"
+            - name: CONTAINER_NAME
+              value: "videos"
+            - name: SAS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: notification-secrets
+                  key: SAS_TOKEN
           readinessProbe:
             httpGet:
               path: '/actuator/health'

@@ -27,6 +27,7 @@ export default function NotificationWrite() {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [important, setImportant] = useState(false);
+  const [fileName, setFileName] = useState('');
   const [file, setFile] = useState(null);
   const [user, setUser] = useState(null);
   const fileInputRef = useRef(null);
@@ -79,16 +80,24 @@ export default function NotificationWrite() {
       formData.append('title', title);
       formData.append('contents', body);
       formData.append('important', important); // 불리언으로
+      formData.append('filename', fileName );
 
       if (file) {
         validateFiles([file]);
-        formData.append('file', file);
       }
 
-      await api.post('/notifications', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      const res = await api.post('/notifications', formData);
+      const sasUrl = res.data.url
+      if (file) {
+      await fetch(sasUrl, {
+        method: 'PUT',
+        headers: {
+          'x-ms-blob-type': 'BlockBlob',
+          'Content-Type': file.type
+        },
+        body: file
       });
-
+    }
       alert("공지사항이 등록되었습니다.");
       navigate('/notifications');
     } catch (error) {
@@ -115,15 +124,19 @@ export default function NotificationWrite() {
     const files = e.target.files;
     if (!files || files.length === 0) {
       setFile(null);
+      setFileName('');
       return;
     }
 
     try {
       validateFiles(Array.from(files));
-      setFile(files[0]);
+      const selectedFile = files[0];
+      setFile(selectedFile);
+      setFileName(selectedFile.name); // 파일명 저장
     } catch (err) {
       alert(err.message);
       setFile(null);
+      setFileName('');
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };

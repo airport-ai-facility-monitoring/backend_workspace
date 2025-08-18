@@ -240,6 +240,7 @@ public class UserController {
             refreshTokenCookie.setSecure(true);
             refreshTokenCookie.setPath("/");
             refreshTokenCookie.setMaxAge(60 * 60 * 24 * 7);
+            refreshTokenCookie.setDomain(".app.github.dev");
             response.addCookie(refreshTokenCookie);
 
             // Authentication 객체에서 권한(ROLE) 꺼내기
