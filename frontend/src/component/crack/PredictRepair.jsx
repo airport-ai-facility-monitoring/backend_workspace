@@ -10,11 +10,24 @@ import {
   Grid,
   Select,
   MenuItem,
-  InputLabel,
   FormControl,
+  Chip,
+  Stack,
+  Tooltip,
 } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 import api from "../../config/api";
+
+/** 포맷 유틸 */
+const fmtNum = (n, digits = 1) =>
+  Number.isFinite(Number(n)) ? Number(Number(n).toFixed(digits)).toLocaleString() : "-";
+const cmToM = (cm) =>
+  Number.isFinite(Number(cm)) ? fmtNum(Number(cm) / 100, 2) : "-";
+const cm2ToM2 = (cm2) =>
+  Number.isFinite(Number(cm2)) ? fmtNum(Number(cm2) / 10000, 2) : "-";
 
 const PredictRepair = () => {
   const { id } = useParams();
@@ -25,6 +38,7 @@ const PredictRepair = () => {
   const [predictionResult, setPredictionResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [inputs, setInputs] = useState({
     pavement_type_concrete: 0,
@@ -45,7 +59,10 @@ const PredictRepair = () => {
   };
 
   const handlePredict = async () => {
-    if (!crackInfo) { alert("손상 정보를 찾을 수 없습니다."); return; }
+    if (!crackInfo) {
+      alert("손상 정보를 찾을 수 없습니다.");
+      return;
+    }
     const payload = {
       lengthCm: crackInfo.lengthCm ?? 10.0,
       areaCm2: crackInfo.areaCm2 ?? 10.0,
@@ -59,37 +76,24 @@ const PredictRepair = () => {
     };
 
     try {
-      console.log("[PREDICT] url:", `/runwaycrackreports/predict/${id}`);
-      console.log("[PREDICT] payload:", payload);
-
       setLoading(true);
       const res = await api.post(`/runwaycrackreports/predict/${id}`, payload);
-
-      console.log("[PREDICT] response:", res.data);
       setPredictionResult(res.data);
     } catch (err) {
       console.error("[PREDICT] error:", err);
-      console.error("[PREDICT] server data:", err?.response?.data);
-      alert("예측 중 오류 발생");
+      alert("예측 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🚀 2. 보고서 생성 요청
   const handleReportGenerate = async () => {
-
-
-
     if (!predictionResult) {
       alert("먼저 예측을 시작하여 예측 결과를 받아야 합니다.");
       return;
     }
-
     try {
       setReportLoading(true);
-      
-      // 사용자가 입력한 값과 예측 결과를 모두 payload에 포함
       const payload = {
         pavementTypeConcrete: inputs.pavement_type_concrete,
         epoxyUsed: inputs.epoxy_used,
@@ -101,16 +105,37 @@ const PredictRepair = () => {
         predictedCost: predictionResult.cost,
         predictedDuration: predictionResult.duration,
       };
-
       const res = await api.post(`/runwaycrackreports/analyze/${id}`, payload);
-      const newReportId = res.data.rcReportId;  // 서버가 응답해주는 rcReportid 값
+      const newReportId = res.data.rcReportId; // 서버에서 rcReportId 반환
       alert("보고서가 성공적으로 생성되었습니다.");
       navigate(`/crack/report/${newReportId}`);
     } catch (err) {
-      console.error("보고서 생성 실패", err);
-      alert("보고서 생성 중 오류 발생");
+      console.error("[REPORT] error:", err);
+      alert("보고서 생성 중 오류가 발생했습니다.");
     } finally {
       setReportLoading(false);
+    }
+  };
+
+  const handleDeleteCrack = async () => {
+    if (!window.confirm("정말 이 손상 내역을 삭제하시겠습니까?")) return;
+    try {
+      setDeleteLoading(true);
+      await api.delete(`/runwaycracks/${id}`);
+      alert("손상 내역이 삭제되었습니다.");
+      navigate("/crack");
+    } catch (err) {
+      const status = err?.response?.status;
+      if (status === 409) {
+        alert("해당 손상의 보고서가 먼저 삭제되어야 합니다.");
+      } else if (status === 404) {
+        alert("이미 삭제되었거나 존재하지 않는 손상입니다.");
+        navigate("/crack");
+      } else {
+        alert("삭제 중 오류가 발생했습니다.");
+      }
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -118,359 +143,318 @@ const PredictRepair = () => {
     return (
       <Box sx={{ p: 3 }}>
         <Typography variant="h6">데이터를 찾을 수 없습니다.</Typography>
-        <Button onClick={() => window.history.back()} sx={{ mt: 2 }}>뒤로 가기</Button>
+        <Button
+          startIcon={<ArrowBackIosNewIcon />}
+          onClick={() => window.history.back()}
+          sx={{ mt: 2 }}
+        >
+          뒤로 가기
+        </Button>
       </Box>
     );
   }
 
+  const statusChip = (
+    <Chip
+      size="small"
+      label={crackInfo.reportState ? "보고서 완료" : "확인 전"}
+      color={crackInfo.reportState ? "success" : "default"}
+      variant={crackInfo.reportState ? "filled" : "outlined"}
+    />
+  );
+
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#f3f6fe" }}>
-      <Box sx={{ maxWidth: "1400px", mx: "auto", p: { xs: 2, md: 3 } }}>
-        {/* Breadcrumb */}
-        <Box sx={{ 
-          display: "flex", 
-          alignItems: "center", 
-          py: 2, 
-          gap: 0.5,
-          flexWrap: "wrap"
-        }}>
-          <Typography variant="body2" color="text.secondary">Welcome</Typography>
+      <Box sx={{ maxWidth: "1280px", mx: "auto", p: { xs: 2, md: 3 } }}>
+        {/* Breadcrumb + 헤더 */}
+        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ py: 1, flexWrap: "wrap" }}>
+          <Typography variant="body2" color="text.secondary">
+            Welcome
+          </Typography>
           <NavigateNextIcon fontSize="small" color="primary" />
-          <Typography variant="body2" color="primary" fontWeight="bold">Dashboard</Typography>
+          <Typography variant="body2" color="primary" fontWeight="bold">
+            Dashboard
+          </Typography>
           <NavigateNextIcon fontSize="small" color="primary" />
-          <Typography variant="body2" color="primary" fontWeight="bold">Crack</Typography>
+          <Typography variant="body2" color="primary" fontWeight="bold">
+            Crack
+          </Typography>
           <NavigateNextIcon fontSize="small" color="primary" />
-          <Typography variant="body2" color="primary" fontWeight="bold">상세 분석</Typography>
-        </Box>
+          <Typography variant="body2" color="primary" fontWeight="bold">
+            상세 분석
+          </Typography>
+        </Stack>
 
-        {/* 손상 정보 및 예측 폼 섹션 */}
+        <Paper
+          sx={{
+            p: 2,
+            mb: 3,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+            border: "1px solid #e5e7eb",
+          }}
+        >
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Typography variant="h6" fontWeight={800}>
+              활주로 손상 상세
+            </Typography>
+            {statusChip}
+          </Stack>
+
+          <Stack direction="row" spacing={1}>
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBackIosNewIcon />}
+              onClick={() => navigate("/crack")}
+            >
+              뒤로
+            </Button>
+
+            <Tooltip
+              title={
+                crackInfo.reportState
+                  ? "보고서가 생성되어 손상 삭제가 비활성화되었습니다. 먼저 보고서를 삭제하세요."
+                  : ""
+              }
+              arrow
+            >
+              <span>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  startIcon={<DeleteOutlineIcon />}
+                  disabled={crackInfo.reportState || deleteLoading}
+                  onClick={handleDeleteCrack}
+                >
+                  {deleteLoading ? <CircularProgress size={18} /> : "손상 삭제"}
+                </Button>
+              </span>
+            </Tooltip>
+          </Stack>
+        </Paper>
+
+        {/* 본문 */}
         <Grid container spacing={3}>
           {/* 좌측: 기본 손상 정보 */}
           <Grid item xs={12} lg={6}>
-            <Paper sx={{ 
-              p: 3, 
-              minHeight: "500px",
-              display: "flex",
-              flexDirection: "column"
-            }}>
-              <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+            <Paper
+              sx={{
+                p: 3,
+                minHeight: 520,
+                display: "flex",
+                flexDirection: "column",
+                border: "1px solid #e5e7eb",
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
                 기본 손상 정보
               </Typography>
-              <Divider sx={{ my: 2 }} />
-              
-              <Box sx={{ flex: 1 }}>
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+              <Divider sx={{ mb: 2 }} />
+
+              <Stack spacing={1.5} sx={{ flex: 1 }}>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
                     CCTV ID
                   </Typography>
-                  <Typography variant="body1" sx={{ fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 500 }}>
-                    {crackInfo.cctvId}
+                  <Typography variant="body1" fontWeight={500}>
+                    {crackInfo.cctvId ?? "-"}
                   </Typography>
                 </Box>
 
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
-                    파손 길이
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 500 }}>
-                    {crackInfo.lengthCm ?? '-'} cm
-                  </Typography>
+                <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      파손 길이
+                    </Typography>
+                    <Typography variant="body1" fontWeight={500}>
+                      {fmtNum(crackInfo.lengthCm)} cm
+                      <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                        ({cmToM(crackInfo.lengthCm)} m)
+                      </Typography>
+                    </Typography>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      파손 면적
+                    </Typography>
+                    <Typography variant="body1" fontWeight={500}>
+                      {fmtNum(crackInfo.areaCm2)} cm²
+                      <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                        ({cm2ToM2(crackInfo.areaCm2)} m²)
+                      </Typography>
+                    </Typography>
+                  </Box>
                 </Box>
 
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
-                    파손 면적
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 500 }}>
-                    {crackInfo.areaCm2 ?? '-'} cm²
-                  </Typography>
-                </Box>
-
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
                     발견 날짜
                   </Typography>
-                  <Typography variant="body1" sx={{ fontSize: { xs: '0.95rem', md: '1rem' }, fontWeight: 500 }}>
-                    {crackInfo.detectedDate}
+                  <Typography variant="body1" fontWeight={500}>
+                    {crackInfo.detectedDate ?? "-"}
                   </Typography>
                 </Box>
 
                 {crackInfo.imageUrl && (
-                  <Box sx={{ textAlign: "center" }}>
-                    <img 
-                      src={crackInfo.imageUrl} 
-                      alt="손상 이미지" 
-                      style={{ 
-                        maxWidth: '100%', 
-                        height: 'auto', 
-                        maxHeight: '300px',
-                        border: '1px solid #ddd', 
-                        borderRadius: '8px',
-                        objectFit: 'contain'
-                      }} 
+                  <Box sx={{ mt: 1, textAlign: "center" }}>
+                    <img
+                      src={crackInfo.imageUrl}
+                      alt="손상 이미지"
+                      style={{
+                        maxWidth: "100%",
+                        height: "auto",
+                        maxHeight: 320,
+                        border: "1px solid #e5e7eb",
+                        borderRadius: 10,
+                        objectFit: "contain",
+                      }}
                     />
                   </Box>
                 )}
-              </Box>
+              </Stack>
             </Paper>
           </Grid>
 
-          {/* 우측: 추가 입력 폼 및 예측 결과 */}
+          {/* 우측: 추가 입력 + 예측/보고서 */}
           <Grid item xs={12} lg={6}>
-            <Paper sx={{ 
-              p: 3, 
-              minHeight: "500px",
-              display: "flex", 
-              flexDirection: "column" 
-            }}>
-              <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+            <Paper
+              sx={{
+                p: 3,
+                minHeight: 520,
+                display: "flex",
+                flexDirection: "column",
+                border: "1px solid #e5e7eb",
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
                 추가 수리 정보 입력
               </Typography>
-              <Divider sx={{ my: 2 }} />
+              <Divider sx={{ mb: 2 }} />
 
-              <Box sx={{ flex: 1 }}>
-                <Grid container spacing={3}>
-                  <Grid item xs={12}>
-                    <Box sx={{ mb: 1 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontSize: '0.875rem' }}>
-                        포장재 종류 (콘크리트)
-                      </Typography>
-                      <FormControl fullWidth>
-                        <Select
-                          name="pavement_type_concrete"
-                          value={inputs.pavement_type_concrete}
-                          onChange={handleInputChange}
-                          displayEmpty
-                          sx={{ height: '45px' }}
-                        >
-                          <MenuItem value={0}>❌ 사용 안 함</MenuItem>
-                          <MenuItem value={1}>✅ 사용</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <Box sx={{ mb: 1 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontSize: '0.875rem' }}>
-                        에폭시
-                      </Typography>
-                      <FormControl fullWidth>
-                        <Select
-                          name="epoxy_used"
-                          value={inputs.epoxy_used}
-                          onChange={handleInputChange}
-                          displayEmpty
-                          sx={{ height: '45px' }}
-                        >
-                          <MenuItem value={0}>❌ 사용 안 함</MenuItem>
-                          <MenuItem value={1}>✅ 사용</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={{ mb: 1 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontSize: '0.875rem' }}>
-                        와이어메시
-                      </Typography>
-                      <FormControl fullWidth>
-                        <Select
-                          name="wiremesh_used"
-                          value={inputs.wiremesh_used}
-                          onChange={handleInputChange}
-                          displayEmpty
-                          sx={{ height: '45px' }}
-                        >
-                          <MenuItem value={0}>❌ 사용 안 함</MenuItem>
-                          <MenuItem value={1}>✅ 사용</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={{ mb: 1 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontSize: '0.875rem' }}>
-                        줄눈 실링
-                      </Typography>
-                      <FormControl fullWidth>
-                        <Select
-                          name="joint_seal_used"
-                          value={inputs.joint_seal_used}
-                          onChange={handleInputChange}
-                          displayEmpty
-                          sx={{ height: '45px' }}
-                        >
-                          <MenuItem value={0}>❌ 사용 안 함</MenuItem>
-                          <MenuItem value={1}>✅ 사용</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={{ mb: 1 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontSize: '0.875rem' }}>
-                        철근
-                      </Typography>
-                      <FormControl fullWidth>
-                        <Select
-                          name="rebar_used"
-                          value={inputs.rebar_used}
-                          onChange={handleInputChange}
-                          displayEmpty
-                          sx={{ height: '45px' }}
-                        >
-                          <MenuItem value={0}>❌ 사용 안 함</MenuItem>
-                          <MenuItem value={1}>✅ 사용</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={{ mb: 1 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontSize: '0.875rem' }}>
-                        폴리머
-                      </Typography>
-                      <FormControl fullWidth>
-                        <Select
-                          name="polymer_used"
-                          value={inputs.polymer_used}
-                          onChange={handleInputChange}
-                          displayEmpty
-                          sx={{ height: '45px' }}
-                        >
-                          <MenuItem value={0}>❌ 사용 안 함</MenuItem>
-                          <MenuItem value={1}>✅ 사용</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={{ mb: 1 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontSize: '0.875rem' }}>
-                        실링
-                      </Typography>
-                      <FormControl fullWidth>
-                        <Select
-                          name="sealing_used"
-                          value={inputs.sealing_used}
-                          onChange={handleInputChange}
-                          displayEmpty
-                          sx={{ height: '45px' }}
-                        >
-                          <MenuItem value={0}>❌ 사용 안 함</MenuItem>
-                          <MenuItem value={1}>✅ 사용</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Grid>
+              <Grid container spacing={2}>
+                {/* 포장재(콘크리트) */}
+                <Grid item xs={12}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+                    포장재 종류 (콘크리트)
+                  </Typography>
+                  <FormControl fullWidth>
+                    <Select
+                      name="pavement_type_concrete"
+                      value={inputs.pavement_type_concrete}
+                      onChange={handleInputChange}
+                      sx={{ height: 44 }}
+                    >
+                      <MenuItem value={0}>❌ 사용 안 함</MenuItem>
+                      <MenuItem value={1}>✅ 사용</MenuItem>
+                    </Select>
+                  </FormControl>
                 </Grid>
 
-                <Box sx={{ mt: 3, textAlign: "right" }}>
-                  <Button
-                    variant="contained"
-                    onClick={handlePredict}
-                    disabled={loading}
-                    sx={{ 
-                      minWidth: "120px",
-                      height: "40px"
-                    }}
-                  >
-                    {loading ? <CircularProgress size={24} /> : "예측 시작"}
-                  </Button>
-                </Box>
-              </Box>
+                {/* 재료/공법 */}
+                {[
+                  ["epoxy_used", "에폭시"],
+                  ["wiremesh_used", "와이어메시"],
+                  ["joint_seal_used", "줄눈 실링"],
+                  ["rebar_used", "철근"],
+                  ["polymer_used", "폴리머"],
+                  ["sealing_used", "실링"],
+                ].map(([key, label]) => (
+                  <Grid item xs={12} sm={6} key={key}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+                      {label}
+                    </Typography>
+                    <FormControl fullWidth>
+                      <Select
+                        name={key}
+                        value={inputs[key]}
+                        onChange={handleInputChange}
+                        sx={{ height: 44 }}
+                      >
+                        <MenuItem value={0}>❌ 사용 안 함</MenuItem>
+                        <MenuItem value={1}>✅ 사용</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                ))}
+              </Grid>
 
+              {/* 액션 */}
+              <Stack direction="row" spacing={1.5} justifyContent="flex-end" sx={{ mt: 3 }}>
+                <Button
+                  variant="contained"
+                  onClick={handlePredict}
+                  disabled={loading}
+                  sx={{ minWidth: 120, height: 42 }}
+                >
+                  {loading ? <CircularProgress size={22} /> : "예측 시작"}
+                </Button>
+              </Stack>
+
+              {/* 예측 결과 박스 */}
               {predictionResult && (
-                <Box sx={{ mt: 4 }}>
-                  <Paper
-                    elevation={2}
-                    sx={{
-                      p: 2.5,
-                      bgcolor: "#f8f9fa",
-                      border: "1px solid #e3f2fd",
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontSize: { xs: "1.1rem", md: "1.25rem" },
-                        color: "primary.main",
-                        mb: 1.5,
-                      }}
-                    >
+                <Paper
+                  elevation={0}
+                  sx={{
+                    mt: 3,
+                    p: 2.5,
+                    bgcolor: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: 2,
+                  }}
+                >
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                    <AssessmentIcon fontSize="small" />
+                    <Typography variant="subtitle1" fontWeight={700}>
                       예측 결과
                     </Typography>
-                    <Divider sx={{ mb: 2 }} />
+                  </Stack>
+                  <Divider sx={{ mb: 2 }} />
 
-                    {/* 비용 */}
-                    <Box sx={{ mb: 1.5 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: "0.875rem" }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle2" color="text.secondary">
                         예상 수리 비용
                       </Typography>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontSize: { xs: "1.1rem", md: "1.3rem" },
-                          fontWeight: 600,
-                          color: "primary.main",
-                        }}
-                      >
+                      <Typography variant="h6" sx={{ color: "primary.main", fontWeight: 700 }}>
                         {Number.isFinite(predictionResult?.cost)
-                          ? Number(predictionResult.cost.toFixed(1)).toLocaleString() + " 원"
+                          ? `${fmtNum(predictionResult.cost, 1)} 원`
                           : "- 원"}
                       </Typography>
-                    </Box>
-
-                    {/* 기간 */}
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ fontSize: "0.875rem" }}>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle2" color="text.secondary">
                         예상 수리 기간
                       </Typography>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontSize: { xs: "1.1rem", md: "1.3rem" },
-                          fontWeight: 600,
-                          color: "secondary.main",
-                        }}
-                      >
+                      <Typography variant="h6" sx={{ color: "secondary.main", fontWeight: 700 }}>
                         {Number.isFinite(predictionResult?.duration)
-                          ? `${Number(predictionResult.duration.toFixed(1))} 일`
+                          ? `${fmtNum(predictionResult.duration, 1)} 일`
                           : "- 일"}
                       </Typography>
-                    </Box>
+                    </Grid>
+                  </Grid>
 
-                    <Box sx={{ mt: 3, textAlign: "center" }}>
-                      <Button
-                        variant="outlined"
-                        color="success"
-                        onClick={handleReportGenerate}
-                        disabled={reportLoading}
-                        sx={{
-                          minWidth: "150px",
-                          height: "45px",
-                          fontSize: "1rem",
-                          fontWeight: 600,
-                        }}
-                      >
-                        {reportLoading ? (
-                          <>
-                            <CircularProgress size={20} sx={{ mr: 1 }} />
-                            생성중...
-                          </>
-                        ) : (
-                          "📊 보고서 생성"
-                        )}
-                      </Button>
-                    </Box>
-                  </Paper>
-                </Box>
+                  <Stack alignItems="center" sx={{ mt: 2 }}>
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      onClick={handleReportGenerate}
+                      disabled={reportLoading}
+                      sx={{ minWidth: 160, height: 44, fontWeight: 700 }}
+                    >
+                      {reportLoading ? (
+                        <>
+                          <CircularProgress size={20} sx={{ mr: 1 }} />
+                          생성중...
+                        </>
+                      ) : (
+                        "📊 보고서 생성"
+                      )}
+                    </Button>
+                  </Stack>
+                </Paper>
               )}
             </Paper>
           </Grid>

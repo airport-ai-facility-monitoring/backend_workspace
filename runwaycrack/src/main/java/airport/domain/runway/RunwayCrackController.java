@@ -105,5 +105,26 @@ public class RunwayCrackController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error); // 400 Bad Request
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCrack(@PathVariable("id") Long id) {
+        return runwayCrackRepository.findById(id)
+            .map(crack -> {
+                if (Boolean.TRUE.equals(crack.getReportState())) {
+                    // 보고서가 이미 존재하면 삭제 불가
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body(Map.of(
+                                    "code", "REPORT_EXISTS",
+                                    "message", "해당 손상의 보고서가 먼저 삭제되어야 합니다."
+                            ));
+                }
+                runwayCrackRepository.delete(crack);
+                return ResponseEntity.noContent().build();
+            })
+            .orElseGet(() ->
+                    ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(Map.of("code", "NOT_FOUND", "message", "손상 내역이 존재하지 않습니다."))
+            );
+}
 }
 //>>> Clean Arch / Inbound Adaptor

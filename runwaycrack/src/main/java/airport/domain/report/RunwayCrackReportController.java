@@ -32,7 +32,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -166,7 +165,7 @@ public class RunwayCrackReportController {
     // }
 
 
-private final ObjectMapper om = new ObjectMapper();
+    private final ObjectMapper om = new ObjectMapper();
 
     @PostMapping("/predict/{id}")
     public PredictResponse predictRepair(@PathVariable Long id, @RequestBody AnalyzeRequestDto dto) {
@@ -248,6 +247,21 @@ private final ObjectMapper om = new ObjectMapper();
         }
     }
 
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<?> deleteReport(
+    //     @PathVariable Long id,
+    //     @RequestHeader("X-Employee-Id") String employeeId
+    // ) {
+    //     return runwayCrackReportRepository.findById(id)
+    //         .map(report -> {
+    //             if (!report.getEmployeeId().toString().equals(employeeId)) {
+    //                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    //             }
+    //             runwayCrackReportRepository.delete(report);
+    //             return ResponseEntity.noContent().build();
+    //         })
+    //         .orElse(ResponseEntity.notFound().build());
+    // }
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteReport(
         @PathVariable Long id,
@@ -255,13 +269,35 @@ private final ObjectMapper om = new ObjectMapper();
     ) {
         return runwayCrackReportRepository.findById(id)
             .map(report -> {
+                // 권한 확인
                 if (!report.getEmployeeId().toString().equals(employeeId)) {
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
                 }
+
+                // 연결된 손상 내역 찾기
+                runwayCrackRepository.findById(report.getCrackId()).ifPresent(crack -> {
+                    crack.setReportState(false);  // 보고서 해제
+                    runwayCrackRepository.save(crack);
+                });
+
+                // 보고서 삭제
                 runwayCrackReportRepository.delete(report);
+
                 return ResponseEntity.noContent().build();
             })
             .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/by-crack/{crackId}")
+    public ResponseEntity<Map<String, Object>> getReportIdByCrack(@PathVariable Long crackId) {
+        return runwayCrackReportRepository.findByCrackId(crackId)
+            .map(r -> {
+                Map<String, Object> body = new HashMap<>();
+                body.put("reportId", r.getRcReportId());
+                body.put("crackId", r.getCrackId());
+                return ResponseEntity.ok(body);
+            })
+            .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
 }
