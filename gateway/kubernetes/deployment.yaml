@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: gangmin522/gateway:250730
+          image: gangmin522/gateway:latest
           ports:
             - containerPort: 8080

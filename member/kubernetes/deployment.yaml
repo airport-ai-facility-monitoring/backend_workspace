@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: member
-          image: "gangmin522/member:250730"
+          image: "gangmin522/member:latest"
           ports:
             - containerPort: 8080
           readinessProbe:
