@@ -124,7 +124,7 @@ useEffect(() => {
                       <TableCell align="center">
                         {row.imageUrl ? (
                           <img
-                            src={ "https://airportfrontendstorage.blob.core.windows.net/videos/20250814-082611.jpg"} //row.imageUrl}
+                            src={row.imageUrl} 
                             alt="이상 이미지"
                             width={60}
                             height={40}
