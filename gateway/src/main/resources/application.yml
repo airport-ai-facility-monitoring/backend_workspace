@@ -30,6 +30,10 @@ spring:
           uri: http://localhost:8085
           predicates:
             - Path=/strangeObjects/**, /workers/**, /workTrucks/**
+        - id: objectdetect
+          uri: http://localhost:8000
+          predicates:
+            - Path=/detect/**
         - id: runwaycrack-api
           uri: http://localhost:8001
           predicates:
