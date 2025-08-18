@@ -36,7 +36,7 @@ public class Alert {
     
     //>>> Clean Arch / Port Method
     
-
+    /* 사용 금지: 서비스 사용 */
     public static void sendAlert(ForeignObjectDetected foreignObjectDetected) {
         CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
             CctvRepository.class
@@ -92,6 +92,7 @@ public class Alert {
                 alertSent.publishAfterCommit();
             });
     }
+    /* 사용 금지: 서비스 사용 */
     public static void sendAlert(WorkerCountExceeded workerCountExceeded) {
         CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
             CctvRepository.class
@@ -134,7 +135,7 @@ public class Alert {
         }
     }
 
-
+    /* 사용 금지: 서비스 사용 */
     public static void sendAlert(WorkNotInProgress workNotInProgress) {
         CctvRepository cctvRepository = AlertApplication.applicationContext.getBean(
             CctvRepository.class
