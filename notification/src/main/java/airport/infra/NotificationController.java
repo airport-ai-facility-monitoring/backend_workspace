@@ -3,6 +3,8 @@ package airport.infra;
 import airport.domain.Notification;
 import airport.domain.NotificationRepository;
 import airport.domain.NotificationsRegistered;
+
+import org.apache.kafka.common.protocol.types.Field.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
@@ -23,7 +25,7 @@ import java.time.ZonedDateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus; 
 
-@CrossOrigin(origins = "*")
+
 @RestController
 @RequestMapping("/notifications")
 @Transactional
@@ -106,45 +108,40 @@ public class NotificationController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<String> updateNotification(
             @PathVariable Long id,
-            @RequestParam("title") String title,
-            @RequestParam("contents") String contents,
-            @RequestParam("important") Boolean important,
-            @RequestParam("filename") String filename
+            @RequestBody Map<String, String> payload
     ) {
         Notification existing = notificationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
 
+        String filename = payload.get("filename");
+        String token = fileStorageService.save(existing, filename);
 
-        String url = fileStorageService.save(existing, filename);
-
-        existing.setTitle(title);
-        existing.setContents(contents);
-        existing.setImportant(important);
+        existing.setTitle(payload.get("title"));
+        existing.setContents(payload.get("contents"));
+        existing.setImportant(Boolean.parseBoolean(payload.get("important")));
         existing.setOriginalFilename(filename);
 
         notificationRepository.save(existing);
 
-        return ResponseEntity.ok(url); // URL만 반환
+        return ResponseEntity.ok(token); // URL만 반환
     }
 
     @PostMapping()
-    public ResponseEntity<String> registerNotification(
-            @RequestParam("writerId") Long writerId,
-            @RequestParam("title") String title,
-            @RequestParam("contents") String contents,
-            @RequestParam("important") Boolean important,
-            @RequestParam("filename") String originalFilename
-    ) {
-        Notification notification = new Notification();
-        notification.setWriterId(writerId);
-        notification.setTitle(title);
-        notification.setContents(contents);
-        notification.setImportant(important);
-        notification.setOriginalFilename(originalFilename);
+    public ResponseEntity<String> registerNotification(@RequestBody Map<String, String> payload) {
+        System.out.println("들어옴");
 
-        // 파일 저장 후 URL
-        String url = fileStorageService.save(notification, originalFilename);
-        notification.setFileUrl(url);
+        Notification notification = new Notification();
+        notification.setWriterId(Long.valueOf(payload.get("writerId")));
+        notification.setTitle(payload.get("title"));
+        notification.setContents(payload.get("contents"));
+        notification.setImportant(Boolean.parseBoolean(payload.get("important")));
+        notification.setOriginalFilename(payload.get("filename"));
+
+        System.out.println("첫번째");
+
+        String token = fileStorageService.save(notification, payload.get("filename"));
+
+        System.out.println("두번째");
 
         LocalDateTime now = LocalDateTime.now();
         ZonedDateTime koreanTime = now.atZone(ZoneId.systemDefault())
@@ -152,8 +149,9 @@ public class NotificationController {
         notification.setWriteDate(koreanTime);
 
         notificationRepository.save(notification);
+        System.out.println("성공");
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(url); // URL만 반환
+        return ResponseEntity.status(HttpStatus.CREATED).body(token);
     }
 
     @DeleteMapping("/{id}/file")

@@ -35,10 +35,10 @@ public class Notification {
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String contents;
 
-    @Column(columnDefinition = "NVARCHAR(255)")
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String fileUrl;
 
-    @Column(columnDefinition = "NVARCHAR(255)")
+    @Column(columnDefinition = "NVARCHAR(500)")
     private String originalFilename;
 
     @Column(updatable = false)

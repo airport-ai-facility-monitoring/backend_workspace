@@ -20,20 +20,19 @@ import java.util.UUID;
 
 @Service
 public class FileStorageService {
-@Value("${STORAGE_ACCOUNT_NAME}")
+    @Value("${storage.account-name}")
     private String storageAccountName;
 
-    @Value("${STORAGE_ACCOUNT_KEY}")
+    @Value("${storage.account-key}")
     private String storageAccountKey;  // 계정 키 사용
 
-    @Value("${CONTAINER_NAME}")
+    @Value("${storage.container-name}")
     private String containerName;
 
     /**
      * blobName 기반으로 SAS URL 생성
      */
-    private String generateBlobSasUrl(String blobName) {
-        // 1️⃣ 계정 인증
+    private String generateBlobSasToken(String blobName) {
         StorageSharedKeyCredential credential =
                 new StorageSharedKeyCredential(storageAccountName, storageAccountKey);
 
@@ -45,26 +44,19 @@ public class FileStorageService {
         BlobContainerClient containerClient = serviceClient.getBlobContainerClient(containerName);
         BlobClient blobClient = containerClient.getBlobClient(blobName);
 
-        // 2️⃣ SAS 권한 정의 (읽기 + 쓰기 + 삭제)
         BlobSasPermission permission = new BlobSasPermission()
                 .setReadPermission(true)
                 .setWritePermission(true)
                 .setDeletePermission(true);
 
-        // 3️⃣ SAS 토큰 유효기간 (예: 5분)
         OffsetDateTime expiryTime = OffsetDateTime.now().plusMinutes(5);
 
         BlobServiceSasSignatureValues values = new BlobServiceSasSignatureValues(expiryTime, permission)
                 .setStartTime(OffsetDateTime.now())
                 .setProtocol(SasProtocol.HTTPS_ONLY);
 
-        // 4️⃣ SAS 토큰 생성
-        String sasToken = blobClient.generateSas(values);
-
-        // 5️⃣ SAS URL 반환
-        return blobClient.getBlobUrl() + "?" + sasToken;
+        return blobClient.generateSas(values); // URL 아님, 토큰만
     }
-
 
     /**
      * 파일 저장 + 기존 파일 삭제 (Blob Storage)
@@ -85,7 +77,7 @@ public class FileStorageService {
             
 
             // 업로드는 스킵하고 SAS URL만 반환
-            return generateBlobSasUrl(filename);
+            return generateBlobSasToken(filename);
 
         } catch (Exception e) {
             throw new RuntimeException("Blob SAS URL 생성 중 오류: " + e.getMessage(), e);

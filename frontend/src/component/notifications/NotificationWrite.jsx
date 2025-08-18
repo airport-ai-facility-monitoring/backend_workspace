@@ -22,7 +22,7 @@ function validateFiles(files) {
 
 export default function NotificationWrite() {
   const navigate = useNavigate();
-  const [authorId, setAuthorId] = useState('');
+  const [authorId, setAuthorId] = useState();
   const [maskedAuthor, setMaskedAuthor] = useState('');
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
@@ -36,6 +36,7 @@ export default function NotificationWrite() {
   useEffect(() => {
     api.get('/users/setting')
       .then(response => {
+        console.log(response.data)
         setUser(response.data);
         setAuthorId(response.data.realEmployeeId);
         setMaskedAuthor(response.data.employeeId);
@@ -75,29 +76,40 @@ export default function NotificationWrite() {
     }
 
     try {
-      const formData = new FormData();
-      formData.append('writerId', authorId);
-      formData.append('title', title);
-      formData.append('contents', body);
-      formData.append('important', important); // 불리언으로
-      formData.append('filename', fileName );
+      const payload = {
+        writerId: authorId,
+        title: title,
+        contents: body,
+        important: important, // Boolean 그대로
+        filename: fileName
+      };
 
+      console.log(payload); // 내용 확인
+
+      const res = await api.post('/notifications', payload); // axios가 자동으로 JSON 변환
+      console.log(res.data)
+      const token  = res.data; // 서버에서 { sasToken: "..." } 형태로 반환한다고 가정
+
+      // 2️⃣ 업로드할 파일명과 컨테이너 정보로 URL 생성
+      const encodedFilename = encodeURIComponent(fileName);
+      const blobUrl = `https://airportfrontendstorage.blob.core.windows.net/videos/${encodedFilename}?${token}`;
+      console.log(blobUrl)
+      // 3️⃣ 파일 업로드
       if (file) {
-        validateFiles([file]);
+        try{
+          await fetch(blobUrl, {
+            method: 'PUT',
+            headers: {
+              'x-ms-blob-type': 'BlockBlob',
+              'Content-Type': file.type
+            },
+            body: file
+          });
+        }catch(error){
+          console.error("업로드 실패")
+        }
       }
-
-      const res = await api.post('/notifications', formData);
-      const sasUrl = res.data.url
-      if (file) {
-      await fetch(sasUrl, {
-        method: 'PUT',
-        headers: {
-          'x-ms-blob-type': 'BlockBlob',
-          'Content-Type': file.type
-        },
-        body: file
-      });
-    }
+    
       alert("공지사항이 등록되었습니다.");
       navigate('/notifications');
     } catch (error) {

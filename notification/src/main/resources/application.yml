@@ -56,11 +56,11 @@ logging:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 
-azure:
-  storage:
-    account-name: airportfrontendstorage
-    account-key: ${AZURE_ACCOUNT_KEY}
-    container-name: videos
+
+storage:
+  account-name: airportfrontendstorage
+  account-key: ${AZURE_ACCOUNT_KEY}
+  container-name: videos
 
 server:
   port: 8083

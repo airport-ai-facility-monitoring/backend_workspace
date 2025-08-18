@@ -105,12 +105,6 @@ export default function NotificationEdit() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('contents', contents);
-    formData.append('important', important);
-    formData.append('filename', fileName);
-
     // 새 파일만 업로드(교체)
     if (file && file.isNew && file.file) {
       // ✅ 서버 가기 전 최종검증
@@ -121,10 +115,17 @@ export default function NotificationEdit() {
         return;
       }
     }
+    const payload = {
+      title: title,
+      contents: contents,
+      important: String(important), // 문자열로 변환
+      filename: fileName
+    };
+
 
     try {
       // 백엔드가 DTO로 200/201을 내려주면 성공 처리
-      const res = await api.put(`/notifications/${id}`, formData);
+      const res = await api.put(`/notifications/${id}`, payload);
       const sasUrl = res.data.url
         if (file) {
         await fetch(sasUrl, {
