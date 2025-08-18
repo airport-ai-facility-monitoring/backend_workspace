@@ -100,12 +100,21 @@ export default function CrackReport() {
     const ok = window.confirm("보고서를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
     if (!ok) return;
     try {
-      await api.delete(`/runwaycrackreports/${rcId}`);
-      alert("삭제되었습니다.");
-      navigate(-1);
+      await api.delete(`/runwaycrackreports/${rcId}`, {
+        headers: { "X-Employee-Id": loggedEmployeeId }
+      });
+      alert("보고서가 삭제되었습니다.");
+      navigate("/crack"); // 삭제 후 목록으로 이동
     } catch (e) {
       console.error(e);
-      alert("삭제 중 오류가 발생했습니다.");
+      if (e.response?.status === 403) {
+        alert("삭제 권한이 없습니다.");
+      } else if (e.response?.status === 404) {
+        alert("보고서를 찾을 수 없습니다.");
+        navigate("/crack");
+      } else {
+        alert("삭제 중 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -169,7 +178,15 @@ export default function CrackReport() {
             <button style={styles.btn} onClick={handleBack} aria-label="뒤로">뒤로</button>
             <button style={{ ...styles.btn, ...styles.btnPrimary }} onClick={handlePrint} aria-label="인쇄">인쇄</button>
             {canEdit && <button style={styles.btn} onClick={handleEdit} aria-label="편집">편집</button>}
-            {/* {canDelete && <button style={{ ...styles.btn, ...styles.btnDanger }} onClick={handleDelete} aria-label="삭제">삭제</button>} */}
+            {canDelete && (
+              <button
+                style={{ ...styles.btn, ...styles.btnDanger }}
+                onClick={handleDelete}
+                aria-label="삭제"
+              >
+                삭제
+              </button>
+            )}
           </div>
         </div>
 
