@@ -28,7 +28,7 @@ public class GatewaySecurityConfig {
 
 
         return http
-                .cors().configurationSource(corsConfigurationSource()).and() // Modified here
+                .cors().and() // Modified here
                 .httpBasic().disable()
                 .csrf().disable()
                 .authorizeExchange(exchanges -> exchanges
@@ -41,24 +41,4 @@ public class GatewaySecurityConfig {
                 .build();
     }
 
-    @Bean // New bean method
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:5173"); // Specific origin for frontend
-        configuration.addAllowedMethod("*"); // Allow all methods
-        configuration.addAllowedHeader("*"); // Allow all headers
-        configuration.setAllowCredentials(true); // Allow credentials
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-    @Bean // New bean method to clear headers
-    public WebFilter corsHeaderClearFilter() {
-        return (exchange, chain) -> {
-            exchange.getResponse().getHeaders().remove("Access-Control-Allow-Origin");
-            exchange.getResponse().getHeaders().remove("Access-Control-Allow-Credentials");
-            return chain.filter(exchange);
-        };
-    }
 }
