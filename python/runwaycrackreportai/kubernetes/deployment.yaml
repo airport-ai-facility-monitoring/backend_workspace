@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: runway-predictor
-          image: your-dockerhub-username/runway-predictor:latest
+          image: "jinsuheo/runwaycrackreportai:latest"
           ports:
             - containerPort: 8000
           readinessProbe:

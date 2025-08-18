@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: objectdectect-api
-          image: "jinsuheo/objectdectect-api:latest"
+          image: "jinsuheo/objectdetectai:latest"
           ports:
             - containerPort: 8000
           readinessProbe:

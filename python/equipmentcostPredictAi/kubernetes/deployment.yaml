@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: equipmentcost-api
-          image: "jinsuheo/equipmentcost-api:latest"
+          image: "jinsuheo/equipmentcostpredictai:latest"
           ports:
             - containerPort: 8000
           readinessProbe:

@@ -31,7 +31,7 @@ public class PolicyHandler {
         );
 
         // Sample Logic //
-        Notification.notify(notificationsRegistered);
+        // Notification.notify(notificationsRegistered);
     }
 
     @StreamListener(KafkaProcessor.INPUT)

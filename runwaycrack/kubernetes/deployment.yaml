@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: runwaycrack
-          image: "gangmin522/runwaycrack:250730"
+          image: "gangmin522/runwaycrack:latest"
           ports:
             - containerPort: 8080
           readinessProbe:

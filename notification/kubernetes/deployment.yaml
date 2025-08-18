@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: notification
-          image: "gangmin522/notification:250730"
+          image: "gangmin522/notification:latest"
           ports:
             - containerPort: 8080
           readinessProbe:
