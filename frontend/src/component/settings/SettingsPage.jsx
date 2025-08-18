@@ -114,7 +114,7 @@ export default function SettingsPage() {
                     <Typography variant="body2">
                       사번 {String(user.employeeId ?? "-").replace(/(\d{2})(\d+)(\d{2})/, "$1***$3")}
                     </Typography>
-                    {getStatusChip(user.status)}
+                    {/* {getStatusChip(user.status)} */}
                   </Stack>
                 )
               }
@@ -179,7 +179,7 @@ export default function SettingsPage() {
                       <Divider />
                       <Row icon={<BadgeIcon fontSize="small" />} label="사번" value={user.employeeId ?? "-"} />
                       <Divider />
-                      <Row label="상태" value={getStatusChip(user.status)} />
+                      {/* <Row label="상태" value={getStatusChip(user.status)} /> */}
                     </Card>
                   </Grid>
                 </Grid>
