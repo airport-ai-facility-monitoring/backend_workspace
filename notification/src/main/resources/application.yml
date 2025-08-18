@@ -20,7 +20,7 @@ spring:
         implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
     database-platform: org.hibernate.dialect.SQLServerDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
   cloud:
     stream:
       kafka:
@@ -56,6 +56,12 @@ logging:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 
+azure:
+  storage:
+    account-name: airportfrontendstorage
+    account-key: ${AZURE_ACCOUNT_KEY}
+    container-name: videos
+
 server:
   port: 8083
 ---
@@ -74,7 +80,7 @@ spring:
         implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
     database-platform: org.hibernate.dialect.SQLServerDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
   cloud:
     stream:
       kafka:
