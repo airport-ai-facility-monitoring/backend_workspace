@@ -39,4 +39,9 @@ public class AlertController {
             }
         }
     }
+
+    @GetMapping
+    public Iterable<Alert> getAllAlerts() {
+        return alertRepository.findAll(Sort.by(Sort.Direction.DESC, "alertDate"));
+    }
 }

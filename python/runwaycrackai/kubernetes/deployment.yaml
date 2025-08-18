@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runwaycrack-api
+  labels:
+    app: runwaycrack-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: runwaycrack-api
+  template:
+    metadata:
+      labels:
+        app: runwaycrack-api
+    spec:
+      containers:
+        - name: runwaycrack-api
+          image: "jinsuheo/runwaycrack-api:latest"
+          ports:
+            - containerPort: 8000
+          env:
+            - name: SAS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: azure-sas-token
+                  key: token
+          readinessProbe:
+            httpGet:
+              path: '/docs'
+              port: 8000
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: '/docs'
+              port: 8000
+            initialDelaySeconds: 15
+            timeoutSeconds: 2
+            periodSeconds: 10
+            failureThreshold: 3

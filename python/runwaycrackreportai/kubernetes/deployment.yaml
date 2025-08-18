@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runway-predictor
+  labels:
+    app: runway-predictor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: runway-predictor
+  template:
+    metadata:
+      labels:
+        app: runway-predictor
+    spec:
+      containers:
+        - name: runway-predictor
+          image: your-dockerhub-username/runway-predictor:latest
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: 8000
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: 8000
+            initialDelaySeconds: 15
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 3

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: equipmentcost-api
+  labels:
+    app: equipmentcost-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: equipmentcost-api
+  template:
+    metadata:
+      labels:
+        app: equipmentcost-api
+    spec:
+      containers:
+        - name: equipmentcost-api
+          image: "jinsuheo/equipmentcost-api:latest"
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: '/docs'
+              port: 8000
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: '/docs'
+              port: 8000
+            initialDelaySeconds: 15
+            timeoutSeconds: 2
+            periodSeconds: 10
+            failureThreshold: 3

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: equipmentcost-api
+  labels:
+    app: equipmentcost-api
+spec:
+  type: ClusterIP
+  selector:
+    app: equipmentcost-api
+  ports:
+    - port: 8000
+      targetPort: 8000

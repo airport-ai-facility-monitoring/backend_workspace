@@ -33,7 +33,7 @@ export default function NotificationWrite() {
 
   // 사용자 정보 로딩
   useEffect(() => {
-    api.get('/employees/setting')
+    api.get('/users/setting')
       .then(response => {
         setUser(response.data);
         setAuthorId(response.data.realEmployeeId);

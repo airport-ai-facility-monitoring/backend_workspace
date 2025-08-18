@@ -26,6 +26,12 @@ const runwayLabels = [
   { id: 4, name: "제2 여객터미널", top: "59%", left: "40.2%" },
   { id: 5, name: "탑승동", top: "40%", left: "59.8%" },
   { id: 6, name: "제3·4 활주로", top: "65.5%", left: "75.5%" },
+  { id: 7, name: "A계류장", top: "45%", left: "20%" },
+  { id: 8, name: "B계류장", top: "50%", left: "80%" },
+  { id: 9, name: "C계류장", top: "70%", left: "25%" },
+  { id: 10, name: "D계류장", top: "20%", left: "30%" },
+  { id: 11, name: "E계류장", top: "80%", left: "50%" },
+  { id: 12, name: "F계류장", top: "10%", left: "60%" },
 ];
 
 const DashBoardMg = () => {
@@ -37,14 +43,20 @@ const DashBoardMg = () => {
     { id: 4, src: "/videos/4.mp4" },
     { id: 5, src: "/videos/5.mp4" },
     { id: 6, src: "/videos/6.mp4" },
+    { id: 7, src: "/videos/7.mp4" },
+    { id: 8, src: "/videos/8.mp4" },
+    { id: 9, src: "/videos/9.mp4" },
+    { id: 10, src: "/videos/10.mp4" },
+    { id: 11, src: "/videos/11.mp4" },
+    { id: 12, src: "/videos/12.mp4" },
   ];
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchInitialAlerts = async () => {
       try {
-        const response = await api.get("/alerts?sort=alertDate,desc");
-        setAlerts(response.data._embedded.alerts.slice(0, 10));
+        const response = await api.get("/alerts"); // No need for ?sort=... as backend handles it
+        setAlerts(response.data.slice(0, 30)); // Directly use response.data as it's a plain array
       } catch (error) {
         console.error("Error fetching initial alerts:", error);
       }

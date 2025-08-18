@@ -13,7 +13,7 @@ export default function NotificationDetail() {
 
   // ✅ 현재 로그인한 사용자 정보 불러오기 (realEmployeeId)
   useEffect(() => {
-    api.get('/employees/setting')
+    api.get('/users/setting')
       .then(res => {
         setCurrentUserId(res.data.realEmployeeId)
       })
