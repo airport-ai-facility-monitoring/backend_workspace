@@ -61,7 +61,7 @@ export default function NotificationEdit() {
   }, [id]);
 
   const handleFileChange = (e) => {
-    const selected = e.target.files?.[0] || null;
+    const selected = e.target.files || null;
     if (!selected) {
       setFile(null);
       setFileName('');
@@ -70,9 +70,10 @@ export default function NotificationEdit() {
 
     try {
       // ✅ 업로드 즉시 사전검증
-      validateFiles([selected]);
-      setFile({ name: selected.name, isNew: true, file: selected });
-      setFileName(selected.name)
+      validateFiles(Array.from(selected));
+      const selectedFile = selected[0];
+      setFile( selectedFile );
+      setFileName(selectedFile.name)
       setRemoveFile(false); // 새 파일을 고르면 삭제 플래그는 해제
     } catch (err) {
       alert(err.message);
@@ -105,16 +106,6 @@ export default function NotificationEdit() {
       return;
     }
 
-    // 새 파일만 업로드(교체)
-    if (file && file.isNew && file.file) {
-      // ✅ 서버 가기 전 최종검증
-      try {
-        validateFiles([file.file]);
-      } catch (err) {
-        alert(err.message);
-        return;
-      }
-    }
     const payload = {
       title: title,
       contents: contents,
@@ -126,9 +117,12 @@ export default function NotificationEdit() {
     try {
       // 백엔드가 DTO로 200/201을 내려주면 성공 처리
       const res = await api.put(`/notifications/${id}`, payload);
-      const sasUrl = res.data.url
+      const token = res.data
+
+      const encodedFilename = encodeURIComponent(fileName);
+      const blobUrl = `https://airportfrontendstorage.blob.core.windows.net/videos/${encodedFilename}?${token}`;
         if (file) {
-        await fetch(sasUrl, {
+        fetch(blobUrl, {
           method: 'PUT',
           headers: {
             'x-ms-blob-type': 'BlockBlob',
