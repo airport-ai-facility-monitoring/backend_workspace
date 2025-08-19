@@ -7,7 +7,7 @@ import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRound
 
 import WeatherBox from "./WeatherBox";
 import NotificationBox from "./NotificationBox";
-import api from "../../api/axios";
+import api from "../../config/api";
 import { useNavigate } from "react-router-dom";
 
 import {

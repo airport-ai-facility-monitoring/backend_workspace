@@ -33,10 +33,13 @@ public class User {
 
     private Long employeeId;
 
+    @Column(columnDefinition = "NVARCHAR(100)")
     private String name;
 
+    @Column(columnDefinition = "NVARCHAR(100)")
     private String department;
 
+    @Column(columnDefinition = "NVARCHAR(100)")
     private String position;
 
     private Date hireDate;

@@ -4,7 +4,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
 import CCTVFeed from "./CCTVFeed";
 import { useNavigate } from 'react-router-dom';
-import api from "../../api/axios"; // api import 추가
+import api from "../../config/api"; // api import 추가
 import {
   AppBar,
   Box,

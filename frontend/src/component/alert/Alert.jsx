@@ -1,28 +1,9 @@
 import React, { useState, useEffect } from "react";
-import CommuteIcon from "@mui/icons-material/Commute";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import DescriptionIcon from "@mui/icons-material/Description";
-import ErrorIcon from "@mui/icons-material/Error";
-import HomeIcon from "@mui/icons-material/Home";
-import LogoutIcon from "@mui/icons-material/Logout";
-import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import SettingsIcon from "@mui/icons-material/Settings";
-import WarningIcon from "@mui/icons-material/Warning";
-import api from "../../config/api"; // api import 추가
+import { useNavigate } from "react-router-dom";
+import api from "../../config/api";
+
 import {
-  AppBar,
-  Avatar,
-  Badge,
   Box,
-  Button,
-  Divider,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Paper,
   Table,
   TableBody,
@@ -30,10 +11,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Toolbar,
+  Button,
   Typography,
+  Tooltip,
+  Chip,
+  Divider,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
 const Alert = () => {
   const [alerts, setAlerts] = useState([]);
@@ -42,8 +25,8 @@ const Alert = () => {
   useEffect(() => {
     const fetchInitialAlerts = async () => {
       try {
-        const response = await api.get("/alerts"); // No need for ?sort=... as backend handles it
-        setAlerts(response.data.slice(0, 30)); // Directly use response.data as it's a plain array
+        const response = await api.get("/alerts");
+        setAlerts(response.data.slice(0, 30));
       } catch (error) {
         console.error("Error fetching initial alerts:", error);
       }
@@ -51,11 +34,9 @@ const Alert = () => {
 
     fetchInitialAlerts();
     const interval = setInterval(fetchInitialAlerts, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
-  // 처리 요청 버튼 클릭 핸들러
   const handleRequest = (alertLog) => {
     let message = "";
     if (alertLog.includes("FOD감지")) {
@@ -67,124 +48,207 @@ const Alert = () => {
     } else {
       message = "[처리 요청] 신호를 보냈습니다.";
     }
-    console.log(message);
+    // UI만 변경: alert 유지
     alert(message);
-    // 나중에 실제 API 호출 로직을 여기에 추가할 수 있습니다.
   };
 
-  // New function to handle alert log click
   const handleAlertClick = (cctvId) => {
-    if (cctvId) { // Only navigate if cctvId exists
-      navigate(`/dashdetail/${cctvId}`); // Assuming the detail page route is /cctv-detail/:cctvId
-    } else {
-      console.warn("cctvId is undefined for this alert. Cannot navigate.");
-    }
+    if (cctvId) navigate(`/dashdetail/${cctvId}`);
+  };
+
+  // ── 스타일 토큰
+  const shellSx = {
+    minHeight: "100vh",
+    bgcolor: "rgba(243,246,254,0.8)",
+    py: 4,
+    px: { xs: 2.5, md: 5 },
+  };
+
+  const cardSx = {
+    borderRadius: 3,
+    overflow: "hidden",
+    boxShadow:
+      "0 4px 16px rgba(17, 24, 39, 0.06), 0 2px 4px rgba(17, 24, 39, 0.04)",
+  };
+
+  const headCellSx = {
+    fontWeight: 700,
+    color: "#0f172a",
+    bgcolor: "rgba(19,72,252,0.06)",
+    borderBottom: "1px solid rgba(2, 6, 23, 0.08)",
+  };
+
+  const dateCellSx = {
+    whiteSpace: "nowrap",
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas",
+    color: "text.secondary",
+  };
+
+  const detailTextSx = {
+    cursor: "pointer",
+    maxWidth: 760,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    "&:hover": { color: "#1348fc" },
+  };
+
+  const tableSx = {
+    "& .MuiTableRow-root:nth-of-type(even)":
+      { backgroundColor: "rgba(2, 6, 23, 0.015)" }, // 줄무늬
+    "& .MuiTableCell-root": { borderBottom: "1px solid rgba(2,6,23,0.06)" },
+  };
+
+  const containerSx = {
+    maxHeight: "calc(100vh - 220px)",
+    "&::-webkit-scrollbar": { height: 10, width: 10 },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(2,6,23,0.2)",
+      borderRadius: 8,
+    },
   };
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f3f6fe" }}>
-      {/* Sidebar */}
-
-      {/* Main content */}
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        {/* Header */}
-
-        {/* Breadcrumb */}
-        <Box sx={{ px: 5, py: 2, display: "flex", alignItems: "center" }}>
-          <Typography
-            variant="body2"
-            sx={{ fontSize: 11, fontWeight: 300, color: "#1f263d" }}
-          >
-            Welcome
-          </Typography>
-          {/* <Box
-            component="img"
-            src="/path-2.svg"
-            alt="Path"
-            sx={{ width: 8, height: 8, mx: 1 }}
-          /> */}
-          <Typography
-            variant="body2"
-            sx={{ fontSize: 11, fontWeight: 700, color: "#1348fc" }}
-          >
-            Dashboard
-          </Typography>
-        </Box>
-
-        {/* Main content area */}
-        <Box sx={{ px: 5, py: 1, flexGrow: 1 }}>
-          <Paper sx={{ height: "100%", overflow: "hidden" }}>
-            <TableContainer sx={{ maxHeight: "100%" }}>
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ width: "30%", fontWeight: "normal" }}>
-                      Date
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "normal" }}>Detail</TableCell>
-                    <TableCell
-                      sx={{
-                        width: "15%",
-                        fontWeight: "normal",
-                        textAlign: "center",
-                      }}
-                    >
-                      Action
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <TableCell colSpan={3} sx={{ border: "none", py: 1 }}>
-                      <Typography
-                        variant="subtitle1"
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        Latest Activities
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                  {alerts.map((row, index) => {
-                    const isTargetAlert =
-                      row.alertLog.includes("FOD감지") ||
-                      row.alertLog.includes("조류 출현") ||
-                      row.alertLog.includes("동물 출현");
-
-                    return (
-                      <TableRow
-                        key={row.alertId || index}
-                        hover
-                        sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                      >
-                        <TableCell component="th" scope="row">
-                          {new Date(row.alertDate).toLocaleString()}
-                        </TableCell>
-                        <TableCell
-                          onClick={() => handleAlertClick(row.cctvId)} // Make alertLog clickable
-                          sx={{ cursor: 'pointer' }} // Add cursor style
-                        >
-                          {row.alertLog}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "center" }}>
-                          {isTargetAlert && (
-                            <Button
-                              variant="contained"
-                              size="small"
-                              onClick={() => handleRequest(row.alertLog)}
-                            >
-                              처리 요청
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Box>
+    <Box sx={shellSx}>
+      {/* 브레드크럼/헤더 */}
+      <Box
+        sx={{
+          mb: 2.5,
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
+        <Typography
+          variant="body2"
+          sx={{ fontSize: 12, color: "text.secondary" }}
+        >
+          Welcome
+        </Typography>
+        <Divider orientation="vertical" flexItem />
+        <Typography
+          variant="body2"
+          sx={{ fontSize: 12, fontWeight: 700, color: "#1348fc" }}
+        >
+          Alert
+        </Typography>
       </Box>
+
+      {/* 카드 타이틀 */}
+      <Paper sx={cardSx}>
+        <Box
+          sx={{
+            px: 3,
+            py: 2.25,
+            bgcolor:
+              "linear-gradient(180deg, rgba(19,72,252,0.06), rgba(19,72,252,0.02))",
+            borderBottom: "1px solid rgba(2,6,23,0.08)",
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 800 }}>
+              Latest Activities
+            </Typography>
+            <Chip
+              label={`${alerts.length}`}
+              size="small"
+              sx={{
+                bgcolor: "rgba(19,72,252,0.1)",
+                color: "#1348fc",
+                fontWeight: 700,
+              }}
+            />
+          </Box>
+        </Box>
+
+        {/* 표 */}
+        <TableContainer sx={containerSx}>
+          <Table stickyHeader size="small" sx={tableSx}>
+            <TableHead>
+              <TableRow
+                sx={{
+                  "& th": headCellSx,
+                }}
+              >
+                <TableCell sx={{ width: { md: "28%", xs: "36%" } }}>
+                  Date
+                </TableCell>
+                <TableCell>Detail</TableCell>
+                <TableCell
+                  align="center"
+                  sx={{ width: { md: "14%", xs: "18%" } }}
+                >
+                  Action
+                </TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {alerts.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={3} sx={{ py: 6, textAlign: "center" }}>
+                    <Typography color="text.secondary">
+                      최근 알림이 없습니다.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {alerts.map((row, index) => {
+                const isTargetAlert =
+                  row.alertLog.includes("FOD감지") ||
+                  row.alertLog.includes("조류 출현") ||
+                  row.alertLog.includes("동물 출현");
+
+                return (
+                  <TableRow
+                    key={row.alertId || index}
+                    hover
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "rgba(19,72,252,0.06)",
+                      },
+                    }}
+                  >
+                    <TableCell component="th" scope="row" sx={dateCellSx}>
+                      {new Date(row.alertDate).toLocaleString()}
+                    </TableCell>
+
+                    <TableCell
+                      onClick={() => handleAlertClick(row.cctvId)}
+                      sx={{ pr: 2 }}
+                    >
+                      <Tooltip title={row.alertLog} arrow placement="top-start">
+                        <Typography variant="body2" sx={detailTextSx}>
+                          {row.alertLog}
+                        </Typography>
+                      </Tooltip>
+                    </TableCell>
+
+                    <TableCell align="center">
+                      {isTargetAlert && (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => handleRequest(row.alertLog)}
+                          sx={{
+                            px: 1.75,
+                            textTransform: "none",
+                            borderRadius: 2,
+                            boxShadow: "none",
+                          }}
+                        >
+                          처리 요청
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </Box>
   );
 };
