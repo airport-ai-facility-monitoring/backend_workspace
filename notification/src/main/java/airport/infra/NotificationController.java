@@ -3,23 +3,29 @@ package airport.infra;
 import airport.domain.Notification;
 import airport.domain.NotificationRepository;
 import airport.domain.NotificationsRegistered;
+
+import org.apache.kafka.common.protocol.types.Field.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
+import java.util.Optional;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus; 
 
-@CrossOrigin(origins = "*")
+
 @RestController
 @RequestMapping("/notifications")
 @Transactional
@@ -32,6 +38,9 @@ public class NotificationController {
     private FileStorageService fileStorageService;
 
     @Autowired private FileValidator fileValidator;
+
+    private final String STORAGE_ACCOUNT_NAME = "airportfrontendstorage";
+    private final String CONTAINER_NAME = "videos";
 
     // 🔹 공지사항 목록 조회
     @GetMapping
@@ -96,97 +105,53 @@ public class NotificationController {
 
     //     return notificationRepository.save(existing);
     // }
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Notification updateNotification(
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<String> updateNotification(
             @PathVariable Long id,
-            @RequestParam("title") String title,
-            @RequestParam("contents") String contents,
-            @RequestParam("important") Boolean important,
-            @RequestParam(value = "removeFile", defaultValue = "false") boolean removeFile,
-            @RequestParam(value = "file", required = false) MultipartFile file
+            @RequestBody Map<String, String> payload
     ) {
         Notification existing = notificationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
 
-        // DB에는 savedName을 fileUrl 필드에 넣어두는 형태 유지
-        String savedName = existing.getFileUrl();
-        String originalFilename = existing.getOriginalFilename();
-        
+        String filename = payload.get("filename");
+        String token = fileStorageService.save(existing, filename);
 
-        // (권장) 둘 다 동시에 요청되면 명확히 막기
-        if (removeFile && file != null && !file.isEmpty()) {
-            throw new IllegalArgumentException("파일 교체와 삭제는 동시에 요청할 수 없습니다.");
-        }
+        existing.setTitle(payload.get("title"));
+        existing.setContents(payload.get("contents"));
+        existing.setImportant(Boolean.parseBoolean(payload.get("important")));
+        existing.setOriginalFilename(filename);
 
-        if (file != null && !file.isEmpty()) {
-            // ✅ 업로드 전 서버 검증(크기/확장자/MIME)
-            fileValidator.validateOne(file);
+        notificationRepository.save(existing);
 
-            // ✅ 교체: 기존 파일 삭제 + 새 파일 저장(서비스에서 old 삭제 처리)
-            savedName = fileStorageService.save(file, existing.getFileUrl());
-            originalFilename = file.getOriginalFilename();
-
-        } else if (removeFile) {
-            // ✅ 삭제만: 실제 파일과 DB 정보 제거
-            if (savedName != null && !savedName.isBlank()) {
-                fileStorageService.deleteByUrl(savedName);
-            }
-            savedName = null;
-            originalFilename = null;
-        }
-        // ✅ 유지: 아무 것도 안 함
-
-        existing.setTitle(title);
-        existing.setContents(contents);
-        existing.setImportant(important);
-        existing.setFileUrl(savedName);            // savedName 저장
-        existing.setOriginalFilename(originalFilename);
-
-        return notificationRepository.save(existing);
+        return ResponseEntity.ok(token); // URL만 반환
     }
 
-    // 🔹 공지사항 등록 (파일 업로드 포함)
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Notification registerNotification(
-    //         @RequestParam("writerId") Long writerId,
-    //         @RequestParam("title") String title,
-    //         @RequestParam("contents") String contents,
-    //         @RequestParam("important") Boolean important,
-    //         @RequestParam(value = "file", required = false) MultipartFile file
-    // ) {
-    //     String fileUrl = null;
-    //     String originalFilename = null;
+    @PostMapping()
+    public ResponseEntity<String> registerNotification(@RequestBody Map<String, String> payload) {
+        System.out.println("들어옴");
 
-    //     if (file != null && !file.isEmpty()) {
-    //         fileUrl = fileStorageService.save(file); // 파일 저장 후 URL 생성
-    //         originalFilename = file.getOriginalFilename();
-    //     }
+        Notification notification = new Notification();
+        notification.setWriterId(Long.valueOf(payload.get("writerId")));
+        notification.setTitle(payload.get("title"));
+        notification.setContents(payload.get("contents"));
+        notification.setImportant(Boolean.parseBoolean(payload.get("important")));
+        notification.setOriginalFilename(payload.get("filename"));
 
-            @RequestParam("writerId") Long writerId,
-            @RequestParam("title") String title,
-            @RequestParam("contents") String contents,
-            @RequestParam("important") Boolean important,
-            @RequestParam(value = "file", required = false) MultipartFile file
-    ) {
-        String savedName = null;
-        String originalFilename = null;
+        System.out.println("첫번째");
 
-        if (file != null && !file.isEmpty()) {
-            fileValidator.validateOne(file);         // ✅ 검증
-            savedName = fileStorageService.save(file); // ✅ savedName 반환
-            originalFilename = file.getOriginalFilename();
-        }
+        String token = fileStorageService.save(notification, payload.get("filename"));
 
-        NotificationsRegistered command = new NotificationsRegistered();
-        command.setWriterId(writerId);
-        command.setTitle(title);
-        command.setContents(contents);
-        command.setImportant(important);
+        System.out.println("두번째");
+
         LocalDateTime now = LocalDateTime.now();
-        ZonedDateTime koreanTime = now.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("Asia/Seoul"));
-        command.setWriteDate(koreanTime);
+        ZonedDateTime koreanTime = now.atZone(ZoneId.systemDefault())
+                                    .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        notification.setWriteDate(koreanTime);
 
-        return Notification.register(command, savedName, originalFilename);
+        notificationRepository.save(notification);
+        System.out.println("성공");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(token);
     }
 
     @DeleteMapping("/{id}/file")
@@ -208,15 +173,4 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/files/{fileName}")
-    public ResponseEntity<?> download(@PathVariable Long id, @PathVariable String fileName) {
-        var res = fileStorageService.loadAsResource(fileName);
-        if (res == null) return ResponseEntity.notFound().build();
-
-        // DB에서 originalFilename 찾아서 Content-Disposition에 사용 (생략시 fileName 사용)
-        String downloadName = "attachment";
-        return ResponseEntity.ok()
-            .header("Content-Disposition", "attachment; filename=\"" + downloadName + "\"")
-            .body(res);
-    }
 }

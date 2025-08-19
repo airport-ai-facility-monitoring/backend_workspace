@@ -1,169 +1,125 @@
 package airport.infra;
 
+import com.azure.storage.blob.*;
+import com.azure.storage.blob.models.*;
+import com.azure.storage.blob.sas.BlobSasPermission;
+import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
+import com.azure.storage.common.StorageSharedKeyCredential;
+import com.azure.storage.common.sas.SasProtocol;
+
+import airport.domain.Notification;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
-import java.nio.file.*;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class FileStorageService {
+    @Value("${storage.account-name}")
+    private String storageAccountName;
 
-    // application.properties 에서 설정
-    @Value("${app.upload.dir}")
-    private String baseDir; // 예: /var/app/uploads/notifications
+    @Value("${storage.account-key}")
+    private String storageAccountKey;  // 계정 키 사용
+
+    @Value("${storage.container-name}")
+    private String containerName;
 
     /**
-     * 새 파일 저장 + (선택) 기존 파일 삭제
-     * @return 저장된 내부 파일 식별자(savedName) 또는 접근용 상대경로
+     * blobName 기반으로 SAS URL 생성
      */
-    public String save(MultipartFile file, String oldFileUrl) {
-        try {
-            if (oldFileUrl != null && !oldFileUrl.isEmpty()) {
-                deleteByUrl(oldFileUrl);
-            }
-            Files.createDirectories(Path.of(baseDir));
+    private String generateBlobSasToken(String blobName) {
+        StorageSharedKeyCredential credential =
+                new StorageSharedKeyCredential(storageAccountName, storageAccountKey);
 
-            // 원본명에서 확장자만 추출
-            String original = Optional.ofNullable(file.getOriginalFilename()).orElse("file");
-            String ext = original.contains(".") ? original.substring(original.lastIndexOf('.') + 1) : "";
-            String savedName = UUID.randomUUID().toString().replace("-", "");
-            if (!ext.isBlank()) savedName += "." + ext.toLowerCase();
+        BlobServiceClient serviceClient = new BlobServiceClientBuilder()
+                .endpoint(String.format("https://%s.blob.core.windows.net", storageAccountName))
+                .credential(credential)
+                .buildClient();
 
-            Path target = Path.of(baseDir).resolve(savedName).normalize();
+        BlobContainerClient containerClient = serviceClient.getBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.getBlobClient(blobName);
 
-            // baseDir 밖으로 나가면 차단
-            if (!target.startsWith(Path.of(baseDir))) {
-                throw new SecurityException("잘못된 경로");
-            }
+        BlobSasPermission permission = new BlobSasPermission()
+                .setReadPermission(true)
+                .setWritePermission(true)
+                .setDeletePermission(true);
 
-            try (InputStream in = file.getInputStream()) {
-                Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
-            }
+        OffsetDateTime expiryTime = OffsetDateTime.now().plusMinutes(5);
 
-            // DB에는 savedName만 저장하는 걸 권장 (또는 /files/{id} 다운로드 링크)
-            return savedName;
+        BlobServiceSasSignatureValues values = new BlobServiceSasSignatureValues(expiryTime, permission)
+                .setStartTime(OffsetDateTime.now())
+                .setProtocol(SasProtocol.HTTPS_ONLY);
 
-        } catch (Exception e) {
-            throw new RuntimeException("파일 저장 중 오류: " + e.getMessage(), e);
-        }
-    }
-
-    public String save(MultipartFile file) {
-        return save(file, null);
+        return blobClient.generateSas(values); // URL 아님, 토큰만
     }
 
     /**
-     * savedName 기반으로 파일 삭제
+     * 파일 저장 + 기존 파일 삭제 (Blob Storage)
+     * 업로드는 하지 않고 SAS URL만 반환
+     * @return Blob SAS URL
      */
-    public void deleteByUrl(String savedNameOrUrl) {
+    public String save(Notification notification, String filename) {
         try {
-            // /uploads/abc.pdf 형태가 들어와도 파일명만 추출
-            String fileName = Paths.get(savedNameOrUrl).getFileName().toString();
-            Path path = Path.of(baseDir).resolve(fileName).normalize();
-
-            if (path.startsWith(Path.of(baseDir)) && Files.exists(path)) {
-                Files.delete(path);
+            // 기존 파일 삭제
+            if (notification.getFileUrl() != null) {
+                String temp = notification.getFileUrl();
+                notification.setFileUrl("");
+                notification.setOriginalFilename("");
+                deleteByUrl(temp);
             }
+            String url = String.format("https://%s.blob.core.windows.net/%s/%s", storageAccountName, containerName, filename);
+            notification.setFileUrl(url);
+            
+
+            // 업로드는 스킵하고 SAS URL만 반환
+            return generateBlobSasToken(filename);
+
         } catch (Exception e) {
-            throw new RuntimeException("파일 삭제 중 오류: " + e.getMessage(), e);
+            throw new RuntimeException("Blob SAS URL 생성 중 오류: " + e.getMessage(), e);
         }
     }
 
-    // (선택) 다운로드용 리소스 리턴
-    public FileSystemResource loadAsResource(String savedName) {
-        Path path = Path.of(baseDir).resolve(savedName).normalize();
-        if (!path.startsWith(Path.of(baseDir)) || !Files.exists(path)) return null;
-        return new FileSystemResource(path);
+    /**
+     * Blob URL 기반 삭제
+     */
+    public void deleteByUrl(String blobUrl) {
+        try {
+            // blobUrl은 항상 https://{account}.blob.core.windows.net/{container}/{blobPath} 형태라고 가정
+            String prefix = String.format("https://%s.blob.core.windows.net/%s/", storageAccountName, containerName);
+            if (!blobUrl.startsWith(prefix)) {
+                return; // 우리 스토리지가 아니면 무시
+            }
+
+            // container 이후 경로 추출
+            String blobName = blobUrl.substring(prefix.length());
+            if (blobName.contains("?")) {
+                blobName = blobName.substring(0, blobName.indexOf("?"));
+            }
+
+            // BlobClient 생성
+            StorageSharedKeyCredential credential =
+                    new StorageSharedKeyCredential(storageAccountName, storageAccountKey);
+
+            BlobServiceClient serviceClient = new BlobServiceClientBuilder()
+                    .endpoint(String.format("https://%s.blob.core.windows.net", storageAccountName))
+                    .credential(credential)
+                    .buildClient();
+
+            BlobContainerClient containerClient = serviceClient.getBlobContainerClient(containerName);
+            BlobClient blobClient = containerClient.getBlobClient(blobName);
+
+            // 삭제
+            if (blobClient.exists()) {
+                blobClient.delete();
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Blob Storage 삭제 중 오류: " + e.getMessage(), e);
+        }
     }
 }
-
-// package airport.infra;
-
-// import org.springframework.stereotype.Service;
-// import org.springframework.web.multipart.MultipartFile;
-
-// import java.io.File;
-// import java.io.IOException;
-// import java.nio.file.*;
-// import java.util.UUID;
-
-// @Service
-// public class FileStorageService {
-
-//     private final String uploadDir = System.getProperty("user.dir") + "/uploads";
-
-//     /**
-//      * 새 파일 저장 + 기존 파일 삭제
-//      * @param file 새로 저장할 파일
-//      * @param oldFileUrl 기존 파일 URL (없으면 null)
-//      * @return 새 파일의 접근 URL
-//      */
-//     public String save(MultipartFile file, String oldFileUrl) {
-//         try {
-//             // 기존 파일 삭제
-//             if (oldFileUrl != null && !oldFileUrl.isEmpty()) {
-//                 deleteByUrl(oldFileUrl);
-//             }
-
-//             // 업로드 폴더 확인
-//             File dir = new File(uploadDir);
-//             if (!dir.exists()) {
-//                 dir.mkdirs();
-//             }
-
-//             String originalFilename = file.getOriginalFilename();
-//             if (originalFilename == null || originalFilename.isEmpty()) {
-//                 throw new RuntimeException("파일 이름이 비어 있습니다.");
-//             }
-
-//             // 새 파일명 생성
-//             String newFilename = UUID.randomUUID() + "_" + originalFilename;
-//             String filePath = uploadDir + "/" + newFilename;
-
-//             // 파일 저장
-//             file.transferTo(new File(filePath));
-
-//             // URL 반환
-//             return "/uploads/" + newFilename;
-
-//         } catch (Exception e) {
-//             e.printStackTrace();
-//             throw new RuntimeException("파일 저장 중 오류 발생: " + e.getMessage());
-//         }
-//     }
-
-//     public String save(MultipartFile file) {
-//         return save(file, null); // 기존 파일 없음
-//     }
-
-//     /**
-//      * URL 기반으로 파일 삭제
-//      */
-//     public void deleteByUrl(String fileUrl) {
-//         try {
-//             String fileName = Paths.get(fileUrl).getFileName().toString();
-//             Path path = Paths.get(uploadDir, fileName); // 저장 경로 그대로 사용
-
-//             if (Files.exists(path)) {
-//                 Files.delete(path);
-//                 System.out.println("파일 삭제 완료: " + path);
-//             } else {
-//                 System.out.println("삭제 대상 파일이 존재하지 않음: " + path);
-//             }
-//         } catch (IOException e) {
-//             throw new RuntimeException("파일 삭제 중 오류: " + e.getMessage(), e);
-//         }
-//     }
-
-//     /**
-//      * 파일 URL로부터 파일명 추출
-//      */
-//     public String extractFileName(String fileUrl) {
-//         return Paths.get(fileUrl).getFileName().toString();
-//     }
-// }

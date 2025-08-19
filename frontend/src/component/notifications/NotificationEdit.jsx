@@ -34,6 +34,7 @@ export default function NotificationEdit() {
   // 파일 상태: 기존/새 파일 공통 관리
   const [file, setFile] = useState(null);           // { name, url?, isNew, file? }
   const [removeFile, setRemoveFile] = useState(false); // 저장 시 삭제할지 여부
+  const [fileName, setFileName] = useState('')
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -63,6 +64,7 @@ export default function NotificationEdit() {
     const selected = e.target.files?.[0] || null;
     if (!selected) {
       setFile(null);
+      setFileName('');
       return;
     }
 
@@ -70,10 +72,12 @@ export default function NotificationEdit() {
       // ✅ 업로드 즉시 사전검증
       validateFiles([selected]);
       setFile({ name: selected.name, isNew: true, file: selected });
+      setFileName(selected.name)
       setRemoveFile(false); // 새 파일을 고르면 삭제 플래그는 해제
     } catch (err) {
       alert(err.message);
       setFile(null);
+      setFileName('')
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -101,12 +105,6 @@ export default function NotificationEdit() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('contents', contents);
-    formData.append('important', important);
-    formData.append('removeFile', removeFile);
-
     // 새 파일만 업로드(교체)
     if (file && file.isNew && file.file) {
       // ✅ 서버 가기 전 최종검증
@@ -116,14 +114,29 @@ export default function NotificationEdit() {
         alert(err.message);
         return;
       }
-      formData.append('file', file.file);
     }
+    const payload = {
+      title: title,
+      contents: contents,
+      important: String(important), // 문자열로 변환
+      filename: fileName
+    };
+
 
     try {
       // 백엔드가 DTO로 200/201을 내려주면 성공 처리
-      await api.put(`/notifications/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const res = await api.put(`/notifications/${id}`, payload);
+      const sasUrl = res.data.url
+        if (file) {
+        await fetch(sasUrl, {
+          method: 'PUT',
+          headers: {
+            'x-ms-blob-type': 'BlockBlob',
+            'Content-Type': file.type
+          },
+          body: file
+        });
+      }
       alert('수정이 완료되었습니다.');
       navigate(`/notifications/${id}`);
     } catch (error) {

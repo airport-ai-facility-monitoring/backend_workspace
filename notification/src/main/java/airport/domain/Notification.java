@@ -26,16 +26,19 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long notificationsId;
-
-    private String title;
-
     @Column(updatable = false)
     private Long writerId;
 
+    @Column(columnDefinition = "NVARCHAR(255)")
+    private String title;
+
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String contents;
 
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String fileUrl;
 
+    @Column(columnDefinition = "NVARCHAR(500)")
     private String originalFilename;
 
     @Column(updatable = false)
@@ -45,13 +48,10 @@ public class Notification {
     @Column(nullable = false)
     private boolean important;
 
-    @PostPersist
-    public void onPostPersist() {
-        NotificationsRegistered notificationsRegistered = new NotificationsRegistered(
-            this
-        );
-        notificationsRegistered.publishAfterCommit();
-    }
+    // @PostPersist
+    // public void onPostPersist() {
+
+    // }
 
     public static NotificationRepository repository() {
         NotificationRepository notificationRepository = NotificationApplication.applicationContext.getBean(

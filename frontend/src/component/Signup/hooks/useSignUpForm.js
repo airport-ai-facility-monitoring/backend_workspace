@@ -120,7 +120,9 @@ const useSignUpForm = () => {
       navigate("/login");
     } catch (error) {
       console.error(error);
-      if (error.response) {
+      if (error.response && error.response.status === 409) {
+        showToast(error.response.data.message, "error", 5000);
+      } else if (error.response) {
         showToast(
           `회원가입 실패: ${error.response.data.message || error.response.statusText}`,
           "error",
