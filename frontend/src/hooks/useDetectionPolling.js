@@ -64,9 +64,9 @@ const useDetectionPolling = (videoRef, cameraId) => {
       try {
         const camId = parseInt(cameraId, 10);
 
-        if (camId === 4) {
+        if (camId === 4 || camId === 5 || camId === 13 || camId === 14 || camId === 15) {
           /**
-           * 카메라 4:
+           * 카메라 4,5,13,14,15:
            * - /api/runwaycracksDetect 호출
            * - 응답 saved[0].boxes: [x1, y1, x2, y2] 배열들
            * - DB 저장: /runwaycracks (item.length_m[m] → cm, item.area_m2[m²] → cm²)
