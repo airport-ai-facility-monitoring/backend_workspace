@@ -175,6 +175,11 @@ public class UserController {
             response.put("message", "회원가입이 완료되었습니다.");
 
             return ResponseEntity.ok(response);
+        } catch (DuplicateEmployeeIdException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
         } catch (RuntimeException e) {
             throw new IllegalArgumentException("회원가입 실패: " + e.getMessage(), e);
         }

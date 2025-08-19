@@ -41,7 +41,7 @@ public class UserService {
         // employeeId 중복 체크
         Optional<User> existing = userRepository.findByEmployeeId(user.getEmployeeId());
         if (existing.isPresent()) {
-            throw new RuntimeException("이미 가입된 사번입니다.");
+            throw new DuplicateEmployeeIdException("이미 가입된 사번입니다.");
         }
         if (user.getEmployeeId() == 1) {
             user.setStatus("APPROVE");
