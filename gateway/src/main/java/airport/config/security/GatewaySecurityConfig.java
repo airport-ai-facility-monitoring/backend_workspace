@@ -34,7 +34,7 @@ public class GatewaySecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                 .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // 임시 /**
-                .pathMatchers("/", "/app/", "/app/**", "/users/signup", "/users/login/jwt", "/path2.svg", "/alerts/**").permitAll() // Added /alerts/**
+                .pathMatchers("/", "/app/", "/app/**", "/users/signup", "/users/login/jwt", "/path2.svg", "/users/password-reset/**" ).permitAll() // Added /alerts/**
                 .anyExchange().authenticated() // Changed back to authenticated()
                 )
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION) // Added back

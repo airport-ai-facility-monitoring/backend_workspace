@@ -21,6 +21,17 @@ spring:
     database-platform: org.hibernate.dialect.SQLServerDialect
     hibernate:
       ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   cloud:
     stream:
       kafka:
@@ -42,6 +53,9 @@ spring:
         event-out:
           destination: airport
           contentType: application/json
+app:                                  # ✅ spring 과 같은 레벨
+  mail:
+    from: ${APP_MAIL_FROM:${MAIL_USERNAME}}
 
 jwt:
   secret: ${JWT_SECRET}
@@ -73,6 +87,17 @@ spring:
     database-platform: org.hibernate.dialect.SQLServerDialect
     hibernate:
       ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   cloud:
     stream:
       kafka:
@@ -94,3 +119,6 @@ spring:
         event-out:
           destination: airport
           contentType: application/json
+app:                                  # ✅ spring 과 같은 레벨
+  mail:
+    from: ${APP_MAIL_FROM:${MAIL_USERNAME}}

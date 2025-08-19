@@ -58,7 +58,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://probable-cod-vj996qgpxqw26qwx-5173.app.github.dev"
+              - "https://supreme-carnival-x7wr65q5gp43vgp9-5173.app.github.dev"
             allowedMethods:
               - "*"
             allowedHeaders:

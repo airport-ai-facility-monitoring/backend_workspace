@@ -135,4 +135,8 @@ public class UserService {
             return false;
         }
     }
+    /** 컨트롤러에서 비밀번호 인코딩이 필요할 때 사용할 헬퍼 */
+    public String encodePassword(String raw) {
+        return passwordEncoder.encode(raw);
+    }
 }

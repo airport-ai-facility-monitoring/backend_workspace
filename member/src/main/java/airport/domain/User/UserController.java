@@ -31,6 +31,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import airport.infra.MailService;
+
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
@@ -40,6 +42,9 @@ public class UserController {
 
     @Autowired
     JwtUtil jwtUtil;
+
+    @Autowired PasswordResetTokenRepository passwordResetTokenRepository;
+    @Autowired MailService mailService;
 
     @Autowired
     UserRepository userRepository;
@@ -328,7 +333,7 @@ public class UserController {
         response.addCookie(cookie);
     }
 
-    @PostMapping("/users/refresh-token")
+    @PostMapping("/refresh-token")
     @ResponseBody
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         // 1. 쿠키에서 refreshToken 꺼내기
@@ -366,6 +371,90 @@ public class UserController {
 
         // 6. 응답으로 Access Token JSON 반환
         return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+    }
+
+    // 비밀번호 재설정 - 코드 요청
+    @PostMapping("/password-reset/request")
+    public ResponseEntity<Map<String, Object>> requestPasswordReset(@RequestBody Map<String, String> req) {
+        String employeeIdStr = req.get("employeeId");
+        String email = req.get("email");
+
+        if (employeeIdStr == null || email == null) {
+            return ResponseEntity.badRequest().body(Map.of("ok", false, "message", "사번/이메일 누락"));
+        }
+
+        Long employeeId = Long.valueOf(employeeIdStr);
+        Optional<User> opt = userRepository.findByEmployeeId(employeeId);
+
+        // 존재 유추 방지: 일관 응답
+        if (opt.isPresent() && email.equalsIgnoreCase(opt.get().getEmail())) {
+            User user = opt.get();
+
+            String code = String.format("%06d",
+                java.util.concurrent.ThreadLocalRandom.current().nextInt(0, 1_000_000));
+            Instant expires = Instant.now().plusSeconds(600); // 10분
+
+            PasswordResetToken token = new PasswordResetToken();
+            token.setUserId(user.getId());
+            token.setEmail(email);
+            token.setCode(code);
+            token.setExpiresAt(expires);
+            token.setUsed(false);
+            token.setAttempts(0);
+            passwordResetTokenRepository.save(token);
+
+            mailService.sendPasswordResetCode(email, code);
+        }
+        return ResponseEntity.ok(Map.of("ok", true));
+    }
+
+    // 비밀번호 재설정 - 코드 확인 + 변경
+    @PostMapping("/password-reset/confirm")
+    public ResponseEntity<Map<String, Object>> confirmPasswordReset(@RequestBody Map<String, String> req) {
+        String employeeIdStr = req.get("employeeId");
+        String email = req.get("email");
+        String code = req.get("code");
+        String newPassword = req.get("newPassword");
+
+        if (employeeIdStr == null || email == null || code == null || newPassword == null) {
+            return ResponseEntity.badRequest().body(Map.of("ok", false, "message", "필수값 누락"));
+        }
+        if (newPassword.length() < 6) {
+            return ResponseEntity.badRequest().body(Map.of("ok", false, "message", "비밀번호는 6자리 이상"));
+        }
+
+        Long employeeId = Long.valueOf(employeeIdStr);
+        User user = userRepository.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 정보"));
+
+        PasswordResetToken token = passwordResetTokenRepository
+                .findTopByUserIdAndEmailAndUsedOrderByIdDesc(user.getId(), email, false)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "코드를 요청해주세요."));
+
+        if (token.getAttempts() != null && token.getAttempts() >= 5) {
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "시도 횟수 초과");
+        }
+        if (Instant.now().isAfter(token.getExpiresAt())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "코드 만료");
+        }
+
+        token.setAttempts((token.getAttempts() == null ? 0 : token.getAttempts()) + 1);
+        if (!token.getCode().equals(code)) {
+            passwordResetTokenRepository.save(token);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "코드 불일치");
+        }
+
+        // 성공 처리
+        token.setUsed(true);
+        passwordResetTokenRepository.save(token);
+
+        user.setPassword(userService.encodePassword(newPassword)); // BCrypt 인코딩
+        user.setPasswordChangedAt(Instant.now());
+        user.setFailedLoginAttempts(0);
+        user.setStatus("APPROVE"); // 잠금 해제
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of("ok", true));
     }
 
 }
