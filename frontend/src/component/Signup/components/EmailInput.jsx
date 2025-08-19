@@ -6,7 +6,7 @@ const EmailInput = ({ value, onChange }) => (
   <>
     <TextField
       name="email"
-      placeholder=" (선택) 이메일 주소 입력"
+      placeholder="이메일 주소 입력"
       variant="outlined"
       fullWidth
       value={value}

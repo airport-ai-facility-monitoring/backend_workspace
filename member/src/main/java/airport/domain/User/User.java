@@ -15,6 +15,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
 import lombok.Data;
 import lombok.ToString;
 
@@ -46,6 +49,9 @@ public class User {
 
     private String phoneNumber;
 
+    @NotBlank
+    @Email
+    @Column(nullable = false)
     private String email;
 
     private String status;
