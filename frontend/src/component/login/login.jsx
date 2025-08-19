@@ -82,12 +82,18 @@ export default function Login() {
       navigate(res.data.role === "ADMIN" ? "/admin" : "/home");
     } catch (err) {
       console.error("로그인 실패:", err);
-      const msg =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        err.message ||
-        "로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.";
-      setError(msg);
+
+      if (err.response?.status === 403 || err.response?.status === 401) {
+        // 세미 로그인 관련 메시지
+        setError(err.response.data.error);
+      } else {
+        const msg =
+          err.response?.data?.error ||
+          err.response?.data?.message ||
+          err.message ||
+          "로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.";
+        setError(msg);
+      }
     }
   };
 

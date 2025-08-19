@@ -83,6 +83,7 @@ const useSignUpForm = () => {
       "department",
       "position",
       "hireDate",
+      "email",
     ];
     const fieldsValid = requiredFields.every(
       (field) => form[field] && form[field].trim() !== ""

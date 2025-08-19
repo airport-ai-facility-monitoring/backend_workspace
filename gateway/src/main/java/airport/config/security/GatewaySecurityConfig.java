@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -36,6 +37,14 @@ public class GatewaySecurityConfig {
                 // 임시 /**
                 .pathMatchers("/", "/app/", "/app/**", "/users/signup", "/users/login/jwt", "/path2.svg", "/users/password-reset/**" ).permitAll() // Added /alerts/**
                 .anyExchange().authenticated() // Changed back to authenticated()
+                ).exceptionHandling(exceptions -> exceptions
+                    .authenticationEntryPoint((exchange, ex) -> {
+                        HttpStatus status = (ex instanceof org.springframework.security.authentication.AuthenticationCredentialsNotFoundException)
+                                            ? HttpStatus.UNAUTHORIZED
+                                            : HttpStatus.FORBIDDEN;
+                        exchange.getResponse().setStatusCode(status);
+                        return exchange.getResponse().setComplete();
+                    })
                 )
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION) // Added back
                 .build();
