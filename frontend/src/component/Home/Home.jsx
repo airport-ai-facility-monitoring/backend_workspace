@@ -2,14 +2,11 @@ import React, { useState, useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import VideocamRoundedIcon from "@mui/icons-material/VideocamRounded";
-import PlaceRoundedIcon from "@mui/icons-material/PlaceRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
-
 import WeatherBox from "./WeatherBox";
 import NotificationBox from "./NotificationBox";
 import api from "../../config/api";
 import { useNavigate } from "react-router-dom";
-
 import {
   Box,
   Grid,
@@ -19,7 +16,6 @@ import {
   CardActionArea,
   Typography,
   IconButton,
-  Chip,
   Divider,
   List,
   ListItem,
@@ -28,15 +24,22 @@ import {
   Tooltip,
   Container,
 } from "@mui/material";
+import MapHero from "../MapHero"; // ✅ 새 공용 컴포넌트
 
-/** 지도 라벨들 */
+/** 지도 라벨: 대시보드와 동일하게 12개 확장 */
 const runwayLabels = [
-  { id: 1, name: "제1·2 활주로", top: "33.1%", left: "29.2%" },
+  { id: 1, name: "제1,2 활주로", top: "33.1%", left: "29.2%" },
   { id: 2, name: "자유무역지역(화물터미널)", top: "16.3%", left: "45.5%" },
   { id: 3, name: "제1 여객터미널", top: "23%", left: "70.7%" },
   { id: 4, name: "제2 여객터미널", top: "59%", left: "40.2%" },
   { id: 5, name: "탑승동", top: "40%", left: "59.8%" },
   { id: 6, name: "제3·4 활주로", top: "65.5%", left: "75.5%" },
+  { id: 7, name: "A계류장", top: "45%", left: "20%" },
+  { id: 8, name: "B계류장", top: "50%", left: "80%" },
+  { id: 9, name: "C계류장", top: "70%", left: "25%" },
+  { id: 10, name: "D계류장", top: "20%", left: "30%" },
+  { id: 11, name: "E계류장", top: "80%", left: "50%" },
+  { id: 12, name: "F계류장", top: "10%", left: "60%" },
 ];
 
 const APP_BAR_HEIGHT = 64;
@@ -48,7 +51,6 @@ export default function MainHomeMg() {
 
   useEffect(() => {
     let mounted = true;
-
     const fetchInitialAlerts = async () => {
       try {
         const response = await api.get("/alerts");
@@ -60,12 +62,10 @@ export default function MainHomeMg() {
         if (mounted) setLoading(false);
       }
     };
-
     fetchInitialAlerts();
     const interval = setInterval(() => {
       if (document.visibilityState === "visible") fetchInitialAlerts();
     }, 5000);
-
     return () => {
       mounted = false;
       clearInterval(interval);
@@ -77,98 +77,28 @@ export default function MainHomeMg() {
       {/* Breadcrumb */}
       <Container maxWidth="xl" sx={{ pt: 2 }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-          <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
-            Welcome
-          </Typography>
+          <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>Welcome</Typography>
           <ArrowForwardIosRoundedIcon sx={{ fontSize: 12, color: "text.disabled" }} />
-          <Typography variant="subtitle2" color="primary" fontWeight={800}>
-            Home
-          </Typography>
+          <Typography variant="subtitle2" color="primary" fontWeight={800}>Home</Typography>
         </Box>
       </Container>
 
       <Container maxWidth="xl" sx={{ pb: 4 }}>
-        {/* 🔒 레이아웃 고정: 좌 9 / 우 3 컬럼 (xs에서도 동일하게 유지) */}
         <Grid container spacing={3}>
-          {/* ===== 왼쪽 메인 컬럼 (지도 + CCTV + 날씨) ===== */}
+          {/* 좌측: 지도 + CCTV + 날씨 */}
           <Grid item xs={9}>
-            {/* 지도(히어로) */}
-            <Card
-              elevation={1}
-              sx={{
-                position: "relative",
-                overflow: "hidden",
-                borderRadius: 3,
-                height: 620,
-                bgcolor: "#e8eefc",
-                border: "1px solid",
-                borderColor: "divider",
-              }}
-            >
-              <CardHeader
-                title={
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <PlaceRoundedIcon fontSize="small" />
-                    <Typography variant="subtitle1" fontWeight={800}>
-                      공항 전경 & 위치 핫스팟
-                    </Typography>
-                  </Box>
-                }
-                subheader="라벨을 클릭하면 해당 구역 상세로 이동합니다."
-                sx={{
-                  px: 2,
-                  py: 1.5,
-                  "& .MuiCardHeader-subheader": { fontSize: 12 },
-                }}
-              />
-              <Divider />
+            {/* ✅ 공용 MapHero 사용 (라벨 12개) */}
+            <MapHero
+              labels={runwayLabels}
+              onLabelClick={(id) => navigate(`/dashdetail/${id}`)}
+              height={620}
+              imageSrc="/chart.png"
+            />
 
-              <Box
-                component="img"
-                src="/chart.png"
-                alt="Airport overview"
-                sx={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  filter: "saturate(1.02)",
-                }}
-              />
-
-              {/* 지도 라벨 */}
-              {runwayLabels.map(({ id, name, top, left }) => (
-                <Chip
-                  key={id}
-                  label={name}
-                  clickable
-                  onClick={() => navigate(`/dashdetail/${id}`)}
-                  size="small"
-                  sx={{
-                    position: "absolute",
-                    top,
-                    left,
-                    transform: "translate(-50%, -50%)",
-                    bgcolor: "#ffffff",
-                    border: "1px solid #f1c40f",
-                    fontSize: 12,
-                    fontWeight: 800,
-                    color: "#111827",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                    "&:hover": { bgcolor: "#fffcee" },
-                  }}
-                />
-              ))}
-            </Card>
-
-            {/* CCTV 1~3 : 지도 아래 한 줄 고정 */}
-            <Grid
-              container
-              columnSpacing={6}   // 👉 가로 간격 더 넓게
-              rowSpacing={5}      // 👉 세로 간격도 균일
-              sx={{ mt: 2, alignItems: 'stretch' }}  // 👉 카드 높이 자동 맞춤
-            >
+            {/* CCTV 1~3 */}
+            <Grid container columnSpacing={6} rowSpacing={5} sx={{ mt: 2, alignItems: "stretch" }}>
               {[1, 2, 3].map((num) => (
-                <Grid key={num} item xs={4} sx={{ display: 'flex' }}>   {/* 👉 item 자체를 flex로 */}
+                <Grid key={num} item xs={4} sx={{ display: "flex" }}>
                   <Card
                     elevation={1}
                     sx={{
@@ -176,9 +106,9 @@ export default function MainHomeMg() {
                       overflow: "hidden",
                       border: "1px solid",
                       borderColor: "divider",
-                      height: 180,              // 동일 높이
+                      height: 180,
                       display: "flex",
-                      width: '100%',            // 열 너비 꽉 채우기
+                      width: "100%",
                     }}
                   >
                     <CardActionArea onClick={() => navigate(`/dashdetail/${num}`)} sx={{ position: "relative" }}>
@@ -191,7 +121,6 @@ export default function MainHomeMg() {
                         playsInline
                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
                       />
-                      {/* 좌측 하단 배지 */}
                       <Box
                         sx={{
                           position: "absolute",
@@ -212,7 +141,6 @@ export default function MainHomeMg() {
                           CCTV {num}
                         </Typography>
                       </Box>
-                      {/* 우측 상단 플레이 아이콘 */}
                       <Box
                         sx={{
                           position: "absolute",
@@ -234,16 +162,8 @@ export default function MainHomeMg() {
               ))}
             </Grid>
 
-            {/* 날씨: CCTV 아래 전체 */}
-            <Card
-              elevation={1}
-              sx={{
-                borderRadius: 3,
-                border: "1px solid",
-                borderColor: "divider",
-                mt: 2,
-              }}
-            >
+            {/* 날씨 */}
+            <Card elevation={1} sx={{ borderRadius: 3, border: "1px solid", borderColor: "divider", mt: 2 }}>
               <CardHeader
                 title={<Typography variant="subtitle1" fontWeight={900}>현재 날씨</Typography>}
                 action={
@@ -262,9 +182,8 @@ export default function MainHomeMg() {
             </Card>
           </Grid>
 
-          {/* ===== 오른쪽 사이드 컬럼 (공지 → 알림 로그) ===== */}
+          {/* 우측: 공지 + 알림 */}
           <Grid item xs={3}>
-            {/* 공지사항 (상단 고정) */}
             <Card elevation={1} sx={{ borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
               <CardHeader
                 title={<Typography variant="subtitle1" fontWeight={900}>공지사항</Typography>}
@@ -283,16 +202,7 @@ export default function MainHomeMg() {
               </CardContent>
             </Card>
 
-            {/* 알림 로그 (공지사항 아래) */}
-            <Card
-              elevation={1}
-              sx={{
-                borderRadius: 3,
-                border: "1px solid",
-                borderColor: "divider",
-                mt: 3,
-              }}
-            >
+            <Card elevation={1} sx={{ borderRadius: 3, border: "1px solid", borderColor: "divider", mt: 3 }}>
               <CardHeader
                 title={<Typography variant="subtitle1" fontWeight={900}>알림 로그</Typography>}
                 action={
