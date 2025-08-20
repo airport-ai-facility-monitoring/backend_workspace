@@ -1,0 +1,26 @@
+
+    create table equipmentanalysis.equipment_report_table (
+       id numeric(19,0) identity not null,
+        action VARCHAR(MAX),
+        avg_life int,
+        category varchar(255),
+        cost VARCHAR(MAX),
+        created_at datetime not null,
+        decision VARCHAR(MAX),
+        equipment_id numeric(19,0),
+        failure int,
+        labor_rate int,
+        llm_report TEXT,
+        maintenance_cost_num int,
+        manufacturer varchar(255),
+        name varchar(255),
+        protection_rating varchar(255),
+        purchase int,
+        raw_json TEXT,
+        repair_cost int,
+        repair_time int,
+        runtime int,
+        service_years int,
+        sub_category varchar(255),
+        primary key (id)
+    );
