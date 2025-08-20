@@ -1,11 +1,11 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://orange-space-meme-xg775v9rgpv26-8088.app.github.dev",
+  baseURL: "http://20.249.106.86:8080/", // 기존 GitHub Codespaces URL → 외부 IP
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // 쿠키 자동 전송 옵션 (refresh token이 쿠키에 있을 때 필수)
+  withCredentials: true, // 쿠키 자동 전송 옵션
 });
 
 // Access Token 저장/조회 함수 (localStorage 사용)
