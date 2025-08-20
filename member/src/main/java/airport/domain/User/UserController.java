@@ -128,16 +128,16 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<Map<String, Object>> registerUser(@RequestBody Map<String, Object> userData, HttpServletRequest request) {
         try {
-            // 1. reCAPTCHA 토큰 검증
-            // String recaptchaToken = (String) userData.get("recaptchaToken");
-            // if (!userService.verifyRecaptcha(recaptchaToken, request)) {
-            //     Map<String, Object> errorResponse = new HashMap<>();
-            //     errorResponse.put("success", false);
-            //     errorResponse.put("message", "로봇으로 의심되는 접근입니다. 다시 시도해 주세요.");
-            //     return ResponseEntity.badRequest().body(errorResponse);
-            // }else{
-            //     System.out.println("인증성공");
-            // }
+            1. reCAPTCHA 토큰 검증
+            String recaptchaToken = (String) userData.get("recaptchaToken");
+            if (!userService.verifyRecaptcha(recaptchaToken, request)) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "로봇으로 의심되는 접근입니다. 다시 시도해 주세요.");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }else{
+                System.out.println("인증성공");
+            }
             
             Long employeeId = Long.valueOf((String) userData.get("employeeId"));
             
@@ -199,13 +199,13 @@ public class UserController {
 
 
         try {
-            // 1. reCAPTCHA 검증
-            // String recaptchaToken = (String) data.get("recaptchaToken");
-            // if (!userService.verifyRecaptcha(recaptchaToken, request)) {
-            //     respond(response, HttpServletResponse.SC_FORBIDDEN,
-            //             "{\"error\": \"로봇으로 의심되는 접근입니다.\"}");
-            //     return;
-            // }
+            1. reCAPTCHA 검증
+            String recaptchaToken = (String) data.get("recaptchaToken");
+            if (!userService.verifyRecaptcha(recaptchaToken, request)) {
+                respond(response, HttpServletResponse.SC_FORBIDDEN,
+                        "{\"error\": \"로봇으로 의심되는 접근입니다.\"}");
+                return;
+            }
 
             // 2. employeeId 가져오기 및 조회
             Long employeeId = Long.valueOf(String.valueOf(data.get("employeeId")));
