@@ -40,6 +40,16 @@ spec:
                 secretKeyRef:
                   name: member-secrets
                   key: CAPTCHA_SECRET
+            - name: MAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: member-secrets
+                  key: MAIL_USERNAME
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: member-secrets
+                  key: MAIL_PASSWORD
           readinessProbe:
             httpGet:
               path: '/actuator/health'
