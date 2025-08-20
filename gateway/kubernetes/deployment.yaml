@@ -19,3 +19,11 @@ spec:
           image: "gangmin522/gateway:latest"
           ports:
             - containerPort: 8080
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: member-secrets
+                  key: JWT_SECRET
+
+          

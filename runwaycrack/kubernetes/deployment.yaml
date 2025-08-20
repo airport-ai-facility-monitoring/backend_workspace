@@ -19,6 +19,22 @@ spec:
           image: "gangmin522/runwaycrack:latest"
           ports:
             - containerPort: 8080
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: member-secrets
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: member-secrets
+                  key: DB_PASSWORD
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: member-secrets
+                  key: GEMINI_API_KEY
           readinessProbe:
             httpGet:
               path: '/actuator/health'
