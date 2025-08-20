@@ -58,7 +58,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://supreme-carnival-x7wr65q5gp43vgp9-5173.app.github.dev"
+              - "https://supreme-fiesta-97454xwqjrr7c7rxv-5173.app.github.dev/"
             allowedMethods:
               - "*"
             allowedHeaders:
@@ -95,7 +95,7 @@ spring:
           predicates:
             - Path=/runwaycracks/**, /runwaycrackreports/**
         - id: runwaycrack-api
-          uri: http://localhost:8000
+          uri: http://runwaycrackai:8000
           predicates:
             - Path=/api/runwaycracksDetect/**
         - id: equipment-analysis
