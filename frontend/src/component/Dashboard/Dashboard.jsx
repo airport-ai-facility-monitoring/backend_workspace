@@ -113,7 +113,7 @@ const DashBoardMg = () => {
             />
           </Box>
 
-          {/* 알림 패널: 내부 스크롤 제거 */}
+          {/* 알림 패널: 내부 스크롤 가능 */}
           <Paper
             elevation={1}
             sx={{
@@ -121,7 +121,8 @@ const DashBoardMg = () => {
               bgcolor: "#fefefe",
               display: "flex",
               flexDirection: "column",
-              overflow: "visible",
+              overflow: "hidden", // ✅ 바깥으로 새는 것 방지
+              maxHeight: 650,     // ✅ 높이 제한 (원하는 값으로 조정 가능)
             }}
           >
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
@@ -131,7 +132,14 @@ const DashBoardMg = () => {
               </IconButton>
             </Box>
 
-            <List sx={{ p: 0, overflow: "visible" }}>
+            {/* 내부 스크롤 영역 */}
+            <List
+              sx={{
+                p: 0,
+                overflowY: "auto",  // ✅ 세로 스크롤 가능
+                flex: 1,
+              }}
+            >
               {alerts.map((alert, index) => (
                 <React.Fragment key={alert.alertId || index}>
                   <ListItem alignItems="flex-start" disablePadding>
