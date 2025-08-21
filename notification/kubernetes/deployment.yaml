@@ -35,6 +35,10 @@ spec:
                 secretKeyRef:
                   name: notification-secrets
                   key: AZURE_ACCOUNT_KEY
+            - name: STORAGE_ACCOUNT_NAME
+              value: "airportfrontendstorage"
+            - name: STORAGE_CONTAINER_NAME
+              value: "videos"
           readinessProbe:
             httpGet:
               path: '/actuator/health'
