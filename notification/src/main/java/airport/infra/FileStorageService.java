@@ -20,13 +20,13 @@ import java.util.UUID;
 
 @Service
 public class FileStorageService {
-    @Value("${storage.account-name}")
+    @Value("${STORAGE_ACCOUNT_NAME}")
     private String storageAccountName;
 
-    @Value("${storage.account-key}")
+    @Value("${AZURE_ACCOUNT_KEY}")
     private String storageAccountKey;  // 계정 키 사용
 
-    @Value("${storage.container-name}")
+    @Value("${STORAGE_CONTAINER_NAME}")
     private String containerName;
 
     /**
