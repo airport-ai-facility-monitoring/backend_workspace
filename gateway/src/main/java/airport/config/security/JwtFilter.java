@@ -48,9 +48,9 @@ public class JwtFilter implements WebFilter {
         // }
 
         if (path.equals("/") || 
-            path.equals("/users/signup") || 
-            path.equals("/users/login/jwt") || 
-            path.equals("/users/refresh-token") ||
+            path.equals("/api/users/signup") || 
+            path.equals("/api/users/login/jwt") || 
+            path.equals("/api/users/refresh-token") ||
             request.getMethod() == HttpMethod.OPTIONS) {
             return chain.filter(exchange);
         }                                                                                                          
