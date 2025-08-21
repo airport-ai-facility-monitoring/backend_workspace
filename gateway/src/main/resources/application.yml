@@ -17,23 +17,23 @@ spring:
         - id: member
           uri: http://localhost:8082
           predicates:
-            - Path=/users/**, /employees/**
+            - Path=/api/users/**, /api/employees/**
         - id: notification
           uri: http://localhost:8083
           predicates:
-            - Path=/notifications/**
+            - Path=/api/notifications/**
         - id: alert
           uri: http://localhost:8084
           predicates:
-            - Path=/alerts/**, /cctvs/**
+            - Path=/api/alerts/**, /api/cctvs/**
         - id: runwayobject
           uri: http://localhost:8085
           predicates:
-            - Path=/strangeObjects/**, /workers/**, /workTrucks/**
+            - Path=/api/strangeObjects/**, /api/workers/**, /api/workTrucks/**
         - id: objectdetect
           uri: http://localhost:8000
           predicates:
-            - Path=/detect/**
+            - Path=/api/detect/**
         - id: runwaycrack-api
           uri: http://localhost:8001
           predicates:
@@ -41,19 +41,15 @@ spring:
         - id: runwaycrack
           uri: http://localhost:8086
           predicates:
-            - Path=/runwaycracks/**, /runwaycrackreports/**
+            - Path=/api/runwaycracks/**, /api/runwaycrackreports/**
         - id: equipment-analysis
           uri: http://localhost:8087
           predicates:
-            - Path=/equipmentReports/**
+            - Path=/api/equipmentReports/**
         - id: equipmentdashboard
           uri: http://localhost:8089
           predicates:
-            - Path=/equipments/**, /equip/**
-        - id: frontend
-          uri: http://localhost:5173
-          predicates:
-            - Path=/**
+            - Path=/api/equipments/**, /api/equip/**
       globalcors:
         corsConfigurations:
           '[/**]':
