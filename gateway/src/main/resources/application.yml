@@ -111,6 +111,7 @@ spring:
           '[/**]':
             allowedOrigins:
               - "http://airport27.azureedge.net"
+              - "https://airport27.azureedge.net"
             allowedMethods:
               - "*"
             allowedHeaders:
