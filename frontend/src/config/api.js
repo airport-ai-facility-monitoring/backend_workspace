@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://20.249.106.86:8080/", // 기존 GitHub Codespaces URL → 외부 IP
+  baseURL: "https://airport27.azureedge.net", // 기존 GitHub Codespaces URL → 외부 IP
   headers: {
     "Content-Type": "application/json",
   },
