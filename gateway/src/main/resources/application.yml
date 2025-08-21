@@ -110,8 +110,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "https://airport27.azureedge.net"
-              - "https://supreme-fiesta-97454xwqjrr7c7rxv-5174.app.github.dev"
+              - "http://airport27.azureedge.net"
             allowedMethods:
               - "*"
             allowedHeaders:
