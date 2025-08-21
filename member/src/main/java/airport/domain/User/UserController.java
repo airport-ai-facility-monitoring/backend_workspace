@@ -36,7 +36,7 @@ import airport.infra.MailService;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-@RequestMapping(value="/users")
+@RequestMapping(value="/api/users")
 @Transactional
 public class UserController {
 

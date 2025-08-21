@@ -14,7 +14,7 @@ import java.util.Map;
  * 필요 시 body로 일부 값을 override할 수 있음.
  */
 @RestController
-@RequestMapping("/equip")
+@RequestMapping("/api/equip")
 @RequiredArgsConstructor
 public class EquipmentPredictionController {
 

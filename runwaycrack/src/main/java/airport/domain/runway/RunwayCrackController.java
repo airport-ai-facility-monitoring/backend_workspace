@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-@RequestMapping(value="/runwaycracks")
+@RequestMapping(value="/api/runwaycracks")
 @Transactional
 public class RunwayCrackController {
 

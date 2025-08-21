@@ -38,7 +38,7 @@ import org.springframework.web.server.ResponseStatusException;
 //<<< Clean Arch / Inbound Adaptor
 @Slf4j
 @RestController
-@RequestMapping(value="/runwaycrackreports")
+@RequestMapping(value="/api/runwaycrackreports")
 @Transactional
 public class RunwayCrackReportController {
 

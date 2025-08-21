@@ -27,7 +27,7 @@ import org.springframework.http.HttpStatus;
 
 
 @RestController
-@RequestMapping("/notifications")
+@RequestMapping("/api/notifications")
 @Transactional
 public class NotificationController {
 

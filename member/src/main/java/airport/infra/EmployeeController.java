@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/api/employees")
 @Transactional
 public class EmployeeController {
 

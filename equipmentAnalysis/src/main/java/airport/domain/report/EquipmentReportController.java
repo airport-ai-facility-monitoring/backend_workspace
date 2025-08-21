@@ -27,7 +27,7 @@ import java.util.Map;
  * EquipmentReport에 대한 API 요청을 처리하는 컨트롤러 클래스입니다.
  */
 @RestController
-@RequestMapping(value="/equipmentReports")
+@RequestMapping(value="/api/equipmentReports")
 public class EquipmentReportController {
 
     @Autowired

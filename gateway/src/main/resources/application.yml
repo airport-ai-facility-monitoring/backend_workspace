@@ -77,23 +77,23 @@ spring:
         - id: member
           uri: http://member:8080
           predicates:
-            - Path=/users/**, /employees/**,
+            - Path=/api/users/**, /api/employees/**,
         - id: notification
           uri: http://notification:8080
           predicates:
-            - Path=/notifications/**
+            - Path=/api/notifications/**
         - id: alert
           uri: http://alert:8080
           predicates:
-            - Path=/alerts/**, /cctvs/**
+            - Path=/api/alerts/**, /api/cctvs/**
         - id: runwayobject
           uri: http://runwayobject:8080
           predicates:
-            - Path=/strangeObjects/**, /workers/**, /workTrucks/**
+            - Path=/api/strangeObjects/**, /api/workers/**, /api/workTrucks/**
         - id: runwaycrack
           uri: http://runwaycrack:8080
           predicates:
-            - Path=/runwaycracks/**, /runwaycrackreports/**
+            - Path=/api/runwaycracks/**, /api/runwaycrackreports/**
         - id: runwaycrack-api
           uri: http://runwaycrackai:8000
           predicates:
@@ -101,11 +101,11 @@ spring:
         - id: equipment-analysis
           uri: http://equipmentAnalysis:8080
           predicates:
-            - Path=/equipmentReports/**
+            - Path=/api/equipmentReports/**
         - id: equipmentdashboard
           uri: http://equipmentdashboard:8080
           predicates:
-            - Path=/equipment/**, /equip/**
+            - Path=/api/equipment/**, /api/equip/**
       globalcors:
         corsConfigurations:
           '[/**]':

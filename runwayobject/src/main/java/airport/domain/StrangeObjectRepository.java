@@ -7,7 +7,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 //<<< PoEAA / Repository
 @RepositoryRestResource(
     collectionResourceRel = "strangeObjects",
-    path = "strangeObjects"
+    path = "api/strangeObjects"
 )
 public interface StrangeObjectRepository
     extends PagingAndSortingRepository<StrangeObject, Long> {}

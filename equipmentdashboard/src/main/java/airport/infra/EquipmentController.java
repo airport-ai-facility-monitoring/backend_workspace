@@ -12,7 +12,7 @@ import org.springframework.http.MediaType;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping(value = "/equipments")
+@RequestMapping(value = "/api/equipments")
 @Transactional
 public class EquipmentController {
 

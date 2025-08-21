@@ -17,7 +17,7 @@ import java.util.stream.StreamSupport;
 import org.springframework.data.domain.Sort; // 올바른 위치로 이동
 
 @RestController
-@RequestMapping("/alerts")
+@RequestMapping("/api/alerts")
 public class AlertController {
 
     @Autowired

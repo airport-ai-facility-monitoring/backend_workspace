@@ -8,7 +8,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 //<<< PoEAA / Repository
 @RepositoryRestResource(
     collectionResourceRel = "workTrucks",
-    path = "workTrucks"
+    path = "api/workTrucks"
 )
 public interface WorkTruckRepository
     extends PagingAndSortingRepository<WorkTruck, Long> {
