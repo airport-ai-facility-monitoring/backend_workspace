@@ -76,8 +76,43 @@ logging:
 # Docker 환경에서 활성화될 프로필
 spring:
   profiles: docker
+  datasource:
+    url: jdbc:sqlserver://airport.database.windows.net:1433;database=airport;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database-platform: org.hibernate.dialect.SQLServer2012Dialect
+    hibernate:
+      ddl-auto: update
+
   cloud:
     stream:
       kafka:
         binder:
-          brokers: my-kafka:9092
+          brokers: my-kafka:9092   # ✅ 클러스터 안에서는 서비스 이름 사용
+        consumer:
+          auto-offset-reset: earliest
+        streams:
+          binder:
+            configuration:
+              default:
+                key:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      bindings:
+        event-in:
+          group: alert
+          destination: airport
+          contentType: application/json
+        event-out:
+          destination: airport
+          contentType: application/json
