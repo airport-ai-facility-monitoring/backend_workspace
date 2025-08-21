@@ -57,10 +57,9 @@ logging:
     org.springframework.cloud: debug
 
 
-storage:
-  account-name: airportfrontendstorage
-  account-key: ${AZURE_ACCOUNT_KEY}
-  container-name: videos
+STORAGE_ACCOUNT_NAME : airportfrontendstorage
+AZURE_ACCOUNT_KEY : ${AZURE_ACCOUNT_KEY}
+STORAGE_CONTAINER_NAME : videos
 
 server:
   port: 8083
