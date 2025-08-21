@@ -122,3 +122,9 @@ spring:
 app:                                  # ✅ spring 과 같은 레벨
   mail:
     from: ${APP_MAIL_FROM:${MAIL_USERNAME}}
+
+jwt:
+  secret: ${JWT_SECRET}
+
+recaptcha:
+  secret: ${CAPTCHA_SECRET}
