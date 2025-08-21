@@ -25,7 +25,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     // application.yml 또는 환경변수에서 주입 (예: recaptcha.secret)
-    @Value("${recaptcha.secret:}")
+    @Value("${CAPTCHA_SECRET}")
     private String recaptchaSecret;
 
     private static final String VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify";
