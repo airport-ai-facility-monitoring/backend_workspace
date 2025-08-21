@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: runwaycrack
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
+
 ---
 spring:
   profiles: default
@@ -43,9 +48,6 @@ spring:
           destination: airport
           contentType: application/json
 
-gemini:
-  api:
-    key: ${GEMINI_API_KEY}
 
 logging:
   level:

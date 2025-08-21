@@ -103,3 +103,6 @@ spring:
           contentType: application/json
 
 
+STORAGE_ACCOUNT_NAME : airportfrontendstorage
+AZURE_ACCOUNT_KEY : ${AZURE_ACCOUNT_KEY}
+STORAGE_CONTAINER_NAME : videos
