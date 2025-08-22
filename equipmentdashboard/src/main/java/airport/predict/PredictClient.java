@@ -6,11 +6,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import java.util.Map;
 
-import airport.domain.*;
-import airport.dto.*;
-import java.util.*;
+import java.util.Map;
 
 @Component
 public class PredictClient {
@@ -18,17 +15,19 @@ public class PredictClient {
     private final WebClient webClient;
     private final String functionKey;
 
-    public PredictClient( @Value("${FUNCTION_KEY}") String functionKey) {
+    public PredictClient(@Value("${FUNCTION_KEY}") String functionKey) {
         this.functionKey = functionKey;
         this.webClient = WebClient.builder()
-            .baseUrl("https://costpredict-e6fgdxaydhfmgcht.koreacentral-01.azurewebsites.net/api/EquipCost1")
-            .build();
+                .baseUrl("https://costpredict-e6fgdxaydhfmgcht.koreacentral-01.azurewebsites.net")
+                .build();
     }
 
     public PredictResponse predict(Map<String, Object> payload) {
         return webClient.post()
-                .uri("") // baseUrl에 이미 EquipCost1 포함
-                .header("x-functions-key", functionKey) // Function Key 헤더
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/EquipCost1")   // 기존 함수 이름 그대로
+                        .queryParam("code", functionKey)  // 401 방지: 쿼리 파라미터로 Key 전달
+                        .build())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(payload)
                 .retrieve()

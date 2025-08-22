@@ -55,8 +55,6 @@ public class RunwayCrackReportController {
 
     @Autowired PredictionClient predictionClient;
 
-    @Value("${FUNCTION_KEY}")
-    private String functionKey;
 
     @GetMapping()
     public ResponseEntity<List<RunwayCrackReport>> getAllReports() {
@@ -229,7 +227,7 @@ public class RunwayCrackReportController {
             log.info("[PREDICT] feignRequest={}", om.writeValueAsString(req));
 
             // 6) 호출 & 응답 로깅
-            PredictResponse resp = predictionClient.predict(req, functionKey);
+            PredictResponse resp = predictionClient.predict(req);
             log.info("[PREDICT] feignResponse={}", om.writeValueAsString(resp));
             return resp;
 
