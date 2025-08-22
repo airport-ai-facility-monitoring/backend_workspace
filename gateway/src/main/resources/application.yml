@@ -101,7 +101,7 @@ spring:
         - id: equipmentdashboard
           uri: http://equipmentdashboard:8080
           predicates:
-            - Path=/api/equipment/**, /api/equip/**
+            - Path=/api/equipments/**, /api/equip/**
       globalcors:
         corsConfigurations:
           '[/**]':
