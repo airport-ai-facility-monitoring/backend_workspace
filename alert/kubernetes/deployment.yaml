@@ -18,11 +18,11 @@ spec:
         - name: alert
           image: "gangmin522/alert:latest"
           ports:
-            - containerPort: 8084
+            - containerPort: 8080
           readinessProbe:
             httpGet:
               path: '/actuator/health'
-              port: 8084
+              port: 8080
             initialDelaySeconds: 60
             timeoutSeconds: 2
             periodSeconds: 5
@@ -30,7 +30,7 @@ spec:
           livenessProbe:
             httpGet:
               path: '/actuator/health'
-              port: 8084
+              port: 8080
             initialDelaySeconds: 60
             timeoutSeconds: 2
             periodSeconds: 5
