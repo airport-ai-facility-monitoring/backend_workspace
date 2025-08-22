@@ -1,5 +1,5 @@
 server:
-  port: 8084
+  port: 8080
 
 spring:
   application:
@@ -71,6 +71,10 @@ logging:
     org.apache.kafka: info
     airport: info
     org.hibernate.tool.hbm2ddl: debug
+
+server:
+  port: 8084
+
 
 ---
 # Docker 환경에서 활성화될 프로필
