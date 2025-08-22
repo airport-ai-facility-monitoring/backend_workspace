@@ -39,9 +39,14 @@ import airport.domain.report.PredictRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "runwaycrack", url = "${predict.url:http://localhost:8002}")
+@FeignClient(name = "runwaycrack", url = "https://airportreport-esbngpcxa9e3cxaz.koreacentral-01.azurewebsites.net/api/CrackCost1")
 public interface PredictionClient {
-    @PostMapping("/predict")
-    PredictResponse predict(@RequestBody PredictRequest request);
+
+    @PostMapping
+    PredictResponse predict(
+        @RequestBody PredictRequest request,
+        @RequestHeader("x-functions-key") String functionKey  // 함수 키 헤더로 전달
+    );
 }

@@ -35,6 +35,11 @@ spec:
                 secretKeyRef:
                   name: member-secrets
                   key: GEMINI_API_KEY
+            - name: FUNCTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: member-secrets
+                  key: FUNCTION_KEY
           readinessProbe:
             httpGet:
               path: '/actuator/health'

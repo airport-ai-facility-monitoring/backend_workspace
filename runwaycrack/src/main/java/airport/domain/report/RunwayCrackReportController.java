@@ -30,6 +30,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.util.Value;
+
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,6 +54,9 @@ public class RunwayCrackReportController {
     AnalysisService analysisService;
 
     @Autowired PredictionClient predictionClient;
+
+    @Value("${FUNCTION_KEY}")
+    private String functionKey;
 
     @GetMapping()
     public ResponseEntity<List<RunwayCrackReport>> getAllReports() {
@@ -224,7 +229,7 @@ public class RunwayCrackReportController {
             log.info("[PREDICT] feignRequest={}", om.writeValueAsString(req));
 
             // 6) 호출 & 응답 로깅
-            PredictResponse resp = predictionClient.predict(req);
+            PredictResponse resp = predictionClient.predict(req, functionKey);
             log.info("[PREDICT] feignResponse={}", om.writeValueAsString(resp));
             return resp;
 
