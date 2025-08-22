@@ -55,7 +55,7 @@ spec:
               path: '/actuator/health'
               port: 8080
             initialDelaySeconds: 150
-            timeoutSeconds: 2
+            timeoutSeconds: 5
             periodSeconds: 5
             failureThreshold: 10
           livenessProbe:
@@ -63,6 +63,6 @@ spec:
               path: '/actuator/health'
               port: 8080
             initialDelaySeconds: 150
-            timeoutSeconds: 2
+            timeoutSeconds: 5
             periodSeconds: 5
             failureThreshold: 5
