@@ -16,16 +16,19 @@ import java.util.*;
 public class PredictClient {
 
     private final WebClient webClient;
+    private final String functionKey;
 
-    public PredictClient(@Value("${predict.base-url:http://localhost:8003}") String baseUrl) {
+    public PredictClient( @Value("${FUNCTION_KEY}") String functionKey) {
+        this.functionKey = functionKey;
         this.webClient = WebClient.builder()
-                .baseUrl(baseUrl)
-                .build();
+            .baseUrl("https://airportreport-esbngpcxa9e3cxaz.koreacentral-01.azurewebsites.net/api/EquipCost1")
+            .build();
     }
 
     public PredictResponse predict(Map<String, Object> payload) {
         return webClient.post()
-                .uri("/predict")
+                .uri("") // baseUrl에 이미 EquipCost1 포함
+                .header("x-functions-key", functionKey) // Function Key 헤더
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(payload)
                 .retrieve()

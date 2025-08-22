@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: equipmentdashboard
+
+FUNCTION_KEY: ${FUNCTION_KEY}
 ---
 spring:
   profiles: default

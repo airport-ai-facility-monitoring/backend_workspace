@@ -46,3 +46,8 @@ spec:
                 secretKeyRef:
                   name: member-secrets
                   key: DB_PASSWORD
+            - name: FUNCTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: member-secrets
+                  key: FUNCTION_KEY
