@@ -87,6 +87,7 @@ spring:
     database-platform: org.hibernate.dialect.SQLServerDialect
     hibernate:
       ddl-auto: update
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -98,6 +99,10 @@ spring:
           auth: true
           starttls:
             enable: true
+  management:
+    health:
+      mail:
+        enabled: false
   cloud:
     stream:
       kafka:
