@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: runwayobject
+  data:
+    rest:
+      base-path: /api
 ---
 spring:
   profiles: default

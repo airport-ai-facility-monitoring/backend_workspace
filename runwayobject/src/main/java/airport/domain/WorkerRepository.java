@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 //<<< PoEAA / Repository
-@RepositoryRestResource(collectionResourceRel = "workers", path = "api/workers")
+@RepositoryRestResource(collectionResourceRel = "workers", path = "workers")
 public interface WorkerRepository
     extends PagingAndSortingRepository<Worker, Long> {
     @Query("SELECT SUM(w.approvalWorkerCount) FROM Worker w")
