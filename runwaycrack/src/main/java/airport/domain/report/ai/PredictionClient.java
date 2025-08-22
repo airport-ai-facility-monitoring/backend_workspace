@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "runwaycrack", url = "https://airportreport-esbngpcxa9e3cxaz.koreacentral-01.azurewebsites.net/api/CrackCost1")
+@FeignClient(name = "runwaycrack", url = "https://costpredict-e6fgdxaydhfmgcht.koreacentral-01.azurewebsites.net/api/CrackCost1")
 public interface PredictionClient {
 
     @PostMapping

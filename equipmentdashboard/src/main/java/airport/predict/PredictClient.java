@@ -21,7 +21,7 @@ public class PredictClient {
     public PredictClient( @Value("${FUNCTION_KEY}") String functionKey) {
         this.functionKey = functionKey;
         this.webClient = WebClient.builder()
-            .baseUrl("https://airportreport-esbngpcxa9e3cxaz.koreacentral-01.azurewebsites.net/api/EquipCost1")
+            .baseUrl("https://costpredict-e6fgdxaydhfmgcht.koreacentral-01.azurewebsites.net/api/EquipCost1")
             .build();
     }
 
