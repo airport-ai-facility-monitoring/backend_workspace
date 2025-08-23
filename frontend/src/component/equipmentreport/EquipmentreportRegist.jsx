@@ -46,6 +46,11 @@ const keyMap = {
   power_consumption: "powerConsumption",
   panel_width: "panelWidth",
   panel_height: "panelHeight",
+  lamp_type: "lampType",             // ✅ Lighting 용
+  mount_type: "mountType",           // ✅ Weather/Sign 용
+  material: "material",              // ✅ Sign 용
+  sign_color: "signColor",           // ✅ Sign 용
+  installation_type: "installationType", // ✅ Sign 용
 };
 
 /** ===== 레이아웃 스타일(입력 박스는 CSS .box로 통일) ===== */
@@ -186,14 +191,37 @@ export default function EquipmentReportRegist() {
   //   if (!equipmentId) throw new Error("equipmentId가 없습니다. 상세 페이지에서 state로 넘겨주세요.");
   //   return `${BASE}/equip/predict/${equipmentId}`;
   // };
-  const buildOverrides = (form) => {
-    const overrides = {};
-    Object.entries(keyMap).forEach(([from, to]) => {
-      const v = form?.[from];
-      if (v !== "" && v != null && !Number.isNaN(Number(v))) overrides[to] = Number(v);
-    });
-    return overrides;
-  };
+const buildOverrides = (form) => {
+  const overrides = {};
+  Object.entries(keyMap).forEach(([from, to]) => {
+    const v = form?.[from];
+    if (v !== "" && v != null) {
+      // 숫자인 경우만 Number 처리
+      overrides[to] = isNaN(Number(v)) ? v : Number(v);
+    }
+  });
+
+  if (protectionRating) overrides["protectionRating"] = protectionRating;
+  if (purchase) overrides["purchase"] = Number(purchase);
+  if (serviceYears) overrides["serviceYears"] = Number(serviceYears);
+
+  // category 구분해서 필수 키 보장
+  if (catKey === "lighting") {
+    overrides["lampType"] = form?.lamp_type || "";
+  }
+  if (catKey === "weather") {
+    overrides["mountType"] = form?.mount_type || "";
+  }
+  if (catKey === "sign") {
+    overrides["material"] = form?.material || "";
+    overrides["signColor"] = form?.sign_color || "";
+    overrides["installationType"] = form?.installation_type || form?.mount_type || "";
+  }
+
+  overrides["category"] = catKey; // Category 명시
+  return overrides;
+};
+
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!formData) return;

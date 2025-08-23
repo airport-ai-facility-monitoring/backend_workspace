@@ -1,7 +1,6 @@
 package airport.predict;
 
 import airport.domain.*;
-import airport.domain.EquipmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -75,7 +74,7 @@ public class EquipmentPredictionService {
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("category", categoryCode);
-
+        // manufacturer 기본값
         // 공통(숫자 기대)
         putNum(payload, "purchase", eq.getPurchase());
         putNum(payload, "failure", eq.getFailure());
@@ -87,7 +86,6 @@ public class EquipmentPredictionService {
         putNum(payload, "avgLife", eq.getAvgLife());
 
         // 코드형(숫자 코드 기대)
-        putCode(payload, "manufacturer", eq.getManufacturer());
         putCode(payload, "protectionRating", eq.getProtectionRating());
 
         // 카테고리별
