@@ -218,7 +218,6 @@ const buildOverrides = (form) => {
     overrides["installationType"] = form?.installation_type || form?.mount_type || "";
   }
 
-  overrides["category"] = catKey; // Category 명시
   return overrides;
 };
 
