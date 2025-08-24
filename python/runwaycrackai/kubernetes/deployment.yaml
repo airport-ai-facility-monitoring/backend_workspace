@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: runwaycrack-api
-          image: "jinsuheo/runwaycrackai:latest"
+          image: "jinsuheo/runwaycrackai:250824"
           ports:
             - containerPort: 8000
           env:
