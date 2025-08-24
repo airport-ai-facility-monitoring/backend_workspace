@@ -22,6 +22,7 @@ public class Alert {
     @Column(name = "alert_id")
     private Long alertId;
 
+    @Column(columnDefinition = "NVARCHAR(255)")
     private String alertLog;
 
     private Date alertDate;
