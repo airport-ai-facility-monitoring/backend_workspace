@@ -17,8 +17,6 @@ Dockerfile
 # 쿠버네티스 설정
 kubernetes/
 
-# 모델 파일
-*.pt
 
 # 문서
 README.md
