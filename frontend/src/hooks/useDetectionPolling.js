@@ -137,7 +137,7 @@ const useDetectionPolling = (videoRef, cameraId) => {
           }
         } else {
           // 일반 카메라: 기존 /detect 응답 { boxes: [{x,y,width,height,label,score}], ... }
-          const res = await api.post("/detect", {
+          const res = await api.post("/objectDetect", {
             image_base64: dataUrl,
             cameraId: parseInt(cameraId, 10),
           });

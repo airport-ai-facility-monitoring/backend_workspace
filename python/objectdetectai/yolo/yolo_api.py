@@ -83,7 +83,7 @@ def safe_decode_image(image_b64: str) -> np.ndarray:
         raise HTTPException(status_code=400, detail="Failed to decode image (cv2.imdecode returned None)")
     return frame
 
-@app.post("/api/detect")
+@app.post("/api/objectDetect")
 def detect_objects(req: FrameRequest):
     # 0. 요청 로깅(문제 원인 파악에 매우 유용)
     # 길이만 로깅하고 본문은 로그로 남기지 마세요 (보안/성능)

@@ -23,7 +23,7 @@ spec:
             httpGet:
               path: '/docs'
               port: 8000
-            initialDelaySeconds: 10
+            initialDelaySeconds: 150
             timeoutSeconds: 2
             periodSeconds: 5
             failureThreshold: 3
@@ -31,7 +31,7 @@ spec:
             httpGet:
               path: '/docs'
               port: 8000
-            initialDelaySeconds: 15
+            initialDelaySeconds: 150
             timeoutSeconds: 2
             periodSeconds: 10
             failureThreshold: 3
