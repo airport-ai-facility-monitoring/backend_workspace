@@ -91,7 +91,7 @@ spring:
           predicates:
             - Path=/api/runwaycracks/**, /api/runwaycrackreports/**
         - id: runwaycrack-api
-          uri: http://runwaycrackai:8000
+          uri: http://runwaycrack-api:8000
           predicates:
             - Path=/api/runwaycracksDetect/**
         - id: objectdectect-api
