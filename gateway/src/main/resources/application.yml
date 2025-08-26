@@ -99,7 +99,7 @@ spring:
           predicates:
             - Path=/api/objectDetect/**
         - id: equipment-analysis
-          uri: http://equipmentAnalysis:8080
+          uri: http://equipmentanalysis:8080
           predicates:
             - Path=/api/equipmentReports/**
         - id: equipmentdashboard
