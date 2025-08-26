@@ -44,7 +44,7 @@ const DashDetail = () => {
     const imageBase64 = canvas.toDataURL('image/jpeg');
 
     try {
-      const res = await axios.post('https://localhost:8000/detect', {
+      const res = await api.post('/objectDetect', {
         image_base64: imageBase64,
         cameraId: Number(id)
       });
