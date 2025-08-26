@@ -98,7 +98,7 @@ spring:
           uri: http://objectdectect-api:8000
           predicates:
             - Path=/api/objectDetect/**
-        - id: equipment-analysis
+        - id: equipmentanalysis
           uri: http://equipmentanalysis:8080
           predicates:
             - Path=/api/equipmentReports/**
