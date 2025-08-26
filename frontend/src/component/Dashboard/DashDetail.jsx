@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
-import api from '../../api/axios'; // api import 추가
+import api from '../../config/api'; // api import 추가
 
 const DashDetail = () => {
   const { id } = useParams();
@@ -32,7 +32,7 @@ const DashDetail = () => {
   }, [id]);
 
   console.log("ID from URL params:", id);
-  const videoPath = `${import.meta.env.BASE_URL}videos/${id}.mp4`;
+  const videoPath = `/videos/${id}.mp4`;
   console.log("Constructed video path:", videoPath);
 
   // 🔸 프레임 캡처 및 객체 탐지 API 요청
