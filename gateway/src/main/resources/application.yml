@@ -110,10 +110,10 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
-              - "http://airport27.azureedge.net"
-              - "https://airport27.azureedge.net"
-              - "http://airport27-bgb3evepevfne3hf.z02.azurefd.net"
-              - "https://airport27-bgb3evepevfne3hf.z02.azurefd.net"
+              - "http://airportcopy27.z12.web.core.windows.net"
+              - "https://airportcopy27.z12.web.core.windows.net"
+              - "http://airportcopy27-h6d3g9g8e6aah6f3.z01.azurefd.net"
+              - "https://airportcopy27-h6d3g9g8e6aah6f3.z01.azurefd.net"
             allowedMethods:
               - "*"
             allowedHeaders:

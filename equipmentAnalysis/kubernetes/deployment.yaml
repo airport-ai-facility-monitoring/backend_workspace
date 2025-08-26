@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: equipmentanalysis
-          image: "gangmin522/equipmentanalysis:latest"
+          image: "jinsuheo/equipmentanalysis:250826"
           ports:
             - containerPort: 8080
           readinessProbe:

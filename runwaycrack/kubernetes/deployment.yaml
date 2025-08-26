@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: runwaycrack
-          image: "gangmin522/runwaycrack:latest"
+          image: "jinsuheo/runwaycrack:250826"
           ports:
             - containerPort: 8080
           env:

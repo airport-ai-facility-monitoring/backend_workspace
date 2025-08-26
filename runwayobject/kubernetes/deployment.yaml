@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: runwayobject
-          image: "gangmin522/runwayobject:latest"
+          image: "jinsuheo/runwayobject:250826"
           ports:
             - containerPort: 8080
           env:

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: equipmentdashboard
-          image: "gangmin522/equipmentdashboard:latest"
+          image: "jinsuheo/equipmentdashboard:250826"
           ports:
             - containerPort: 8080
           readinessProbe:
