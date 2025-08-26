@@ -33,7 +33,7 @@ spec:
             - name: AZURE_ACCOUNT_KEY
               valueFrom:
                 secretKeyRef:
-                  name: notification-secrets
+                  name: member-secrets
                   key: AZURE_ACCOUNT_KEY
             - name: STORAGE_ACCOUNT_NAME
               value: "airportfrontendstorage"

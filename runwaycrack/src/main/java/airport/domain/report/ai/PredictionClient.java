@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(name = "runwaycrack",
-             url = "https://costpredict-e6fgdxaydhfmgcht.koreacentral-01.azurewebsites.net")
+             url = "https://airportcopy27-h6d3g9g8e6aah6f3.koreacentral-01.azurewebsites.net")
 public interface PredictionClient {
 
     @PostMapping("/api/CrackCost1?code=${FUNCTION_KEY}")
