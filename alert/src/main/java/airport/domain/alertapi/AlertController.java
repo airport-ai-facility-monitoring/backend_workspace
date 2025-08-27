@@ -50,7 +50,7 @@ public class AlertController {
     // GET /alerts/search/findByCctvId?cctvId=3
     @GetMapping("/search/findByCctvId")
     public ResponseEntity<List<Alert>> getAlertsByCctvId(@RequestParam Long cctvId) {
-        List<Alert> alerts = alertRepository.findByCctvId(cctvId);
+        List<Alert> alerts = alertRepository.findByCctvIdOrderByAlertDateDesc(cctvId);
 
         if (alerts.isEmpty()) {
             return ResponseEntity.noContent().build(); // 데이터 없으면 204 No Content

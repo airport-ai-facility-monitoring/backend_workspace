@@ -8,5 +8,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 //<<< PoEAA / Repository
 @RepositoryRestResource(collectionResourceRel = "alerts", path = "alerts")
 public interface AlertRepository extends JpaRepository<Alert, Long> {
-    List<Alert> findByCctvId(@Param("cctvId") Long cctvId);
+    List<Alert> findByCctvIdOrderByAlertDateDesc(Long cctvId);
 }

@@ -19,7 +19,8 @@ const DashDetail = () => {
     const fetchAlerts = async () => {
       try {
         const response = await api.get(`/alerts/search/findByCctvId?cctvId=${id}`);
-        setAlerts(response.data._embedded.alerts || []);
+        console.log(response)
+        setAlerts(response.data || []);
       } catch (error) {
         console.error('Error fetching alerts:', error);
       }
