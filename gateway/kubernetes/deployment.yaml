@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: "jinsuheo/gateway:2508261"
+          image: "jinsuheo/gateway:250827"
           ports:
             - containerPort: 8080
           env:

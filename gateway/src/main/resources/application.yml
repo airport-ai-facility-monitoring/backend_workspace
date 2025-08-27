@@ -110,6 +110,7 @@ spring:
         corsConfigurations:
           '[/**]':
             allowedOrigins:
+              - "https://supreme-fiesta-97454xwqjrr7c7rxv-5173.app.github.dev"
               - "http://airportcopy27.z12.web.core.windows.net"
               - "https://airportcopy27.z12.web.core.windows.net"
               - "http://airportcopy27-h6d3g9g8e6aah6f3.z01.azurefd.net"
