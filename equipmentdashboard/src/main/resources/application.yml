@@ -10,7 +10,7 @@ FUNCTION_KEY: ${FUNCTION_KEY}
 spring:
   profiles: default
   datasource:
-    url: jdbc:sqlserver://airport.database.windows.net:1433;database=airport;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    url: jdbc:sqlserver://airportcopy27.database.windows.net:1433;database=airportcopy27;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -56,7 +56,7 @@ server:
 spring:
   profiles: docker
   datasource:
-    url: jdbc:sqlserver://airport.database.windows.net:1433;database=airport;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    url: jdbc:sqlserver://airportcopy27.database.windows.net:1433;database=airportcopy27;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
