@@ -59,9 +59,9 @@ public class EquipmentReport {
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String cost;
 
-     // LLM이 만들어준 전체 보고서 본문
-    @Column(columnDefinition = "TEXT")
-    private String llmReport;      // ✅ 프론트에서 편집한 텍스트를 그대로 저장
+    // LLM이 만들어준 전체 보고서 본문
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String llmReport;
 
     // (선택) 디버깅용
     @Column(columnDefinition = "TEXT")
@@ -69,12 +69,21 @@ public class EquipmentReport {
 
     // (선택) 메타들 저장해두면 상세에서 다시 호출 없이 표시 가능
     private Long equipmentId;
-    private String name;
-    private String category;
-    private String subCategory;
-    private String manufacturer;
+    @Column(columnDefinition = "NVARCHAR(100)")
+    private String name;             // 장비명
+
+    @Column(columnDefinition = "NVARCHAR(50)")
+    private String category;         // 분류
+
+    @Column(columnDefinition = "NVARCHAR(50)")
+    private String subCategory;      // 세부 분류
+
+    @Column(columnDefinition = "NVARCHAR(100)")
+    private String manufacturer;     // 제조사
+
+    @Column(columnDefinition = "NVARCHAR(50)")
+    private String protectionRating; // 보호 등급
     private Integer purchase;
-    private String protectionRating;
     private Integer failure;
     private Integer runtime;
     private Integer serviceYears;

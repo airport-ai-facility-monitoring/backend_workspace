@@ -343,6 +343,15 @@ export default function EquipmentReportPreview() {
                       제조사: {payload?.manufacturer || "-"} · 보호등급: {payload?.protection_rating || "-"} · 내용연수: {fmtNum(payload?.service_years, "년")}
                     </div>
                   </div>
+                  {/* ✅ 여기에 안내 문구 추가 */}
+                  <div style={{ 
+                    marginBottom: 8, 
+                    fontSize: 13, 
+                    color: "#2563eb", 
+                    fontWeight: 600 
+                  }}>
+                    ※ 이 보고서는 AI가 생성한 초안입니다. 필요 시 편집 후 저장하세요.
+                  </div>
 
                   {/* ✅ HTML/Markdown 자동 처리 + 예쁜 스타일 */}
                   <div style={styles.previewBox}>

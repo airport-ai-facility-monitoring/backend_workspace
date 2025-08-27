@@ -192,6 +192,15 @@ export default function CrackReport() {
 
         {/* BODY */}
         <div style={styles.body}>
+          {/* AI 안내 문구 */}
+          <div style={{ 
+            marginBottom: 12, 
+            fontSize: 13, 
+            color: "#2563eb", 
+            fontWeight: 600 
+          }}>
+            ※ 이 보고서는 AI 기반 분석 결과를 토대로 자동 생성되었습니다.
+          </div>
           <div style={styles.metaGrid}>
             <div style={styles.metaLabel}>보고서 ID</div><div style={styles.metaValue}>{reportId || rcId}</div>
             <div style={styles.metaLabel}>작성 일시</div><div style={styles.metaValue}>{fmtDate(writingDate)}</div>
