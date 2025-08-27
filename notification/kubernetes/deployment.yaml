@@ -36,7 +36,7 @@ spec:
                   name: member-secrets
                   key: AZURE_ACCOUNT_KEY
             - name: STORAGE_ACCOUNT_NAME
-              value: "airportfrontendstorage"
+              value: "airportcopy27"
             - name: STORAGE_CONTAINER_NAME
               value: "videos"
           readinessProbe:
