@@ -207,24 +207,24 @@ export default function Login() {
             <Grid item xs={12} sm={6} md={3}>
               <Feature
                 icon={RadarIcon}
-                title="AI 이상 객체/수신호/충돌위험 탐지"
-                desc="영상 기반 실시간 감지와 상황별 즉시 경고"
+                title="활주로 이상 객체 탐지"
+                desc="실시간 이상 객체 탐지 및 분류ㆍ맞춤형 알림"
               />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
               <Feature
-                icon={MapIcon}
-                title="공항 지도·히트맵 시각화"
-                desc="공간·시간 흐름에 따른 이상 패턴을 한눈에"
+                icon={RadarIcon}
+                title="활주로 노면 손상 탐지"
+                desc="실시간 균열 탐지 및 수리기간ㆍ비용 예측"
               />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
               <Feature
                 icon={AssessmentIcon}
-                title="노면 손상 분석·수리비용 예측"
-                desc="손상 면적 산정 후 기간·비용을 AI로 추정"
+                title="장비 유지보수 비용 예측"
+                desc="유지보수 비용 예측ㆍ유사 장비 추천"
               />
             </Grid>
 
@@ -232,8 +232,8 @@ export default function Login() {
             <Grid item xs={12} sm={6} md={3}>
               <Feature
                 icon={AssessmentIcon}
-                title="공지/보고서 관리"
-                desc="파일 업로드 및 LLM 기반 자동 보고서 생성"
+                title="보고서 자동 생성"
+                desc="LLM 기반 종합 보고서 생성"
               />
             </Grid>
           </Grid>
@@ -382,20 +382,35 @@ export default function Login() {
       <Dialog open={openAbout} onClose={() => setOpenAbout(false)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 800 }}>서비스 소개</DialogTitle>
         <DialogContent dividers sx={{ lineHeight: 1.7 }}>
-          PRINCESS AIRPORTS SERVICE는 공항 운영·안전을 위한 AI 통합 플랫폼입니다.
-          활주로 이상 객체/수신호/충돌위험 탐지, 공항 지도·히트맵 시각화, 노면 손상 분석과 수리 비용 예측,
-          장비 유지보수 보고서 자동 생성까지 한 화면에서 제공합니다.
-        </DialogContent>
+          PRINCESS AIRPORTS SERVICE는 공항 운영·안전을 위한 AI 통합 플랫폼입니다.<br />
+          한 화면에서 이상 탐지, 지도·히트맵 시각화, 노면 손상 분석과 수리 예측, 장비 유지보수 보고서까지 제공합니다.<br /><br />
+          
+          • 통합 모니터링 대시보드: 구역·시간대별 이상 패턴 시각화<br />
+          • 공항 지도·히트맵: 공간 기반 탐지 결과 시각화<br />
+          • 실시간 이상객체 탐지: FOD/조류/동물/작업자/차량/수신호/충돌위험 등 맞춤형 알림<br />
+          • 실시간 날씨 확인: API 기반 기온·풍속·강수 등 조회<br />
+          • 활주로 노면 손상 탐지: 실시간 균열 탐지 및 수리기간·수리비용 예측<br />
+          • 장비 유지보수: 입력값 기반 비용 예측, 교체 권고 및 대체 품목 제안<br />
+          • 보고서 자동 생성: 노면 손상·장비 유지보수 종합 보고서 생성<br />
+          • 공지/기록 관리: 파일 업로드, 이력 관리, 권한 기반 접근 제어<br /><br />
+          
+          <strong>[AI 기능]</strong><br />
+          - 활주로 이상 객체 탐지·분류(이미지/영상): 딥러닝 기반 실시간 탐지·분류, 객체 유형별 경고 및 관련 부서 호출 권고, 인가 인원/작업 시간 위반 시 즉시 알림<br />
+          - 노면 손상 자동 탐지 &amp; 보고(이미지/영상·회귀·LLM): 드론/CCTV 영상에서 균열 분할 → 길이·면적 산출 → 수리기간·비용 예측 → LLM 기반 이상 탐지 보고서 자동 생성<br />
+          - 장비 유지보수 비용 예측 &amp; 권고(회귀·LLM): 장비 정보·추가 변수 입력 → 유지보수 비용 예측 → 유사/대체 품목 제안 → LLM 기반 조치 권고(유지·폐기·신규 매입) 보고서 작성
+          </DialogContent>
       </Dialog>
 
       <Dialog open={openDocs} onClose={() => setOpenDocs(false)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 800 }}>기능 요약</DialogTitle>
         <DialogContent dividers sx={{ lineHeight: 1.7 }}>
-          • 실시간 AI 탐지: FOD/조류/동물/작업자/차량 유형 등 상황별 경고<br />
-          • 지도/히트맵: 구역·시간대별 이상 패턴 시각화<br />
-          • 노면 손상: 분할·측정·수리기간/비용 예측(회귀), 자동 보고서(LLM)<br />
+          • 통합 모니터링 대시보드: 구역·시간대별 이상 패턴 시각화<br />
+          • 실시간 이상객체 탐지: FOD/조류/동물/작업자/차량 유형 등 맞춤형 알림<br />
+          • 실시간 날씨 확인 : API를 통한 실시간 날씨(기온,풍속,강수 등) 확인<br />
+          • 활주로 노면 손상 탐지: 실시간 활주로 균열 탐지 및 수리기간/수리비용 예측<br />
           • 장비 유지보수: 입력값 기반 비용 예측, 교체 권고 및 대체 품목 제안<br />
-          • 공지/보고서: 파일 업로드, 기록 관리, 권한 기반 접근 제어
+	        • 보고서 자동 생성: 활주로 노면 손상 및 장비 유지보수 종합 보고서 생성<br />	
+          • 공지 사항: 파일 업로드, 기록 관리, 권한 기반 접근 제어
         </DialogContent>
       </Dialog>
     </Box>
