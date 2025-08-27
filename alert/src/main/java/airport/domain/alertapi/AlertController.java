@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import org.springframework.http.ResponseEntity;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -43,5 +45,17 @@ public class AlertController {
     @GetMapping
     public Iterable<Alert> getAllAlerts() {
         return alertRepository.findAll(Sort.by(Sort.Direction.DESC, "alertDate"));
+    }
+
+    // GET /alerts/search/findByCctvId?cctvId=3
+    @GetMapping("/search/findByCctvId")
+    public ResponseEntity<List<Alert>> getAlertsByCctvId(@RequestParam Long cctvId) {
+        List<Alert> alerts = alertRepository.findByCctvId(cctvId);
+
+        if (alerts.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 데이터 없으면 204 No Content
+        } else {
+            return ResponseEntity.ok(alerts); // 데이터 있으면 200 OK
+        }
     }
 }

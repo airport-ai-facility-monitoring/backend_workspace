@@ -25,7 +25,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("runway-detect")
 
 # Azure Blob Storage
-STORAGE_ACCOUNT_NAME = "airportfrontendstorage"
+STORAGE_ACCOUNT_NAME = "airportcopy27"
 CONTAINER_NAME = "videos"
 STORAGE_URL = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/{CONTAINER_NAME}"
 SAS_TOKEN = os.getenv("SAS_TOKEN", "")  # "sv=..." 형태 권장(물음표 없이)

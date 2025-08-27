@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: alert
-          image: "jinsuheo/alert:250827"
+          image: "jinsuheo/alert:2508271"
           ports:
             - containerPort: 8080
           readinessProbe:
