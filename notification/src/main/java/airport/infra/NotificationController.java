@@ -39,7 +39,7 @@ public class NotificationController {
 
     @Autowired private FileValidator fileValidator;
 
-    private final String STORAGE_ACCOUNT_NAME = "airportfrontendstorage";
+    private final String STORAGE_ACCOUNT_NAME = "airportcopy27";
     private final String CONTAINER_NAME = "videos";
 
     // 🔹 공지사항 목록 조회

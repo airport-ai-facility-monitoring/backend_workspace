@@ -92,7 +92,7 @@ export default function NotificationWrite() {
 
       // 2️⃣ 업로드할 파일명과 컨테이너 정보로 URL 생성
       const encodedFilename = encodeURIComponent(fileName);
-      const blobUrl = `https://airportfrontendstorage.blob.core.windows.net/videos/${encodedFilename}?${token}`;
+      const blobUrl = `https://airportcopy27.blob.core.windows.net/videos/${encodedFilename}?${token}`;
       console.log(blobUrl)
       // 3️⃣ 파일 업로드
       if (file) {

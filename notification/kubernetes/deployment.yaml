@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: notification
-          image: "jinsuheo/notification:250827"
+          image: "jinsuheo/notification:2508271"
           ports:
             - containerPort: 8080
           env:
